@@ -8,6 +8,9 @@ import { StorageService } from './services/storage.service';
 import { ResultsComponent } from './results/results.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
+import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
+import { HeatmapComponent } from './results/heatmap/heatmap.component';
+import { BibleService } from './services/bible.service';
 
 
 @NgModule({
@@ -15,14 +18,16 @@ import { FormsModule } from '@angular/forms';
     AppComponent,
     InputComponent,
     ResultsComponent,
-    NavbarComponent
+    NavbarComponent,
+    SingleAttemptComponent,
+    HeatmapComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule
   ],
-  providers: [StorageService],
+  providers: [StorageService, BibleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

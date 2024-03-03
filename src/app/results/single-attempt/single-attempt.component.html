@@ -1,0 +1,11 @@
+<div *ngIf="this.current_result;then result_defined else result_undefined"></div>
+<ng-template #result_defined>
+	<div class="words">
+		<span [ngClass]="{'removed': diff.removed, 'added': diff.added}" *ngFor="let diff of (current_result?.diff || []); index as i;">
+			{{diff.value}}
+		</span>
+	</div>
+</ng-template>
+<ng-template #result_undefined>
+</ng-template>
+

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { Change, diffWords } from 'diff'
-import bible from '../../romans.json'
 import { StorageService } from '../services/storage.service';
+import { Router } from '@angular/router';
+import { BibleService } from '../services/bible.service';
 
 @Component({
   selector: 'app-input',
@@ -12,12 +13,22 @@ import { StorageService } from '../services/storage.service';
 export class InputComponent {
   attempt = ""
 
-  constructor(private _storageService: StorageService){}
+  constructor(private _storageService: StorageService, private _bibleService: BibleService, private router: Router){}
 
   submit() {
-    let diff: Change[] = diffWords(bible.romans[0], this.attempt, {"ignoreCase": true, "ignoreWhitespace": true});
-    this._storageService.store_attempt(diff)
-    
+    let diff: Change[] = diffWords("", this.attempt, {"ignoreCase": true, "ignoreWhitespace": true});
+    this._storageService.store_attempt(diff);
+    this.router.navigateByUrl('results');
   }
+
+  findAnchors() {
+    let anchors = this._bibleService.findAchors(this.attempt);
+    console.log("Found anchors: " + anchors);
+    if(anchors){
+      console.log(this._bibleService.getText(anchors[0], anchors[1]));
+    }
+
+  }
+
 
 }

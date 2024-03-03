@@ -34,4 +34,8 @@ export class StorageService {
   grade_diff(diff: Change[]){
     return 1;
   }
+
+  get_bank(): ResultBank {
+    return this.result_bank;
+  }
 }
