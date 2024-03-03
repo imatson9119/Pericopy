@@ -21,19 +21,23 @@ export class BibleService {
     }
   }
 
+  sanitizeText(text: string): string{
+    return text.replace(/[^\w ]/g, "").toLowerCase().split(/\s+/).join(" ");
+  }
+
 
   findAchors(attempt: string): number[] | undefined{
     // Remove non-word characters and split the attempt into words
     let words: string[] = attempt.replace(/[^\w ]/g, "").toLowerCase().split(/\s+/);
     let start = this.anchor(words);
-    let end = this.anchor(words.reverse(), true);
+    let end = this.anchor(words.reverse(), true, start);
     if (start == -1 || end == -1 || start > end){ 
       return undefined;
     }
     return [start, end+1];
   }
   
-  anchor(words: string[], reversed: boolean = false): number{
+  anchor(words: string[], reversed: boolean = false, startAnchorLoc: number = -1, ): number{
     // This function will attempt to find the start of the user's attempt in the Bible
     // It will accomplish this by finding the first unique valid sequence of words in the attempt using wordMap
     // If no such sequence is found, it will return -1
@@ -66,8 +70,15 @@ export class BibleService {
           });
         }
         if (possibleStartLocs.size == 1){
-          // If there is only one possible start location, we have found the start of the attempt
-          return Array.from(possibleStartLocs)[0];
+          let val = Array.from(possibleStartLocs)[0];
+          if (startAnchorLoc != -1 && val - startAnchorLoc > 2*words.length){
+            start += 1;
+            end = start;
+            possibleStartLocs.clear(); 
+          } else{
+            // If there is only one possible start location, we have found the start of the attempt
+            return Array.from(possibleStartLocs)[0];
+          }
         }
         else if (possibleStartLocs.size > 0){
           // If there are still possible start locations, we need to move the end pointer to the next word
@@ -158,6 +169,26 @@ export class BibleService {
     return undefined;
   }
 
+  getLocReference(loc: number): string[] | undefined{
+    if (loc < 0){
+      return undefined;
+    }
+    for (let book of this.bible.content){
+      if (loc < book.metadata.loc + book.metadata.words){
+        for (let chapter of book.content){
+          if (loc < chapter.metadata.loc + chapter.metadata.words){
+            for (let verse of chapter.content){
+              if (loc < verse.metadata.loc + verse.metadata.words){
+                return [book.metadata.book, chapter.metadata.chapter.toString(), verse.metadata.verse.toString()];
+              }
+            }
+          }
+        }
+      }
+    }
+    return undefined; 
+  }
+
   getBookText(book: Book) {
     let chapters = [];
     for (let chapter of book.content){
@@ -216,5 +247,23 @@ export class BibleService {
       } 
     }
     return "";
+  }
+
+  getPassageTitle(start_loc: number, end_loc: number): string | undefined {
+    if(start_loc < 0 || end_loc < 0 || start_loc > end_loc){
+      return undefined;
+    }
+    let start_ref = this.getLocReference(start_loc);
+    let end_ref = this.getLocReference(end_loc);
+    if (start_ref == undefined || end_ref == undefined){
+      return undefined;
+    }
+    if (start_ref[0] == end_ref[0] && start_ref[1] == end_ref[1]){
+      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + "-" + end_ref[2];
+    } else if (start_ref[0] == end_ref[0]){
+      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + " - " + end_ref[1] + ":" + end_ref[2];
+    } else {
+      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + " - " + end_ref[0] + " " + end_ref[1] + ":" + end_ref[2]; 
+    }
   }
 }

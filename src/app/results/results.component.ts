@@ -21,6 +21,6 @@ export class ResultsComponent implements OnInit {
   constructor(private _storage_service: StorageService) {}
 
   ngOnInit() {
-    this.result_bank = this._storage_service.get_bank();
+    this.result_bank = this._storage_service.getBank();
   }
 }

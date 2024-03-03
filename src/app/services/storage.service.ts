@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Change } from 'diff';
-import { Result, ResultBank } from '../models/models';
+import { BibleChange, Result, ResultBank } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -17,25 +17,25 @@ export class StorageService {
     }
   }
 
-  store_attempt(diff: Change[]){
-    let new_entry = this.process_diff(diff);
+  storeAttempt(diff: BibleChange[]){
+    let new_entry = this.processDiff(diff);
     this.result_bank.results.push(new_entry);
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
   }
 
-  process_diff(diff: Change[]): Result{
+  processDiff(diff: BibleChange[]): Result{
     return {
       "diff": diff,
       "timestamp": Date.now(),
-      "score": this.grade_diff(diff)
+      "score": this.gradeDiff(diff)
     }
   }
   
-  grade_diff(diff: Change[]){
+  gradeDiff(diff: BibleChange[]){
     return 1;
   }
 
-  get_bank(): ResultBank {
+  getBank(): ResultBank {
     return this.result_bank;
   }
 }

@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Change } from 'diff';
 import { Result, ResultBank } from 'src/app/models/models';
-import { trim_diff } from 'src/utils';
+import { trimDiff } from 'src/utils';
 
 @Component({
   selector: 'app-single-attempt',
@@ -24,7 +23,7 @@ export class SingleAttemptComponent implements OnInit {
       return;
     }
     this.current_result = this.result_bank.results[index];
-    this.current_result.diff = trim_diff(this.current_result.diff)
+    this.current_result.diff = trimDiff(this.current_result.diff)
   }
 
 

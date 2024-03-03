@@ -1,6 +1,6 @@
-import { Change } from "diff";
+import { BibleChange } from "./app/models/models";
 
-export function trim_diff(diff: Change[]): Change[]{
+export function trimDiff(diff: BibleChange[]): BibleChange[]{
   if(diff.length > 1){
     if(diff[0].added){
       diff.shift();
