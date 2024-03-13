@@ -1,43 +1,123 @@
 import { Injectable } from '@angular/core';
-import bibleFile from 'src/assets/bible-esv-min.json'
-import wordMapFile from 'src/assets/word_map.json'
-import { BibleM, BookM, ChapterM, VerseM, WordMap, WordMapFile } from '../models/models';
-
-
+import bibleFile from 'src/assets/bible-esv-min.json';
+import wordMapFile from 'src/assets/word_map.json';
+import {
+  Bible,
+  BibleDiffNew,
+  Book,
+  BookDiff,
+  Chapter,
+  ChapterDiff,
+  DiffType,
+  Verse,
+  VerseDiff,
+  WordChange,
+  WordMap,
+  WordMapFile,
+} from '../models/models';
+import { Change, diffWords } from 'diff';
+import { getWordChange, sanitizeText } from 'src/utils';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class BibleService {
+  bookIndices = {
+    genesis: 0,
+    exodus: 1,
+    leviticus: 2,
+    numbers: 3,
+    deuteronomy: 4,
+    joshua: 5,
+    judges: 6,
+    ruth: 7,
+    '1 samuel': 8,
+    '2 samuel': 9,
+    '1 kings': 10,
+    '2 kings': 11,
+    '1 chronicles': 12,
+    '2 chronicles': 13,
+    ezra: 14,
+    nehemiah: 15,
+    esther: 16,
+    job: 17,
+    psalm: 18,
+    proverbs: 19,
+    ecclesiastes: 20,
+    'song of solomon': 21,
+    isaiah: 22,
+    jeremiah: 23,
+    lamentations: 24,
+    ezekiel: 25,
+    daniel: 26,
+    hosea: 27,
+    joel: 28,
+    amos: 29,
+    obadiah: 30,
+    jonah: 31,
+    micah: 32,
+    nahum: 33,
+    habakkuk: 34,
+    zephaniah: 35,
+    haggai: 36,
+    zechariah: 37,
+    malachi: 38,
+    matthew: 39,
+    mark: 40,
+    luke: 41,
+    john: 42,
+    acts: 43,
+    romans: 44,
+    '1 corinthians': 45,
+    '2 corinthians': 46,
+    galatians: 47,
+    ephesians: 48,
+    philippians: 49,
+    colossians: 50,
+    '1 thessalonians': 51,
+    '2 thessalonians': 52,
+    '1 timothy': 53,
+    '2 timothy': 54,
+    titus: 55,
+    philemon: 56,
+    hebrews: 57,
+    james: 58,
+    '1 peter': 59,
+    '2 peter': 60,
+    '1 john': 61,
+    '2 john': 62,
+    '3 john': 63,
+    jude: 64,
+    revelation: 65,
+  };
+  bible = bibleFile as Bible;
+  wordMap: WordMap = {};
 
-  bookIndices = {"genesis": 0, "exodus": 1, "leviticus": 2, "numbers": 3, "deuteronomy": 4, "joshua": 5, "judges": 6, "ruth": 7, "1 samuel": 8, "2 samuel": 9, "1 kings": 10, "2 kings": 11, "1 chronicles": 12, "2 chronicles": 13, "ezra": 14, "nehemiah": 15, "esther": 16, "job": 17, "psalm": 18, "proverbs": 19, "ecclesiastes": 20, "song of solomon": 21, "isaiah": 22, "jeremiah": 23, "lamentations": 24, "ezekiel": 25, "daniel": 26, "hosea": 27, "joel": 28, "amos": 29, "obadiah": 30, "jonah": 31, "micah": 32, "nahum": 33, "habakkuk": 34, "zephaniah": 35, "haggai": 36, "zechariah": 37, "malachi": 38, "matthew": 39, "mark": 40, "luke": 41, "john": 42, "acts": 43, "romans": 44, "1 corinthians": 45, "2 corinthians": 46, "galatians": 47, "ephesians": 48, "philippians": 49, "colossians": 50, "1 thessalonians": 51, "2 thessalonians": 52, "1 timothy": 53, "2 timothy": 54, "titus": 55, "philemon": 56, "hebrews": 57, "james": 58, "1 peter": 59, "2 peter": 60, "1 john": 61, "2 john": 62, "3 john": 63, "jude": 64, "revelation": 65}
-  bible = bibleFile as BibleM
-  wordMap: WordMap = {}
-
-  constructor() { 
-    for (let word in wordMapFile){
+  constructor() {
+    for (let word in wordMapFile) {
       this.wordMap[word] = new Set((wordMapFile as WordMapFile)[word]);
     }
   }
 
-  sanitizeText(text: string): string{
-    return text.trim().replace(/[^\w ]/g, "").toLowerCase().split(/\s+/).join(" ");
-  }
-
-
-  findAchors(attempt: string): number[] | undefined{
+  findAchors(attempt: string): number[] | undefined {
     // Remove non-word characters and split the attempt into words
-    let words: string[] = attempt.replace(/[^\w ]/g, "").toLowerCase().split(/\s+/);
+    let words: string[] = attempt
+      .replace(/[^\w ]/g, '')
+      .toLowerCase()
+      .split(/\s+/);
     let start = this.anchor(words);
     let end = this.anchor(words.reverse(), true, start);
-    if (start == -1 || end == -1 || start > end){ 
+    if (start == -1 || end == -1 || start > end) {
       return undefined;
     }
-    return [start, end+1];
+    return [start, end + 1];
   }
-  
-  anchor(words: string[], reversed: boolean = false, startAnchorLoc: number = -1, ): number{
+
+  anchor(
+    words: string[],
+    reversed: boolean = false,
+    startAnchorLoc: number = -1
+  ): number {
     // This function will attempt to find the start of the user's attempt in the Bible
     // It will accomplish this by finding the first unique valid sequence of words in the attempt using wordMap
     // If no such sequence is found, it will return -1
@@ -46,81 +126,79 @@ export class BibleService {
     let end: number = 0;
     let possibleStartLocs = new Set<number>();
 
-    while(end < words.length){
+    while (end < words.length) {
       let curWord = words[end];
-      if(this.wordMap[curWord]){
+      if (this.wordMap[curWord]) {
         // If the current word is in the wordMap, we need to check if it is a valid start
-        if (possibleStartLocs.size == 0){
+        if (possibleStartLocs.size == 0) {
           // If there are no possible start locations, we need to add the current word's locations to the set
           possibleStartLocs = new Set(this.wordMap[curWord]);
-          console.log("Starting consideration with word" + curWord)
+          console.log('Starting consideration with word' + curWord);
         } else {
           // If there are possible start locations, we need to find the intersection of the current word's locations and the possible start locations
           let possibleWordLocs = new Set(this.wordMap[curWord]);
           possibleStartLocs.forEach((loc) => {
-            if (reversed){
-              if (!possibleWordLocs.has(loc - end + start)){
+            if (reversed) {
+              if (!possibleWordLocs.has(loc - end + start)) {
                 possibleStartLocs.delete(loc);
               }
             } else {
-              if (!possibleWordLocs.has(loc + end - start)){
+              if (!possibleWordLocs.has(loc + end - start)) {
                 possibleStartLocs.delete(loc);
               }
             }
           });
         }
-        if (possibleStartLocs.size == 1){
+        if (possibleStartLocs.size == 1) {
           let val = Array.from(possibleStartLocs)[0];
-          if (startAnchorLoc != -1 && val - startAnchorLoc > 2*words.length){
+          if (startAnchorLoc != -1 && val - startAnchorLoc > 2 * words.length) {
             start += 1;
             end = start;
-            possibleStartLocs.clear(); 
-          } else{
+            possibleStartLocs.clear();
+          } else {
             // If there is only one possible start location, we have found the start of the attempt
             return Array.from(possibleStartLocs)[0];
           }
-        }
-        else if (possibleStartLocs.size > 0){
+        } else if (possibleStartLocs.size > 0) {
           // If there are still possible start locations, we need to move the end pointer to the next word
           end += 1;
         } else {
           // If there are no possible start locations, we need to drop the first word
           start += 1;
           end = start;
-          possibleStartLocs.clear(); 
+          possibleStartLocs.clear();
         }
       } else {
         // If the current word is not in the wordMap, we need to move the start and end pointers to the next word
         end += 1;
         start = end;
-        possibleStartLocs.clear(); 
+        possibleStartLocs.clear();
       }
     }
-    console.log(possibleStartLocs)
+    console.log(possibleStartLocs);
     return -1;
   }
 
-
-  getLocBook(loc: number): BookM | undefined{
-    if (loc < 0){
+  getLocBook(loc: number): Book | undefined {
+    if (loc < 0) {
       return undefined;
     }
-    for (let book of this.bible.v){
-      if (loc < book.m.i + book.m.l){
+    for (let book of this.bible.v) {
+      if (loc < book.m.i + book.m.l) {
         return book;
       }
     }
     return undefined;
   }
 
-  getLocChapter(loc: number): ChapterM | undefined{
-    if (loc < 0){
+  getLocChapter(loc: number): Chapter | undefined {
+    if (loc < 0) {
       return undefined;
     }
-    for (let book of this.bible.v){
-      if (loc < book.m.i + book.m.l){
-        for (let chapter of book.v){
-          if (loc < chapter.m.i + chapter.m.l){
+    for (let book of this.bible.v) {
+      if (loc < book.m.i + book.m.l) {
+        for (let chapter of book.v) {
+          if (loc < chapter.m.i + chapter.m.l) {
             return chapter;
           }
         }
@@ -129,16 +207,16 @@ export class BibleService {
     return undefined;
   }
 
-  getLocVerse(loc: number): VerseM | undefined{
-    if (loc < 0){
+  getLocVerse(loc: number): Verse | undefined {
+    if (loc < 0) {
       return undefined;
     }
-    for (let book of this.bible.v){
-      if (loc < book.m.i + book.m.l){
-        for (let chapter of book.v){
-          if (loc < chapter.m.i + chapter.m.l){
-            for (let verse of chapter.v){
-              if (loc < verse.m.i + verse.m.l){
+    for (let book of this.bible.v) {
+      if (loc < book.m.i + book.m.l) {
+        for (let chapter of book.v) {
+          if (loc < chapter.m.i + chapter.m.l) {
+            for (let verse of chapter.v) {
+              if (loc < verse.m.i + verse.m.l) {
                 return verse;
               }
             }
@@ -148,17 +226,17 @@ export class BibleService {
     }
     return undefined;
   }
-  
-  getLocWord(loc: number): string | undefined{
-    if (loc < 0){
+
+  getLocWord(loc: number): string | undefined {
+    if (loc < 0) {
       return undefined;
     }
-    for (let book of this.bible.v){
-      if (loc < book.m.i + book.m.l){
-        for (let chapter of book.v){
-          if (loc < chapter.m.i + chapter.m.l){
-            for (let verse of chapter.v){
-              if (loc < verse.m.i + verse.m.l){
+    for (let book of this.bible.v) {
+      if (loc < book.m.i + book.m.l) {
+        for (let chapter of book.v) {
+          if (loc < chapter.m.i + chapter.m.l) {
+            for (let verse of chapter.v) {
+              if (loc < verse.m.i + verse.m.l) {
                 return verse.v[loc - verse.m.i];
               }
             }
@@ -169,16 +247,16 @@ export class BibleService {
     return undefined;
   }
 
-  getLocReference(loc: number): string[] | undefined{
-    if (loc < 0){
+  getLocReference(loc: number): string[] | undefined {
+    if (loc < 0) {
       return undefined;
     }
-    for (let book of this.bible.v){
-      if (loc < book.m.i + book.m.l){
-        for (let chapter of book.v){
-          if (loc < chapter.m.i + chapter.m.l){
-            for (let verse of chapter.v){
-              if (loc < verse.m.i + verse.m.l){
+    for (let book of this.bible.v) {
+      if (loc < book.m.i + book.m.l) {
+        for (let chapter of book.v) {
+          if (loc < chapter.m.i + chapter.m.l) {
+            for (let verse of chapter.v) {
+              if (loc < verse.m.i + verse.m.l) {
                 return [book.m.b, chapter.m.c.toString(), verse.m.v.toString()];
               }
             }
@@ -186,84 +264,221 @@ export class BibleService {
         }
       }
     }
-    return undefined; 
+    return undefined;
   }
 
-  getBookText(book: BookM) {
+  getBookText(book: Book) {
     let chapters = [];
-    for (let chapter of book.v){
+    for (let chapter of book.v) {
       chapters.push(this.getChapterText(chapter));
     }
-    return chapters.join(" ");
+    return chapters.join(' ');
   }
 
-  getChapterText(chapter: ChapterM) {
+  getChapterText(chapter: Chapter) {
     let verses = [];
-    for (let verse of chapter.v){
+    for (let verse of chapter.v) {
       verses.push(this.getVerseText(verse));
     }
-    return verses.join(" ");
+    return verses.join(' ');
   }
 
-  getVerseText(verse: VerseM) {
-    return verse.v.join(" ");
+  getVerseText(verse: Verse) {
+    return verse.v.join(' ');
   }
 
   getText(start_loc: number, end_loc: number): string | undefined {
-    if(start_loc < 0 || end_loc < 0 || start_loc > end_loc){
+    if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
       return undefined;
     }
     let cur_loc = start_loc;
-    let build = ""
-    for (let book of this.bible.v){
-      if (cur_loc == book.m.i && book.m.i + book.m.l <= end_loc){
-        build += this.getBookText(book) + " ";
+    let build = '';
+    for (let book of this.bible.v) {
+      if (cur_loc == book.m.i && book.m.i + book.m.l <= end_loc) {
+        build += this.getBookText(book) + ' ';
         cur_loc += book.m.l;
-      }
-      else if (cur_loc < book.m.i + book.m.l){
-        for (let chapter of book.v){
-          if (cur_loc == chapter.m.i && chapter.m.i + chapter.m.l <= end_loc){
-            build += this.getChapterText(chapter) + " ";
+      } else if (cur_loc < book.m.i + book.m.l) {
+        for (let chapter of book.v) {
+          if (cur_loc == chapter.m.i && chapter.m.i + chapter.m.l <= end_loc) {
+            build += this.getChapterText(chapter) + ' ';
             cur_loc += chapter.m.l;
-          }
-          else if (cur_loc < chapter.m.i + chapter.m.l){
-            for (let verse of chapter.v){
-              if (cur_loc == verse.m.i && verse.m.i + verse.m.l <= end_loc){
-                build += this.getVerseText(verse) + " ";
+          } else if (cur_loc < chapter.m.i + chapter.m.l) {
+            for (let verse of chapter.v) {
+              if (cur_loc == verse.m.i && verse.m.i + verse.m.l <= end_loc) {
+                build += this.getVerseText(verse) + ' ';
                 cur_loc += verse.m.l;
-              }
-              else if (cur_loc < verse.m.i + verse.m.l){
-                if(end_loc < verse.m.i + verse.m.l){
-                  build += verse.v.slice(cur_loc - verse.m.i, end_loc - verse.m.i).join(" ");
+              } else if (cur_loc < verse.m.i + verse.m.l) {
+                if (end_loc < verse.m.i + verse.m.l) {
+                  build += verse.v
+                    .slice(cur_loc - verse.m.i, end_loc - verse.m.i)
+                    .join(' ');
                   return build;
-                } else{
-                  build += verse.v.slice(cur_loc - verse.m.i).join(" ") + " ";
+                } else {
+                  build += verse.v.slice(cur_loc - verse.m.i).join(' ') + ' ';
                   cur_loc += verse.m.l - (cur_loc - verse.m.i);
                 }
               }
             }
           }
         }
-      } 
+      }
     }
-    return "";
+    return '';
   }
 
   getPassageTitle(start_loc: number, end_loc: number): string | undefined {
-    if(start_loc < 0 || end_loc < 0 || start_loc > end_loc){
+    if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
       return undefined;
     }
     let start_ref = this.getLocReference(start_loc);
     let end_ref = this.getLocReference(end_loc);
-    if (start_ref == undefined || end_ref == undefined){
+    if (start_ref == undefined || end_ref == undefined) {
       return undefined;
     }
-    if (start_ref[0] == end_ref[0] && start_ref[1] == end_ref[1]){
-      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + "-" + end_ref[2];
-    } else if (start_ref[0] == end_ref[0]){
-      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + " - " + end_ref[1] + ":" + end_ref[2];
+    if (start_ref[0] == end_ref[0] && start_ref[1] == end_ref[1]) {
+      return (
+        start_ref[0] +
+        ' ' +
+        start_ref[1] +
+        ':' +
+        start_ref[2] +
+        '-' +
+        end_ref[2]
+      );
+    } else if (start_ref[0] == end_ref[0]) {
+      return (
+        start_ref[0] +
+        ' ' +
+        start_ref[1] +
+        ':' +
+        start_ref[2] +
+        ' - ' +
+        end_ref[1] +
+        ':' +
+        end_ref[2]
+      );
     } else {
-      return start_ref[0] + " " + start_ref[1] + ":" + start_ref[2] + " - " + end_ref[0] + " " + end_ref[1] + ":" + end_ref[2]; 
+      return (
+        start_ref[0] +
+        ' ' +
+        start_ref[1] +
+        ':' +
+        start_ref[2] +
+        ' - ' +
+        end_ref[0] +
+        ' ' +
+        end_ref[1] +
+        ':' +
+        end_ref[2]
+      );
     }
+  }
+
+  getBibleDiff(
+    attempt: string,
+    start_loc: number,
+    end_loc: number
+  ): BibleDiffNew | undefined {
+    if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
+      return undefined;
+    }
+    let scripture = this.getText(start_loc, end_loc);
+    if (!scripture) {
+      console.log('Error getting text');
+      return undefined;
+    }
+    let diff: WordChange[] = getWordChange(
+      diffWords(sanitizeText(scripture), sanitizeText(attempt), {
+        ignoreCase: true,
+        ignoreWhitespace: true,
+      })
+    );
+    console.log('Word diff');
+    console.log(diff);
+    let scripture_arr = scripture.split(' ');
+    let attempt_arr = attempt.split(' ');
+    let scripture_index = 0;
+    let attempt_index = 0;
+    let diff_index = 0;
+    let change_index = 0;
+    let cur_loc = start_loc;
+    let done = false;
+    let bibleDiff: BibleDiffNew = {
+      m: this.bible.m,
+      v: [],
+    };
+
+    for (let book of this.bible.v) {
+      if (cur_loc < book.m.i + book.m.l && !done) {
+        let bookDiff: BookDiff = {
+          m: book.m,
+          v: [],
+        };
+        for (let chapter of book.v) {
+          if (cur_loc < chapter.m.i + chapter.m.l && !done) {
+            let chapterDiff: ChapterDiff = {
+              m: chapter.m,
+              v: [],
+            };
+            for (let verse of chapter.v) {
+              if (cur_loc < verse.m.i + verse.m.l && !done) {
+                let verseDiff: VerseDiff = {
+                  m: verse.m,
+                  v: [],
+                };
+                while (
+                  cur_loc < verse.m.i + verse.m.l &&
+                  diff_index < diff.length &&
+                  change_index < diff[diff_index].v.length
+                ) {
+                  let diffType = diff[diff_index].t;
+                  if (
+                    verseDiff.v.length == 0 ||
+                    diffType != verseDiff.v[verseDiff.v.length - 1].t
+                  ) {
+                    verseDiff.v.push({
+                      t: diffType,
+                      v: [],
+                    });
+                  }
+                  if (diffType == DiffType.Added) {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      attempt_arr[attempt_index]
+                    );
+                    attempt_index += 1;
+                  } else if (diffType == DiffType.Removed) {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      scripture_arr[scripture_index]
+                    );
+                    scripture_index += 1;
+                    cur_loc += 1;
+                  } else {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      scripture_arr[scripture_index]
+                    );
+                    attempt_index += 1;
+                    scripture_index += 1;
+                    cur_loc += 1;
+                  }
+                  change_index += 1;
+                  if (change_index == diff[diff_index].v.length) {
+                    change_index = 0;
+                    diff_index += 1;
+                  }
+                  if (diff_index == diff.length) {
+                    done = true;
+                    break;
+                  }
+                }
+                chapterDiff.v.push(verseDiff);
+              }
+            }
+            bookDiff.v.push(chapterDiff);
+          }
+        }
+        bibleDiff.v.push(bookDiff);
+      }
+    }
+    return bibleDiff;
   }
 }

@@ -4,7 +4,8 @@ import { Change, diffWords } from 'diff'
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
-import { BibleChange, BibleDiff } from '../models/models';
+import { BibleChange, BibleDiff, BibleDiffNew } from '../models/models';
+import { sanitizeText } from 'src/utils';
 
 @Component({
   selector: 'app-input',
@@ -45,9 +46,12 @@ export class InputComponent {
 
 
   getBibleDiff(attempt: string, scripture: string, anchors: number[]): BibleDiff {
+    let test = this._bibleService.getBibleDiff(attempt, anchors[0], anchors[1])
+    console.log("DIFF")
+    console.log(test)
     let diff: Change[] = diffWords(
-      this._bibleService.sanitizeText(scripture),
-      this._bibleService.sanitizeText(attempt),
+      sanitizeText(scripture),
+      sanitizeText(attempt),
       {
         "ignoreCase": true,
         "ignoreWhitespace": true
@@ -64,13 +68,11 @@ export class InputComponent {
     for (let change of diff){
       let added = Object.hasOwn(change, "added") && change.added !== undefined;
       let removed = Object.hasOwn(change, "removed") && change.removed !== undefined;
-      let sanitizedText = this._bibleService.sanitizeText(change.value);
+      let sanitizedText = sanitizeText(change.value);
       if (sanitizedText === ""){
         continue;
       }
       let change_len = sanitizedText.split(" ").length;
-      console.log("On change: " + change.value + " added: " + added + " removed: " + removed + " change_len: " + change_len)
-      console.log(this._bibleService.sanitizeText(change.value).split(" "))
       let value = [];
       if(added){
         value = attempt_arr.slice(attempt_index, attempt_index + change_len);
@@ -90,7 +92,6 @@ export class InputComponent {
         "value": value,
       });
     }
-    console.log(bibleDiff)
     let title = this._bibleService.getPassageTitle(anchors[0], anchors[1]);
 
     return {
