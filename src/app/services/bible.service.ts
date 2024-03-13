@@ -22,7 +22,7 @@ export class BibleService {
   }
 
   sanitizeText(text: string): string{
-    return text.replace(/[^\w ]/g, "").toLowerCase().split(/\s+/).join(" ");
+    return text.trim().replace(/[^\w ]/g, "").toLowerCase().split(/\s+/).join(" ");
   }
 
 
@@ -238,7 +238,7 @@ export class BibleService {
                   return build;
                 } else{
                   build += verse.content.slice(cur_loc - verse.metadata.loc).join(" ") + " ";
-                  cur_loc += verse.metadata.words;
+                  cur_loc += verse.metadata.words - (cur_loc - verse.metadata.loc);
                 }
               }
             }

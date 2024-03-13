@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Result, ResultBank } from 'src/app/models/models';
+import { BibleService } from 'src/app/services/bible.service';
 import { trimDiff } from 'src/utils';
 
 @Component({
@@ -13,19 +14,18 @@ export class SingleAttemptComponent implements OnInit {
 
   current_result: Result | undefined = undefined;
 
+  constructor(private _bibleService: BibleService) {}
+
   ngOnInit(): void {
-    this.set_result(this.result_bank.results.length - 1);
+    this.setResult(this.result_bank.results.length - 1);
   }
 
-  set_result(index: number): void {
+  setResult(index: number): void {
     if(index < 0 || index > this.result_bank.results.length){
       this.current_result = undefined;
       return;
     }
     this.current_result = this.result_bank.results[index];
-    this.current_result.diff = trimDiff(this.current_result.diff)
+    this.current_result.diff.diff = trimDiff(this.current_result.diff.diff)
   }
-
-
-
 }

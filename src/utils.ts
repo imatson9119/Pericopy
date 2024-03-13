@@ -9,6 +9,5 @@ export function trimDiff(diff: BibleChange[]): BibleChange[]{
       diff.pop();
     }
   } 
-  console.log(diff)
   return diff;
 }
