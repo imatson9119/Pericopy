@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Result, ResultBank } from 'src/app/models/models';
+import { DiffType, Result, ResultBank } from 'src/app/models/models';
 import { BibleService } from 'src/app/services/bible.service';
-import { trimDiff } from 'src/utils';
+
 
 @Component({
   selector: 'app-single-attempt',
@@ -11,6 +11,7 @@ import { trimDiff } from 'src/utils';
 export class SingleAttemptComponent implements OnInit {
   @Input()
   result_bank: ResultBank = {"results": []}
+  diffTypes = DiffType;
 
   current_result: Result | undefined = undefined;
 
@@ -26,6 +27,5 @@ export class SingleAttemptComponent implements OnInit {
       return;
     }
     this.current_result = this.result_bank.results[index];
-    this.current_result.diff.diff = trimDiff(this.current_result.diff.diff)
   }
 }

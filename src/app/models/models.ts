@@ -1,5 +1,5 @@
 export interface Result {
-  diff: BibleDiff;
+  diff: BibleDiffNew;
   timestamp: Number;
   score: Number;
 }
@@ -50,6 +50,9 @@ export interface BibleMetadata {
 
 export interface BibleDiffNew {
   m: BibleMetadata;
+  p: string; // Passage title
+  i: number; // Start index
+  j: number; // End index
   v: BookDiff[];
 }
 export interface Book {

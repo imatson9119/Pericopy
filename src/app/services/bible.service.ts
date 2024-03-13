@@ -405,6 +405,9 @@ export class BibleService {
     let done = false;
     let bibleDiff: BibleDiffNew = {
       m: this.bible.m,
+      p: this.getPassageTitle(start_loc, end_loc) || '',
+      i: start_loc,
+      j: end_loc,
       v: [],
     };
 
