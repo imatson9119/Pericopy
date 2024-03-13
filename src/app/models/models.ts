@@ -73,3 +73,45 @@ export interface BibleChange {
   removed: boolean;
   value: string[];
 }
+
+export interface BibleM {
+	m: {
+	  t: string;
+	  i: number;
+	  l: number;
+	  nb: number;
+	  nc: number;
+	  nv: number;
+	};
+	v: BookM[];
+  }
+  
+  export interface BookM {
+	m: {
+	  b: string;
+	  i: number;
+	  l: number;
+	  nc: number;
+	  nv: number;
+	};
+	v: ChapterM[];
+  }
+  
+  export interface ChapterM {
+	m: {
+	  c: number;
+	  i: number;
+	  l: number;
+	  nv: number;
+	};
+	v: VerseM[];
+  }
+  
+  export interface VerseM {
+	m: {
+	  v: number;
+	  i: number;
+	  l: number;
+	};
+	v: string[];
+  }
