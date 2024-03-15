@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DiffType, Result, ResultBank } from 'src/app/models/models';
+import { DiffType, Result, ResultBank } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 
 

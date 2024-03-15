@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ResultBank } from '../models/models';
+import { ResultBank } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 
 export enum Views {

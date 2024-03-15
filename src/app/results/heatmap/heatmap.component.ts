@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ResultBank } from 'src/app/models/models';
+import { ResultBank } from 'src/app/classes/models';
 
 @Component({
   selector: 'app-heatmap',

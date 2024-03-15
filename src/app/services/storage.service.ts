@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BibleDiffNew, Result, ResultBank } from '../models/models';
+import { BibleDiffNew, Result, ResultBank } from '../classes/models';
 
 @Injectable({
   providedIn: 'root'

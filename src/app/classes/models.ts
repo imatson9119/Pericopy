@@ -34,7 +34,7 @@ export interface BibleChange {
   value: string[];
 }
 
-export interface Bible {
+export interface IBible {
   m: BibleMetadata;
   v: Book[];
 }
@@ -115,4 +115,23 @@ export enum DiffType {
   Added,
   Removed,
   Unchanged
+}
+
+export interface BibleWord {
+  word: string;
+  index: number;
+  book: Book;
+  chapter: Chapter;
+  verse: Verse;
+}
+
+export interface Reference {
+  book: string;
+  chapter: number;
+  verse: number;
+}
+
+export enum AnchorType {
+  START,
+  END
 }

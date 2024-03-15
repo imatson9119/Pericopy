@@ -1,4 +1,13 @@
-<textarea [(ngModel)]="attempt"></textarea>
-<br>
-<button (click)="submit()">Submit</button>
-<br>
+<div class="input-container">
+	<mat-form-field class="example-full-width">
+		<mat-label>Scripture here</mat-label>
+		<textarea [(ngModel)]="attempt" matInput
+		cdkTextareaAutosize
+		#autosize="cdkTextareaAutosize"
+		cdkAutosizeMinRows="1"
+		cdkAutosizeMaxRows="100" placeholder="In the beginning, God..."></textarea>
+	</mat-form-field>
+	<div class="button-container">
+		<button (click)="submit()" mat-flat-button color="primary">Submit</button>
+	</div>
+</div>

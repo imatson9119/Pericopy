@@ -11,7 +11,10 @@ import { FormsModule } from '@angular/forms';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
 import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { BibleService } from './services/bible.service';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,11 @@ import { BibleService } from './services/bible.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent]
