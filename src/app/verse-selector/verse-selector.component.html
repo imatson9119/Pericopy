@@ -1,4 +1,5 @@
-<div class="container">
+<h2 mat-dialog-title>Select Passage</h2>
+<mat-dialog-content class="mat-typography">
   Oops, it looks like we couldn't find the passage you were reciting. Specify
   below!
   <div class></div>
@@ -100,8 +101,12 @@
     </button>
   </div>
   <div class="dialog-footer">
-    <button mat-raised-button color="primary" (click)="this.submit()" [disabled]="!this.isValid()">
-      Submit
-    </button>
+    
   </div>
-</div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="this.submit()" [disabled]="!this.isValid()">
+    Submit
+  </button>
+</mat-dialog-actions>
+

@@ -26,6 +26,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatSortModule } from '@angular/material/sort';
+import { DeleteAttemptDialogComponent } from './results/history/delete-attempt-dialog/delete-attempt-dialog.component';
 
 
 @NgModule({
@@ -37,6 +38,7 @@ import { MatSortModule } from '@angular/material/sort';
     HeatmapComponent,
     VerseSelectorComponent,
     HistoryComponent,
+    DeleteAttemptDialogComponent,
     
   ],
   imports: [
