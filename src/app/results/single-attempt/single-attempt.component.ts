@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { DisplayType } from '../diff-display/diff-display.component';
 
 
 @Component({
@@ -13,6 +14,7 @@ import { StorageService } from 'src/app/services/storage.service';
 export class SingleAttemptComponent implements OnInit {
   result_bank: ResultBank = {"results": []}
   diffTypes = DiffType;
+  displayTypes = DisplayType;
 
   current_result: IResult | undefined = undefined;
 

@@ -27,6 +27,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatSortModule } from '@angular/material/sort';
 import { DeleteAttemptDialogComponent } from './results/history/delete-attempt-dialog/delete-attempt-dialog.component';
+import { DiffDisplayComponent } from './results/diff-display/diff-display.component';
+import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
 
 
 @NgModule({
@@ -39,6 +41,8 @@ import { DeleteAttemptDialogComponent } from './results/history/delete-attempt-d
     VerseSelectorComponent,
     HistoryComponent,
     DeleteAttemptDialogComponent,
+    DiffDisplayComponent,
+    BibleDisplayComponent,
     
   ],
   imports: [
