@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { InputComponent } from './input/input.component';
 import { StorageService } from './services/storage.service';
-import { ResultsComponent } from './results/results.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
@@ -22,13 +21,17 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
 import { HistoryComponent } from './results/history/history.component';
 import {MatCardModule} from '@angular/material/card';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatSortModule } from '@angular/material/sort';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     InputComponent,
-    ResultsComponent,
     NavbarComponent,
     SingleAttemptComponent,
     HeatmapComponent,
@@ -48,7 +51,12 @@ import {MatCardModule} from '@angular/material/card';
     MatIconModule,
     MatToolbarModule,
     MatMenuModule,
-    MatCardModule
+    MatCardModule,
+    MatTabsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatSortModule
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent]

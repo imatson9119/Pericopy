@@ -1,7 +1,0 @@
-<div *ngIf="this.view == this.views.single_attempt;then single_attempt else heatmap"></div>
-<ng-template #single_attempt>
-	<app-single-attempt [result_bank]="this.result_bank"></app-single-attempt>
-</ng-template>
-<ng-template #heatmap>
-	<app-heatmap [result_bank]="this.result_bank"></app-heatmap>
-</ng-template>

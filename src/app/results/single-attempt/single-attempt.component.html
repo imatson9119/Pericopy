@@ -1,23 +1,34 @@
 <div *ngIf="this.current_result;then result_defined else result_undefined"></div>
 <ng-template #result_defined>
-	<div class="book" *ngFor="let bookDiff of current_result?.diff?.v">
-		<div class="book-title">
-			{{bookDiff.m.b}}
-		</div>
-		<div class="chapter" *ngFor="let chapterDiff of bookDiff.v">
-			<div class="chapter-title">
-				{{chapterDiff.m.c}}
+	<mat-tab-group>
+		<mat-tab label="Difference">
+			<div class="book" *ngFor="let bookDiff of current_result?.diff?.v">
+				<div class="book-title">
+					{{bookDiff.m.b}}
+				</div>
+				<div class="chapter" *ngFor="let chapterDiff of bookDiff.v">
+					<div class="chapter-title">
+						{{chapterDiff.m.c}}
+					</div>
+					<ng-container *ngFor="let verseDiff of chapterDiff.v">
+						<span class="verse-number">
+							{{verseDiff.m.v}}
+						</span>
+						<span [ngClass]="{'removed': diff.t == diffTypes.Removed, 'added': diff.t == diffTypes.Added}" *ngFor="let diff of verseDiff.v; index as i;">
+							{{diff.v.join(" ")}}
+						</span>
+					</ng-container>
+				</div>
 			</div>
-			<ng-container *ngFor="let verseDiff of chapterDiff.v">
-				<span class="verse-number">
-					{{verseDiff.m.v}}
-				</span>
-				<span [ngClass]="{'removed': diff.t == diffTypes.Removed, 'added': diff.t == diffTypes.Added}" *ngFor="let diff of verseDiff.v; index as i;">
-					{{diff.v.join(" ")}}
-				</span>
-			</ng-container>
-		</div>
-	</div>
+		</mat-tab>
+		<mat-tab label="Attempt">
+
+		</mat-tab>
+		<mat-tab label="Scripture">
+
+		</mat-tab>
+	  </mat-tab-group>
+	
 </ng-template>
 <ng-template #result_undefined>
 	No results found.

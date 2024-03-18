@@ -11,3 +11,38 @@
 	border-bottom: 1px solid #e0e0e0;
 	flex-wrap: wrap;
 }
+
+.mat-column-actions {
+	width: 128px;
+}
+
+.history-table {
+	border-radius: 5px;
+}
+
+.history-table-header-row {
+	border-radius: 5px;
+}
+
+.history-paginator {
+	border-radius: 0 0 5px 5px;	
+}
+
+.container {
+	padding: 1rem;
+}
+
+.mat-mdc-table {
+	border-radius: 5px 5px 0 0;
+}
+
+.history-header {
+	font-weight: 300;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+.full-width {
+	width: 100%;
+}

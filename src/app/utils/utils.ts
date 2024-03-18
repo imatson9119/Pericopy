@@ -42,3 +42,30 @@ export function getWordChange(diff: Change[]): WordChange[] {
   }
   return wordChanges;
 }
+
+export function getRelativeDate(dateParam: string | Date | number | null): string | null {
+  if (!dateParam) {
+    return null;
+  }
+
+  const date = typeof dateParam === 'object' ? dateParam : new Date(dateParam);
+  const today = new Date();
+  const seconds = Math.round((today.getTime() - date.getTime()) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
+  const weeks = Math.round(days / 7);
+  const months = Math.round(days / 30);
+  const years = Math.round(months / 12);
+
+  if (seconds < 60) {
+    return seconds === 1 ? '1 second ago' : `${seconds} seconds ago`;
+  } else if (minutes < 60) {
+    return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+  } else if (hours < 24) {
+    return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+  } else if (days < 7) {
+    return days === 1 ? '1 day ago' : `${days} days ago`;
+  }
+  return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+}

@@ -1,15 +1,46 @@
 <div class="container">
-	<div class="history-header">
-		Your Previous Attempts
-	</div>
-	<div class="history-item-container">
-		<mat-card class="history-item" *ngFor="let attempt of getAttempts().reverse(); index as i" (click)="loadResult(getAttempts().length - i - 1)">
-			<mat-card-title>
-				{{ attempt.diff.p }}
-			</mat-card-title>
-			<mat-card-content>
-				{{ attempt.timestamp}}
-			</mat-card-content>
-		</mat-card>
-	</div>
+  <div class="history-header">Your Previous Attempts</div>
+  <mat-form-field class="full-width">
+    <mat-label>Filter</mat-label>
+    <input matInput value="" [(ngModel)]="filterValue" (keyup)="this.applyFilter($event)">
+    <mat-icon matSuffix>filter_list</mat-icon>
+  </mat-form-field>
+  <table class="history-table" mat-table matSort [dataSource]="dataSource">
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by passage">Passage</th>
+      <td mat-cell *matCellDef="let attempt">{{ attempt.diff.p }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="score">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by score">Score</th>
+      <td mat-cell *matCellDef="let attempt">{{ attempt.score }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="time">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by time">Time</th>
+      <td mat-cell *matCellDef="let attempt">{{ this.getRelativeTime(attempt.timestamp) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let attempt;">
+        <button mat-icon-button (click)="deleteResult(attempt.index)" matTooltip="Delete this attempt">
+            <mat-icon>delete_outline</mat-icon>
+        </button>
+        <button mat-icon-button (click)="loadResult(attempt.index)" matTooltip="View this attempt">
+          <mat-icon>north_east</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr class='history-table-header-row' mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <mat-paginator
+    class="history-paginator"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    aria-label="Select page"
+  >
+  </mat-paginator>
 </div>

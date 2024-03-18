@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DiffType, IResult, ResultBank } from 'src/app/classes/models';
+import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 @Component({
@@ -10,20 +11,20 @@ import { BibleService } from 'src/app/services/bible.service';
   styleUrls: ['./single-attempt.component.scss']
 })
 export class SingleAttemptComponent implements OnInit {
-  @Input()
   result_bank: ResultBank = {"results": []}
   diffTypes = DiffType;
 
   current_result: IResult | undefined = undefined;
 
-  constructor(private _bibleService: BibleService, private _router: Router) {}
+  constructor(private _bibleService: BibleService, private _router: Router, private _storageService: StorageService) {}
 
   ngOnInit(): void {
+    this.result_bank = this._storageService.getBank();
     let index = this._router.parseUrl(this._router.url).queryParams['i'];
     if(index != undefined){
       this.setResult(parseInt(index));
     } else {
-      this.setResult(this.result_bank.results.length - 1);
+      this.setResult(0);
     }
 
     
@@ -35,5 +36,13 @@ export class SingleAttemptComponent implements OnInit {
       return;
     }
     this.current_result = this.result_bank.results[index];
+  }
+
+  isScripture(diff: VerseChange): boolean {
+    return diff.t === DiffType.Unchanged || diff.t === DiffType.Removed;
+  }
+
+  isAttempt(diff: VerseChange): boolean {
+    return diff.t === DiffType.Unchanged || diff.t === DiffType.Added;
   }
 }
