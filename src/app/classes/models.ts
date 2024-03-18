@@ -1,11 +1,11 @@
-export interface Result {
+export interface IResult {
   diff: BibleDiffNew;
-  timestamp: Number;
-  score: Number;
+  timestamp: number;
+  score: number;
 }
 
 export interface ResultBank {
-  results: Result[];
+  results: IResult[];
 }
 
 export interface WordMap {

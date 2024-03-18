@@ -15,6 +15,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatSelectModule} from '@angular/material/select';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
+import { HistoryComponent } from './results/history/history.component';
+import {MatCardModule} from '@angular/material/card';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +31,10 @@ import {MatDialogModule} from '@angular/material/dialog';
     ResultsComponent,
     NavbarComponent,
     SingleAttemptComponent,
-    HeatmapComponent
+    HeatmapComponent,
+    VerseSelectorComponent,
+    HistoryComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -32,7 +43,12 @@ import {MatDialogModule} from '@angular/material/dialog';
     BrowserAnimationsModule,
     MatInputModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSelectModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatMenuModule,
+    MatCardModule
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent]

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DiffType, Result, ResultBank } from 'src/app/classes/models';
+import { Router } from '@angular/router';
+import { DiffType, IResult, ResultBank } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 
 
@@ -13,12 +14,19 @@ export class SingleAttemptComponent implements OnInit {
   result_bank: ResultBank = {"results": []}
   diffTypes = DiffType;
 
-  current_result: Result | undefined = undefined;
+  current_result: IResult | undefined = undefined;
 
-  constructor(private _bibleService: BibleService) {}
+  constructor(private _bibleService: BibleService, private _router: Router) {}
 
   ngOnInit(): void {
-    this.setResult(this.result_bank.results.length - 1);
+    let index = this._router.parseUrl(this._router.url).queryParams['i'];
+    if(index != undefined){
+      this.setResult(parseInt(index));
+    } else {
+      this.setResult(this.result_bank.results.length - 1);
+    }
+
+    
   }
 
   setResult(index: number): void {

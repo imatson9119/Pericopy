@@ -1,21 +1,23 @@
+import { Book, Chapter, Verse } from "./models";
+
 export class BiblePassage {
   i: number;
   j: number;
-  b1: string;
-  c1: number;
-  v1: number;
-  b2: string;
-  c2: number;
-  v2: number;
+  b1: Book
+  c1: Chapter;
+  v1: Verse;
+  b2: Book;
+  c2: Chapter;
+  v2: Verse;
   constructor(
     i: number,
     j: number,
-    b1: string,
-    c1: number,
-    v1: number,
-    b2: string,
-    c2: number,
-    v2: number
+    b1: Book,
+    c1: Chapter,
+    v1: Verse,
+    b2: Book,
+    c2: Chapter,
+    v2: Verse
   ) {
     if (i < 0 || j < 0 || i > j) {
       throw new Error('Invalid indices');
@@ -31,15 +33,15 @@ export class BiblePassage {
   }
 
   toString() {
-    if (this.b1 === this.b2) {
-      if (this.c1 === this.c2) {
-        if (this.v1 === this.v2) {
-          return `${this.b1} ${this.c1}:${this.v1}`;
+    if (this.b1.m.b === this.b2.m.b) {
+      if (this.c1.m.c === this.c2.m.c) {
+        if (this.v1.m.v === this.v2.m.v) {
+          return `${this.b1.m.b} ${this.c1.m.c}:${this.v1.m.v}`;
         }
-		return `${this.b1} ${this.c1}:${this.v1}-${this.v2}`;
+		return `${this.b1.m.b} ${this.c1.m.c}:${this.v1.m.v}-${this.v2.m.v}`;
       }
-	  return `${this.b1} ${this.c1}:${this.v1}-${this.c2}:${this.v2}`;
+	  return `${this.b1.m.b} ${this.c1.m.c}:${this.v1.m.v}-${this.c2.m.c}:${this.v2.m.v}`;
     }
-	return `${this.b1} ${this.c1}:${this.v1}-${this.b2} ${this.c2}:${this.v2}`;
+	return `${this.b1.m.b} ${this.c1.m.c}:${this.v1.m.v}-${this.b2.m.b} ${this.c2.m.c}:${this.v2.m.v}`;
   }
 }

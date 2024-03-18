@@ -1,0 +1,16 @@
+.main-container{
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.sidenav-container{
+	flex-grow: 1;
+}
+.buttons-container {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	font-size:large
+}

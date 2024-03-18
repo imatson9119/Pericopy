@@ -1,0 +1,15 @@
+<div class="container">
+	<div class="history-header">
+		Your Previous Attempts
+	</div>
+	<div class="history-item-container">
+		<mat-card class="history-item" *ngFor="let attempt of getAttempts().reverse(); index as i" (click)="loadResult(getAttempts().length - i - 1)">
+			<mat-card-title>
+				{{ attempt.diff.p }}
+			</mat-card-title>
+			<mat-card-content>
+				{{ attempt.timestamp}}
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

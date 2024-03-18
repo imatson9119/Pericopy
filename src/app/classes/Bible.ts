@@ -10,8 +10,9 @@ export class Bible implements IBible {
   wordMap: WordMap;
 
   ANCHOR_MAX_CERTAIN_LOCKS = 1;
-  ANCHOR_SIGNIFICANCE_THRESHOLD = 10;
-  ANCHOR_RETURN_NUMBER = 10;
+  ANCHOR_SIGNIFICANCE_THRESHOLD = 20;
+  ANCHOR_RETURN_NUMBER = 5;
+  MAX_LENGTH_DIFF_FACTOR = 4;
 
   constructor(bible: IBible, wordMap: WordMap) {
     this.m = bible.m;
@@ -56,7 +57,7 @@ export class Bible implements IBible {
     }
     let start = this.get(i);
     let end = this.get(j);
-    return new BiblePassage(i, j, start.book.m.b, start.chapter.m.c, start.verse.m.v, end.book.m.b, end.chapter.m.c, end.verse.m.v);
+    return new BiblePassage(i, j, start.book, start.chapter, start.verse, end.book, end.chapter, end.verse);
   }
 
   getText(start_loc: number, end_loc: number): string {
@@ -80,25 +81,26 @@ export class Bible implements IBible {
       return result;
     }
 
-    return this._getPassagesFromAnchors(startAnchors, endAnchors);
+    return this._getPassagesFromAnchors(startAnchors, endAnchors, words);
   }
 
-  _getPassagesFromAnchors(startAnchors: [number, number][], endAnchors: [number, number][]): [BiblePassage, number][] {
+  _getPassagesFromAnchors(startAnchors: [number, number][], endAnchors: [number, number][], words: string[]): [BiblePassage, number][] {
     let result: [BiblePassage, number][] = [];
-    console.log(startAnchors);
-    console.log(endAnchors);
     for (let startAnchor of startAnchors) {
       for (let endAnchor of endAnchors) {
-        if (startAnchor[0] >= endAnchor[0]) {
-          continue;
+        if (this._isValidPassage(startAnchor[0], endAnchor[0], words.length)) {
+          let passage = this.getPassage(startAnchor[0], endAnchor[0]);
+          let score = startAnchor[1] * endAnchor[1];
+          result.push([passage, score]);
         }
-        console.log(startAnchor[0], endAnchor[0])
-        let passage = this.getPassage(startAnchor[0], endAnchor[0]);
-        let score = startAnchor[1] * endAnchor[1];
-        result.push([passage, score]);
       }
     }
+    console.log("Anchors:\n", result.sort((a, b) => b[1] - a[1]).slice(0, this.ANCHOR_RETURN_NUMBER));
     return result.sort((a, b) => b[1] - a[1]).slice(0, this.ANCHOR_RETURN_NUMBER);
+  }
+
+  _isValidPassage(start: number, end: number, attemptLength: number): boolean {
+    return start <= end && end - start <= attemptLength * this.MAX_LENGTH_DIFF_FACTOR;
   }
 
   _getBibleAnchors(words: string[], type: AnchorType): [number, number][]{
@@ -134,7 +136,7 @@ export class Bible implements IBible {
     for (let anchorProbability of anchorProbabilities) {
       combinedAnchorProbabilities = combinedAnchorProbabilities.concat(anchorProbability);
     }
-    return combinedAnchorProbabilities.sort((a, b) => b[1] - a[1]).slice(0, this.ANCHOR_RETURN_NUMBER);
+    return combinedAnchorProbabilities.sort((a, b) => b[1] - a[1]);
   }
 
 
@@ -181,4 +183,5 @@ export class Bible implements IBible {
     }
     return [...anchorProbabilities.entries()].sort((a, b) => b[1] - a[1]);
   }
+
 }
