@@ -93,11 +93,11 @@
   </div>
   <div class="button-container">
     <button
-      *ngFor="let pair of data.anchors"
-      (click)="selectPassage(pair[0])"
+      *ngFor="let passage of dedupedAnchors"
+      (click)="selectPassage(passage)"
       mat-raised-button
     >
-      {{ pair[0] }}
+      {{ passage }}
     </button>
   </div>
   <div class="dialog-footer">

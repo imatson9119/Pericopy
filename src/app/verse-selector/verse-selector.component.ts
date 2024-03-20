@@ -16,6 +16,7 @@ export class VerseSelectorComponent {
   model: any = {};
   nWordsToPreview = 40;
   attemptLength = 0;
+  dedupedAnchors: BiblePassage[] = [];
 
   constructor(
     private _bibleService: BibleService,
@@ -25,6 +26,7 @@ export class VerseSelectorComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.attemptLength = this.data.attempt.split(/\s+/).length;
+    this.dedupedAnchors = this.dedupeAnchors(this.data.anchors);
   }
 
   getBooks(): Book[] {
@@ -33,6 +35,18 @@ export class VerseSelectorComponent {
 
   getChapters(book: Book): Chapter[] {
     return book.v;
+  }
+
+  dedupeAnchors(anchors: [BiblePassage, number][]): BiblePassage[] {
+    let deduped: BiblePassage[] = [];
+    let seen: Set<string> = new Set();
+    for (let anchor of anchors) {
+      if (!seen.has(anchor[0].toString())) {
+        deduped.push(anchor[0]);
+        seen.add(anchor[0].toString());
+      }
+    }
+    return deduped;
   }
 
   submit() {
