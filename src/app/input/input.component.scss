@@ -10,7 +10,15 @@
 .button-container {
 	display: flex;
 	gap: 1rem;
-	justify-content: flex-start;
+	justify-content: space-between;
+	align-items: center;
+
+	.record-button.mat-mdc-mini-fab.mat-accent {
+		--mdc-fab-container-color: #7a7a7a;
+	}
+	.record-button.mat-mdc-mini-fab.mat-accent.recording {
+		--mdc-fab-container-color: #cf5166;
+	}
 }
 
 .header {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
@@ -8,6 +8,8 @@ import { VerseSelectorComponent } from '../verse-selector/verse-selector.compone
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
 
+declare const annyang: any;
+
 @Component({
   selector: 'app-input',
   templateUrl: './input.component.html',
@@ -15,13 +17,27 @@ import { sanitizeText } from '../utils/utils';
 })
 export class InputComponent {
   attempt = '';
+  annyang = annyang;
+  recording = false;
 
   constructor(
     private _storageService: StorageService,
     private _bibleService: BibleService,
     private router: Router,
-    private _dialog: MatDialog
-  ) {}
+    private _dialog: MatDialog,
+    private ngZone: NgZone
+  ) {
+    annyang.addCallback('result', (userSaid: string[] | undefined) => {
+      if(userSaid && userSaid.length > 0){
+        ngZone.run(() => {
+          if (this.attempt.length > 0 && this.attempt[this.attempt.length - 1] !== " "){
+            this.attempt += ' ';
+          }
+          this.attempt += userSaid[0].trim();
+        });
+      }
+    });
+  }
 
   submit() {
     let anchors = this._bibleService.bible.anchorText(this.attempt);
@@ -66,6 +82,16 @@ export class InputComponent {
     if (e.code === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       this.submit();
+    }
+  }
+
+  toggleVoice() {
+    if (annyang.isListening()) {
+      annyang.abort();
+      this.recording = false;
+    } else {
+      annyang.start();
+      this.recording = true;
     }
   }
 }

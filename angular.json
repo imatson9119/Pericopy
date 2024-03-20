@@ -32,7 +32,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": ["src/assets/js/annyang.js"]
           },
           "configurations": {
             "production": {

@@ -24,12 +24,14 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let attempt;">
-        <button mat-icon-button (click)="deleteResult(attempt.index)" matTooltip="Delete this attempt">
-            <mat-icon>delete_outline</mat-icon>
-        </button>
-        <button mat-icon-button (click)="loadResult(attempt.index)" matTooltip="View this attempt">
-          <mat-icon>north_east</mat-icon>
-        </button>
+        <div class="attempt-actions">
+          <button mat-icon-button (click)="deleteResult(attempt.index)" matTooltip="Delete this attempt">
+              <mat-icon>delete_outline</mat-icon>
+          </button>
+          <button mat-icon-button (click)="loadResult(attempt.index)" matTooltip="View this attempt">
+            <mat-icon>north_east</mat-icon>
+          </button>
+        </div>
       </td>
     </ng-container>
 

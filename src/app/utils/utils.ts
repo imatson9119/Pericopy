@@ -14,7 +14,11 @@ export function trimDiff(diff: BibleChange[]): BibleChange[]{
 }
 
 export function sanitizeText(text: string): string{
-  return text.trim().replace(/[^\w ]/g, "").toLowerCase().split(/\s+/).join(" ");
+  return cleanWhitespace(text).replace(/[^\w ]/g, "").toLowerCase();
+}
+
+export function cleanWhitespace(text: string): string{
+  return text.split(/\s+/).join(" ");
 }
 
 export function addToMapValue<T>(map: Map<T,number>, key: T, value: number): void {

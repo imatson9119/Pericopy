@@ -138,8 +138,6 @@ export class BibleService {
         ignoreWhitespace: true,
       })
     );
-    console.log('Word diff');
-    console.log(diff);
     let scripture_arr = scripture.split(' ');
     let attempt_arr = attempt.split(' ');
     let scripture_index = 0;

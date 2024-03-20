@@ -6,6 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { getRelativeDate } from 'src/app/utils/utils';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteAttemptDialogComponent } from './delete-attempt-dialog/delete-attempt-dialog.component';
 
 @Component({
   selector: 'app-history',
@@ -21,7 +23,7 @@ export class HistoryComponent implements AfterViewInit{
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
 
-  constructor(private _storageService: StorageService, private _router: Router) {
+  constructor(private _storageService: StorageService, private _router: Router, private _dialog: MatDialog) {
   }
 
   ngAfterViewInit() {
@@ -64,7 +66,11 @@ export class HistoryComponent implements AfterViewInit{
   }
 
   deleteResult(index: number) {
-    this._storageService.deleteAttempt(index);
-    this.dataSource.data = this.getDataSource();
+    this._dialog.open(DeleteAttemptDialogComponent).afterClosed().subscribe((result) => {
+      if (result) {
+        this._storageService.deleteAttempt(index);
+        this.dataSource.data = this.getDataSource();
+      }
+    });
   }
 }
