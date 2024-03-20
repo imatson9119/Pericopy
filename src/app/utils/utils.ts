@@ -14,7 +14,7 @@ export function trimDiff(diff: BibleChange[]): BibleChange[]{
 }
 
 export function sanitizeText(text: string): string{
-  return cleanWhitespace(text.replace(/[^\w ]/g, "").toLowerCase());
+  return cleanWhitespace(text).replace(/[^\w ]/g, "").toLowerCase();
 }
 
 export function cleanWhitespace(text: string): string{
