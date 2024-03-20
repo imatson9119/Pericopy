@@ -37,6 +37,16 @@ export class InputComponent {
         });
       }
     });
+    annyang.addCallback('end', () => {
+      ngZone.run(() => {
+        this.recording = false;
+      });
+    });
+    annyang.addCallback('start', () => {
+      ngZone.run(() => {
+        this.recording = true;
+      });
+    });
   }
 
   submit() {
@@ -88,10 +98,8 @@ export class InputComponent {
   toggleVoice() {
     if (annyang.isListening()) {
       annyang.abort();
-      this.recording = false;
     } else {
       annyang.start();
-      this.recording = true;
     }
   }
 }

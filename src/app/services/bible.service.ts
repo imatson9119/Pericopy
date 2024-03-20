@@ -4,12 +4,9 @@ import wordMapFile from 'src/assets/word_map.json';
 import {
   IBible,
   BibleDiffNew,
-  Book,
   BookDiff,
-  Chapter,
   ChapterDiff,
   DiffType,
-  Verse,
   VerseDiff,
   WordChange,
   WordMap,
@@ -17,7 +14,6 @@ import {
 } from '../classes/models';
 import { diffWords } from 'diff';
 import { getWordChange, sanitizeText } from 'src/app/utils/utils';
-import { BibleIterator } from '../classes/BibleIterator';
 import { Bible } from '../classes/Bible';
 
 @Injectable({
@@ -34,86 +30,6 @@ export class BibleService {
     this.bible = new Bible(bibleFile as IBible, this.wordMap);
   }
 
-  findAchors(attempt: string): number[] | undefined {
-    console.log(this.bible.anchorText(attempt))
-    // Remove non-word characters and split the attempt into words
-    let words: string[] = attempt
-      .replace(/[^\w ]/g, '')
-      .toLowerCase()
-      .split(/\s+/);
-    let start = this.anchor(words);
-    let end = this.anchor(words.reverse(), true, start);
-    if (start == -1 || end == -1 || start > end) {
-      console.log('No anchors found: ' + start + ' ' + end);
-      return undefined;
-    }
-    return [start, end + 1];
-  }
-
-  anchor(
-    words: string[],
-    reversed: boolean = false,
-    startAnchorLoc: number = -1
-  ): number {
-    // This function will attempt to find the start of the user's attempt in the Bible
-    // It will accomplish this by finding the first unique valid sequence of words in the attempt using wordMap
-    // If no such sequence is found, it will return -1
-
-    let start: number = 0;
-    let end: number = 0;
-    let possibleStartLocs = new Set<number>();
-
-    while (end < words.length) {
-      let curWord = words[end];
-      if (this.wordMap[curWord]) {
-        // If the current word is in the wordMap, we need to check if it is a valid start
-        if (possibleStartLocs.size == 0) {
-          // If there are no possible start locations, we need to add the current word's locations to the set
-          possibleStartLocs = new Set(this.wordMap[curWord]);
-        } else {
-          // If there are possible start locations, we need to find the intersection of the current word's locations and the possible start locations
-          let possibleWordLocs = new Set(this.wordMap[curWord]);
-          possibleStartLocs.forEach((loc) => {
-            if (reversed) {
-              if (!possibleWordLocs.has(loc - end + start)) {
-                possibleStartLocs.delete(loc);
-              }
-            } else {
-              if (!possibleWordLocs.has(loc + end - start)) {
-                possibleStartLocs.delete(loc);
-              }
-            }
-          });
-        }
-        if (possibleStartLocs.size == 1) {
-          let val = Array.from(possibleStartLocs)[0];
-          if (startAnchorLoc != -1 && val - startAnchorLoc > 2 * words.length) {
-            start += 1;
-            end = start;
-            possibleStartLocs.clear();
-          } else {
-            // If there is only one possible start location, we have found the start of the attempt
-            return Array.from(possibleStartLocs)[0];
-          }
-        } else if (possibleStartLocs.size > 0) {
-          // If there are still possible start locations, we need to move the end pointer to the next word
-          end += 1;
-        } else {
-          // If there are no possible start locations, we need to drop the first word
-          start += 1;
-          end = start;
-          possibleStartLocs.clear();
-        }
-      } else {
-        // If the current word is not in the wordMap, we need to move the start and end pointers to the next word
-        end += 1;
-        start = end;
-        possibleStartLocs.clear();
-      }
-    }
-    console.log(possibleStartLocs);
-    return -1;
-  }
 
   getPassageTitle(start_loc: number, end_loc: number): string {
     return this.bible.getPassage(start_loc, end_loc).toString();
@@ -140,6 +56,18 @@ export class BibleService {
     );
     let scripture_arr = scripture.split(' ');
     let attempt_arr = attempt.split(' ');
+    let original_Diff = diffWords(sanitizeText(scripture), sanitizeText(attempt), {
+      ignoreCase: true,
+      ignoreWhitespace: true,
+    })
+    console.log("original_Diff:\n", original_Diff)
+    console.log("diff:\n", diff)
+    console.log("scripture:\n", scripture);
+    console.log("attempt:\n", attempt);
+    console.log("Sanitized scripture:\n", sanitizeText(scripture));
+    console.log("Sanitized attempt:\n", sanitizeText(attempt));
+    console.log("scripture_arr:\n", scripture_arr);
+    console.log("attempt_arr:\n", attempt_arr);
     let scripture_index = 0;
     let attempt_index = 0;
     let diff_index = 0;
@@ -225,6 +153,7 @@ export class BibleService {
         bibleDiff.v.push(bookDiff);
       }
     }
+    console.log("bibleDiff:\n", bibleDiff);
     return bibleDiff;
   }
 }
