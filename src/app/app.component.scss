@@ -3,6 +3,11 @@
 	flex-direction: column;
 	height: 100%;
 	width: 100%;
+	align-items: center;
+}
+
+.header{
+	width: 100%
 }
 
 .sidenav-container{
@@ -13,4 +18,8 @@
 	flex-direction: column;
 	align-items: stretch;
 	font-size:large
+}
+.content-container{
+	max-width: 1000px;
+	width:100%
 }

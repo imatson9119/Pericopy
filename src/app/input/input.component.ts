@@ -62,7 +62,7 @@ export class InputComponent {
     let diff = this._bibleService.getBibleDiff(
       this.attempt,
       passage.i,
-      passage.j + 1
+      passage.j
     );
     if (!diff) {
       throw new Error('Error getting diff');

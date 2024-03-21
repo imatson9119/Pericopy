@@ -13,7 +13,7 @@ import {
   WordMapFile,
 } from '../classes/models';
 import { diffWords } from 'diff';
-import { getWordChange, sanitizeText } from 'src/app/utils/utils';
+import { cleanWhitespace, getWordChange, sanitizeText } from 'src/app/utils/utils';
 import { Bible } from '../classes/Bible';
 
 @Injectable({
@@ -44,6 +44,7 @@ export class BibleService {
       return undefined;
     }
     let scripture = this.bible.getText(start_loc, end_loc);
+    console.log("scripture:\n", scripture);
     if (!scripture) {
       console.log('Error getting text');
       return undefined;
@@ -54,20 +55,10 @@ export class BibleService {
         ignoreWhitespace: true,
       })
     );
-    let scripture_arr = scripture.split(' ');
-    let attempt_arr = attempt.split(' ');
-    let original_Diff = diffWords(sanitizeText(scripture), sanitizeText(attempt), {
-      ignoreCase: true,
-      ignoreWhitespace: true,
-    })
-    console.log("original_Diff:\n", original_Diff)
-    console.log("diff:\n", diff)
-    console.log("scripture:\n", scripture);
-    console.log("attempt:\n", attempt);
-    console.log("Sanitized scripture:\n", sanitizeText(scripture));
-    console.log("Sanitized attempt:\n", sanitizeText(attempt));
+    let scripture_arr = cleanWhitespace(scripture).split(' ');
     console.log("scripture_arr:\n", scripture_arr);
-    console.log("attempt_arr:\n", attempt_arr);
+    console.log("diff:\n", diff)
+    let attempt_arr = cleanWhitespace(attempt).split(' ');
     let scripture_index = 0;
     let attempt_index = 0;
     let diff_index = 0;

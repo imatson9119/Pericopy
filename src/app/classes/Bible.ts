@@ -56,7 +56,7 @@ export class Bible implements IBible {
       throw new Error('Invalid indices');
     }
     let start = this.get(i);
-    let end = this.get(j);
+    let end = this.get(j-1);
     return new BiblePassage(i, j, start.book, start.chapter, start.verse, end.book, end.chapter, end.verse);
   }
 
@@ -89,7 +89,7 @@ export class Bible implements IBible {
     for (let startAnchor of startAnchors) {
       for (let endAnchor of endAnchors) {
         if (this._isValidPassage(startAnchor[0], endAnchor[0], words.length)) {
-          let passage = this.getPassage(startAnchor[0], endAnchor[0]);
+          let passage = this.getPassage(startAnchor[0], endAnchor[0] + 1);
           let score = startAnchor[1] * endAnchor[1];
           result.push([passage, score]);
         }

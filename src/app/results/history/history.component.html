@@ -13,7 +13,7 @@
 
     <ng-container matColumnDef="score">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by score">Score</th>
-      <td mat-cell *matCellDef="let attempt">{{ attempt.score }}</td>
+      <td class="score" mat-cell *matCellDef="let attempt">{{ attempt.score }}</td>
     </ng-container>
 
     <ng-container matColumnDef="time">
