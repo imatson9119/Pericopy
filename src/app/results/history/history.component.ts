@@ -73,4 +73,8 @@ export class HistoryComponent implements AfterViewInit{
       }
     });
   }
+
+  formatScore(score: number): string {
+    return Math.round(score * 100).toString() + '%';
+  }
 }

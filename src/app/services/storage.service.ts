@@ -17,31 +17,18 @@ export class StorageService {
     }
   }
 
-  storeAttempt(diff: BibleDiff){
-    let new_entry = this.processDiff(diff);
-    this.result_bank.results.unshift(new_entry);
+  storeAttempt(result: IResult){
+    this.result_bank.results.unshift(result);
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
   }
 
   deleteAttempt(index: number){
     this.result_bank.results.splice(index, 1);
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
-  }
-
-  processDiff(diff: BibleDiff): IResult{
-    return {
-      "diff": diff,
-      "timestamp": Date.now(),
-      "score": this.gradeDiff(diff)
-    }
-  }
+  } 
 
   getAttempts(){
     return this.result_bank.results;
-  }
-  
-  gradeDiff(diff: BibleDiff){
-    return 1;
   }
 
   getBank(): ResultBank {

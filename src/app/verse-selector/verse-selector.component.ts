@@ -50,14 +50,7 @@ export class VerseSelectorComponent {
   }
 
   submit() {
-    console.log('here')
-    let diff = this._bibleService.getBibleDiff(this.data.attempt, this.model.v1.m.i, this.model.v2.m.i + this.model.v2.m.l)
-    if (!diff){
-      throw new Error("Error getting diff")
-    }
-    this._storageService.storeAttempt(diff);
-    this._dialogRef.close();
-    this._router.navigateByUrl('results');
+    this._dialogRef.close([this.model.v1.m.i, this.model.v2.m.i + this.model.v2.m.l]);
   }
 
   getPreview() {

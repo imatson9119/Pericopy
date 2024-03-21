@@ -1,17 +1,6 @@
 import { Change } from "diff";
-import { BibleChange, DiffType, WordChange } from "../classes/models";
+import { DiffType, WordChange } from "../classes/models";
 
-export function trimDiff(diff: BibleChange[]): BibleChange[]{
-  if(diff.length > 1){
-    if(diff[0].added){
-      diff.shift();
-    }
-    if(diff[diff.length - 1].added){
-      diff.pop();
-    }
-  } 
-  return diff;
-}
 
 export function sanitizeText(text: string): string{
   return cleanWhitespace(text).replace(/[^\w —]/g, "").toLowerCase();

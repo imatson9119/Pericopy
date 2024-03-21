@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { VerseSelectorComponent } from '../verse-selector/verse-selector.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
+import { BibleDiff, DiffType, IResult } from '../classes/models';
 
 declare const annyang: any;
 
@@ -52,7 +53,13 @@ export class InputComponent {
   submit() {
     let anchors = this._bibleService.bible.anchorText(this.attempt);
     if (!this.canAutoLock(anchors, this.attempt)) {
-      this.openVerseSelector(anchors);
+      this._dialog.open(VerseSelectorComponent, {
+        data: { anchors: anchors, attempt: this.attempt },
+      }).afterClosed().subscribe((result: [number, number]) => {
+        if (result) {
+          this.getAndStoreDiff(this._bibleService.bible.getPassage(result[0], result[1]));
+        }
+      });
     } else {
       this.getAndStoreDiff(anchors[0][0]);
     }
@@ -67,7 +74,7 @@ export class InputComponent {
     if (!diff) {
       throw new Error('Error getting diff');
     }
-    this._storageService.storeAttempt(diff);
+    this.processDiff(diff);
     this.router.navigateByUrl('results');
   }
 
@@ -82,11 +89,6 @@ export class InputComponent {
     );
   }
 
-  openVerseSelector(anchorList: [BiblePassage, number][]) {
-    this._dialog.open(VerseSelectorComponent, {
-      data: { anchors: anchorList, attempt: this.attempt },
-    });
-  }
 
   onKeyDown(e: KeyboardEvent) {
     if (e.code === 'Enter' && !e.shiftKey) {
@@ -101,5 +103,28 @@ export class InputComponent {
     } else {
       annyang.start();
     }
+  }
+
+  processDiff(diff: BibleDiff){
+    // Will want to make heatmap changes here as well
+    let totalChanges = 0;
+    for(let book of diff.v){
+      for(let chapter of book.v){
+        for(let verse of chapter.v){
+          for(let change of verse.v){
+            if (change.t === DiffType.Removed){
+              totalChanges= totalChanges + change.v.length;
+            }
+          }
+        }
+      }
+    }
+    let score = ((diff.j- diff.i) - totalChanges) / (diff.j - diff.i);
+
+    this._storageService.storeAttempt({
+      "diff": diff,
+      "timestamp": Date.now(),
+      "score": score
+    });
   }
 }
