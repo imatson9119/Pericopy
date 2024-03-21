@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
@@ -20,6 +20,9 @@ export class InputComponent {
   attempt = '';
   annyang = annyang;
   recording = false;
+  
+  @ViewChild('input') input: ElementRef | null = null;
+
 
   constructor(
     private _storageService: StorageService,
@@ -89,6 +92,12 @@ export class InputComponent {
     );
   }
 
+  adjustInputHeight(){
+    if(this.input){
+      this.input.nativeElement.style.height = 'auto';
+      this.input.nativeElement.style.height = (this.input.nativeElement.scrollHeight) + 'px';
+    }
+  }
 
   onKeyDown(e: KeyboardEvent) {
     if (e.code === 'Enter' && !e.shiftKey) {
