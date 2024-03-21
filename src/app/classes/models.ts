@@ -1,5 +1,5 @@
 export interface IResult {
-  diff: BibleDiffNew;
+  diff: BibleDiff;
   timestamp: number;
   score: number;
 }
@@ -21,19 +21,6 @@ export interface WordChange {
   v: string[]; // Value
 }
 
-export interface BibleDiff {
-  diff: BibleChange[];
-  start_loc: number;
-  end_loc: number;
-  title: string;
-}
-
-export interface BibleChange {
-  added: boolean;
-  removed: boolean;
-  value: string[];
-}
-
 export interface IBible {
   m: BibleMetadata;
   v: Book[];
@@ -48,7 +35,7 @@ export interface BibleMetadata {
   nv: number; // Number of verses
 }
 
-export interface BibleDiffNew {
+export interface BibleDiff {
   m: BibleMetadata;
   p: string; // Passage title
   i: number; // Start index

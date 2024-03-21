@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BibleDiffNew, DiffType } from 'src/app/classes/models';
+import { BibleDiff, DiffType } from 'src/app/classes/models';
 
 export enum DisplayType {
   diff,
@@ -17,7 +17,7 @@ export class DiffDisplayComponent {
   displayTypes = DisplayType;
   diffTypes = DiffType;
   
-  @Input() diff: BibleDiffNew | null | undefined = null;
+  @Input() diff: BibleDiff | null | undefined = null;
   @Input() type: DisplayType = DisplayType.diff;
 
   constructor() { } 

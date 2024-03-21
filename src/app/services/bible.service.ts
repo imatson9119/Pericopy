@@ -3,7 +3,7 @@ import bibleFile from 'src/assets/bible-esv-min.json';
 import wordMapFile from 'src/assets/word_map.json';
 import {
   IBible,
-  BibleDiffNew,
+  BibleDiff,
   BookDiff,
   ChapterDiff,
   DiffType,
@@ -39,7 +39,7 @@ export class BibleService {
     attempt: string,
     start_loc: number,
     end_loc: number
-  ): BibleDiffNew | undefined {
+  ): BibleDiff | undefined {
     if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
       return undefined;
     }
@@ -65,7 +65,7 @@ export class BibleService {
     let change_index = 0;
     let cur_loc = start_loc;
     let done = false;
-    let bibleDiff: BibleDiffNew = {
+    let bibleDiff: BibleDiff = {
       m: this.bible.m,
       p: this.getPassageTitle(start_loc, end_loc) || '',
       i: start_loc,

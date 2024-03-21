@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BibleDiffNew, IResult, ResultBank } from '../classes/models';
+import { BibleDiff, IResult, ResultBank } from '../classes/models';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class StorageService {
     }
   }
 
-  storeAttempt(diff: BibleDiffNew){
+  storeAttempt(diff: BibleDiff){
     let new_entry = this.processDiff(diff);
     this.result_bank.results.unshift(new_entry);
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
@@ -28,7 +28,7 @@ export class StorageService {
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
   }
 
-  processDiff(diff: BibleDiffNew): IResult{
+  processDiff(diff: BibleDiff): IResult{
     return {
       "diff": diff,
       "timestamp": Date.now(),
@@ -40,7 +40,7 @@ export class StorageService {
     return this.result_bank.results;
   }
   
-  gradeDiff(diff: BibleDiffNew){
+  gradeDiff(diff: BibleDiff){
     return 1;
   }
 
