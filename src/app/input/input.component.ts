@@ -4,7 +4,7 @@ import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
-import { VerseSelectorComponent } from '../verse-selector/verse-selector.component';
+import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
 import { BibleDiff, DiffType, IResult } from '../classes/models';

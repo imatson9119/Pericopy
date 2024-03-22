@@ -2,6 +2,75 @@ import { Change } from "diff";
 import { DiffType, WordChange } from "../classes/models";
 
 
+const bookAbbreviations: { [key: string]: string } = {
+  "genesis": "Gen",
+  "exodus": "Exo",
+  "leviticus": "Lev",
+  "numbers": "Num",
+  "deuteronomy": "Deu",
+  "joshua": "Jos",
+  "judges": "Jdg",
+  "ruth": "Rth",
+  "1 samuel": "1Sa",
+  "2 samuel": "2Sa",
+  "1 kings": "1Ki",
+  "2 kings": "2Ki",
+  "1 chronicles": "1Ch",
+  "2 chronicles": "2Ch",
+  "ezra": "Eza",
+  "nehemiah": "Neh",
+  "esther": "Est",
+  "job": "Job",
+  "psalms": "Psa",
+  "proverbs": "Pro",
+  "ecclesiastes": "Ecc",
+  "song of solomon": "SS",
+  "isaiah": "Isa",
+  "jeremiah": "Jer",
+  "lamentations": "Lam",
+  "ezekiel": "Ezk",
+  "daniel": "Dan",
+  "hosea": "Hos",
+  "joel": "Joe",
+  "amos": "Amo",
+  "obadiah": "Obd",
+  "jonah": "Jon",
+  "micah": "Mic",
+  "nahum": "Nah",
+  "habakkuk": "Hab",
+  "zephaniah": "Zep",
+  "haggai": "Hag",
+  "zechariah": "Zch",
+  "malachi": "Mal",
+  "matthew": "Mat",
+  "mark": "Mrk",
+  "luke": "Luk",
+  "john": "Jn",
+  "acts": "Act",
+  "romans": "Rom",
+  "1 corinthians": "1Co",
+  "2 corinthians": "2Co",
+  "galatians": "Gal",
+  "ephesians": "Eph",
+  "philippians": "Php",
+  "colossians": "Col",
+  "1 thessalonians": "1Th",
+  "2 thessalonians": "2Th",
+  "1 timothy": "1Ti",
+  "2 timothy": "2Ti",
+  "titus": "Tit",
+  "philemon": "Phm",
+  "hebrews": "Heb",
+  "james": "Jam",
+  "1 peter": "1Pe",
+  "2 peter": "2Pe",
+  "1 john": "1Jo",
+  "2 john": "2Jo",
+  "3 john": "3Jo",
+  "jude": "Jud",
+  "revelation": "Rev",
+}
+
 export function sanitizeText(text: string): string{
   return cleanWhitespace(text).replace(/[^\w —]/g, "").toLowerCase();
 }
@@ -61,4 +130,8 @@ export function getRelativeDate(dateParam: string | Date | number | null): strin
     return days === 1 ? '1 day ago' : `${days} days ago`;
   }
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+}
+
+export function abbreviateBookName(bookName: string): string {
+  return bookAbbreviations[bookName.toLowerCase()] || bookName;
 }

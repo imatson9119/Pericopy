@@ -1,5 +1,6 @@
 <div class="input-container">
-  <div class="header">Scripture Memory</div>
+  <div class="header">Welcome to PeriCopy.</div>
+  <div class="subheader">To get started, type some scripture below.</div>
   <mat-form-field class="example-full-width">
     <mat-label>Scripture here</mat-label>
     <textarea
@@ -12,7 +13,7 @@
     ></textarea>
   </mat-form-field>
   <div class="button-container">
-    <button (click)="submit()" mat-flat-button color="primary">Submit</button>
+    <button (click)="submit()" [disabled]="attempt.length === 0" mat-flat-button color="primary">Submit</button>
     <button (click)="toggleVoice()" [ngClass]="{recording: this.recording}" class="record-button" mat-mini-fab aria-label="Dictate">
       <mat-icon>mic</mat-icon>
     </button>

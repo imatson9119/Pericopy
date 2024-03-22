@@ -18,7 +18,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
+import { VerseSelectorComponent } from './input/verse-selector/verse-selector.component';
 import { HistoryComponent } from './results/history/history.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -29,6 +29,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { DeleteAttemptDialogComponent } from './results/history/delete-attempt-dialog/delete-attempt-dialog.component';
 import { DiffDisplayComponent } from './results/diff-display/diff-display.component';
 import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
+import { PassageSelectorComponent } from './passage-selector/passage-selector.component';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { BibleDisplayComponent } from './results/bible-display/bible-display.com
     DeleteAttemptDialogComponent,
     DiffDisplayComponent,
     BibleDisplayComponent,
+    PassageSelectorComponent,
     
   ],
   imports: [
