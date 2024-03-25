@@ -5,16 +5,16 @@
     flex-direction: row;
     justify-content: center;
     gap: .5rem;
+	margin-top: 1rem;
 }
 .container {
 	padding: 1rem;
 }
 
 .verse-selector-container {
-	margin-top: 1rem;
+	margin-top: 2rem;
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
 	flex-wrap: wrap;
 	gap: 1rem;
 }
@@ -23,20 +23,12 @@
 	max-width: 600px;
 }
 
-.verse-selector {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: center;
+.message-text{
+	font-size: .9rem;
 }
 
-.dialog-footer {
-	display: flex;
-	justify-content: flex-end;
-	margin-top: 1rem;
-}
 .verse-preview {
-	margin: 1rem;
+	margin-top: 1rem;
 	border-radius: 5px;
 	padding: 1rem;
 	background-color: #f0f0f0;

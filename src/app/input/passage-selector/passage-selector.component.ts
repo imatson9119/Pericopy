@@ -7,27 +7,24 @@ import { abbreviateBookName } from '../../utils/utils';
 @Component({
   selector: 'app-passage-selector',
   templateUrl: './passage-selector.component.html',
-  styleUrls: ['./passage-selector.component.scss']
+  styleUrls: ['./passage-selector.component.scss'],
 })
 export class PassageSelectorComponent {
   @Input()
-  b: Book | null = null;
+  label: string = "";
   @Input()
-  c: Chapter | null = null;
+  b: Book = {} as Book;
   @Input()
-  v: Verse | null = null;
-
-
+  c: Chapter = {} as Chapter;
+  @Input()
+  v: Verse = {} as Verse;
 
   nWordsToPreview = 40;
   attemptLength = 0;
   dedupedAnchors: BiblePassage[] = [];
   abbreviateBookName = abbreviateBookName;
 
-  constructor(
-    private _bibleService: BibleService,
-  ) {
-  }
+  constructor(private _bibleService: BibleService) {}
 
   getBooks(): Book[] {
     return this._bibleService.bible.v;
@@ -38,10 +35,28 @@ export class PassageSelectorComponent {
   }
 
   isValid(): boolean {
-    if (!this.b || !this.c || !this.v) {
-      return false;
-    }
-    return true;
+    return (
+      this.b.m !== undefined &&
+      this.c.m !== undefined &&
+      this.v.m !== undefined &&
+      this.v.m.i >= this.c.m.i &&
+      this.v.m.i + this.v.m.l <= this.c.m.i + this.c.m.l &&
+      this.c.m.i >= this.b.m.i &&
+      this.c.m.i + this.c.m.l <= this.b.m.i + this.b.m.l
+    );
   }
 
+  resetVerse() {
+    this.v = {} as Verse;
+  }
+
+  resetChapter() {
+    this.resetVerse();
+    this.c = {} as Chapter;
+  }
+
+  reset() {
+    this.resetChapter();
+    this.b = {} as Book;
+  }
 }

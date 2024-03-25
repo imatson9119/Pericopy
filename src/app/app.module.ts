@@ -30,6 +30,8 @@ import { DeleteAttemptDialogComponent } from './results/history/delete-attempt-d
 import { DiffDisplayComponent } from './results/diff-display/diff-display.component';
 import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
 import { PassageSelectorComponent } from './input/passage-selector/passage-selector.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatRippleModule} from '@angular/material/core';
 
 
 @NgModule({
@@ -64,7 +66,9 @@ import { PassageSelectorComponent } from './input/passage-selector/passage-selec
     MatTableModule,
     MatPaginatorModule,
     MatTooltipModule,
-    MatSortModule
+    MatSortModule,
+    MatSnackBarModule,
+    MatRippleModule
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent]

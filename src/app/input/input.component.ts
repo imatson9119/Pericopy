@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
-import { BibleDiff, DiffType, IResult } from '../classes/models';
+import { BibleDiff, DiffType } from '../classes/models';
 
 declare const annyang: any;
 
@@ -58,6 +58,7 @@ export class InputComponent {
     if(this.attempt.length === 0){
       return;
     }
+    this.annyang.abort();
     let anchors = this._bibleService.bible.anchorText(this.attempt);
     if (!this.canAutoLock(anchors, this.attempt)) {
       this._dialog.open(VerseSelectorComponent, {

@@ -1,0 +1,35 @@
+.verse-selector-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.verse-selector-header {
+	font-size: 0.8rem;
+    color: #676666;
+    margin-bottom: .1rem;
+}
+
+.verse-selector {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+select {
+	border: none;
+	border-bottom: 1px solid #8e8e8e;
+	background: #f5f5f5;
+}
+
+.book-select {
+	border-radius: 5px 0 0 0;
+}
+
+.verse-select {
+	border-radius: 0 5px 0 0;
+	min-width: 37px;
+}
+
+.chapter-select {
+	min-width: 37px;
+}
