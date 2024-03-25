@@ -44,7 +44,6 @@ export class BibleService {
       return undefined;
     }
     let scripture = this.bible.getText(start_loc, end_loc);
-    console.log("scripture:\n", scripture);
     if (!scripture) {
       console.log('Error getting text');
       return undefined;
@@ -56,8 +55,6 @@ export class BibleService {
       })
     );
     let scripture_arr = cleanWhitespace(scripture).split(' ');
-    console.log("scripture_arr:\n", scripture_arr);
-    console.log("diff:\n", diff)
     let attempt_arr = cleanWhitespace(attempt).split(' ');
     let scripture_index = 0;
     let attempt_index = 0;
@@ -72,7 +69,15 @@ export class BibleService {
       j: end_loc,
       v: [],
     };
-
+    
+    console.log("scripture:\n", scripture);
+    console.log("attempt:\n", attempt)
+    console.log("sanitized scripture:\n", sanitizeText(scripture));
+    console.log("sanitized attempt:\n", sanitizeText(attempt));
+    console.log("scripture_arr:\n", scripture_arr);
+    console.log("attempt_arr:\n", attempt_arr)
+    console.log("diff:\n", diff)
+    console.log("bible diff\n", bibleDiff);
     for (let book of this.bible.v) {
       if (cur_loc < book.m.i + book.m.l && !done) {
         let bookDiff: BookDiff = {

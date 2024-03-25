@@ -72,7 +72,7 @@ const bookAbbreviations: { [key: string]: string } = {
 }
 
 export function sanitizeText(text: string): string{
-  return cleanWhitespace(text).replace(/[^\w —]/g, "").toLowerCase();
+  return cleanWhitespace(text).replace(/[^\w ]/g, "").toLowerCase();
 }
 
 export function cleanWhitespace(text: string): string{

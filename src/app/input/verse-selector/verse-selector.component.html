@@ -52,7 +52,7 @@
           (change)="this.model.c2 = null; this.model.v2 = null"
         >
           <option *ngFor="let book of getBooks()" [ngValue]="book">{{
-            abbreviateBookName(book.m.b)
+            book.m.b
           }}</option>
         </select>
       </div>

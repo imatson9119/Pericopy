@@ -39,6 +39,7 @@ export class InputComponent {
           }
           this.attempt += userSaid[0].trim();
         });
+        this.adjustInputHeight();
       }
     });
     annyang.addCallback('end', () => {
@@ -54,6 +55,9 @@ export class InputComponent {
   }
 
   submit() {
+    if(this.attempt.length === 0){
+      return;
+    }
     let anchors = this._bibleService.bible.anchorText(this.attempt);
     if (!this.canAutoLock(anchors, this.attempt)) {
       this._dialog.open(VerseSelectorComponent, {

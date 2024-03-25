@@ -7,9 +7,12 @@
       #input
       [(ngModel)]="attempt"
       matInput
+      cdkTextareaAutosize="true"
       placeholder="In the beginning, God..."
       (keydown)="this.onKeyDown($event)"
       (input)="this.adjustInputHeight()"
+      (formdata)="this.adjustInputHeight()"
+      (ngModelChange)="this.adjustInputHeight()"
     ></textarea>
   </mat-form-field>
   <div class="button-container">
@@ -19,3 +22,6 @@
     </button>
   </div>
 </div>
+<!-- <app-passage-selector>
+  
+</app-passage-selector> -->

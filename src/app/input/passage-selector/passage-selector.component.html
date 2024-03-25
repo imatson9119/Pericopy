@@ -1,0 +1,42 @@
+<form class="verse-selector-container" #f="ngForm">
+    <div class="start-container verse-selector">
+      <div class="book-select">
+        <select
+          name="b"
+          [(ngModel)]="this.b"
+          (change)="this.c = null; this.v = null"
+        >
+          <option *ngFor="let book of getBooks()" [ngValue]="book">{{
+            this.abbreviateBookName(book.m.b)
+          }}</option>
+        </select>
+	</div>
+      <div class="number-select">
+        <select
+          [disabled]="!this.b"
+          name="c"
+          [(ngModel)]="this.c"
+          (change)="this.v = null"
+        >
+          <option
+            *ngFor="let chapter of this.b ? this.b.v : []"
+            [ngValue]="chapter"
+            >{{ chapter.m.c }}</option
+          >
+        </select>
+      </div>
+      <div class="number-select">
+        <select
+          [disabled]="!this.b || !this.c"
+          name="v"
+          [(ngModel)]="this.v"
+        >
+          <option
+            *ngFor="let verse of this.c ? this.c.v : []"
+            [ngValue]="verse"
+            >{{ verse.m.v }}</option
+          >
+        </select>
+      </div>
+    </div>
+  </form>
