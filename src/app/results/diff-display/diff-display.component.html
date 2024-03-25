@@ -1,36 +1,56 @@
 <div class="book" *ngFor="let bookDiff of diff?.v">
-	<div class="book-title">
-		{{bookDiff.m.b}}
-	</div>
-	<div class="chapter" *ngFor="let chapterDiff of bookDiff.v">
-		<div class="chapter-title">
-			{{chapterDiff.m.c}}
-		</div>
-		<div class="chapter-text">
-			<ng-container *ngFor="let verseDiff of chapterDiff.v">
-				<span class="verse-number">
-					{{verseDiff.m.v}}
-				</span>
-				<ng-container *ngIf="this.type === displayTypes.diff">
-					<ng-container *ngFor="let diff of verseDiff.v; index as i;">
-						<span [ngClass]="{'removed': diff.t == diffTypes.Removed, 'added': diff.t == diffTypes.Added}">{{diff.v.join(" ")}}</span><span>&nbsp;</span>
-					</ng-container>
-				</ng-container>
-				<ng-container *ngIf="this.type === displayTypes.attempt">
-					<ng-container *ngFor="let diff of verseDiff.v; index as i;">
-						<ng-container *ngIf="diff.t === diffTypes.Added || diff.t === diffTypes.Unchanged">
-							<span [ngClass]="{'added': diff.t == diffTypes.Added}">{{diff.v.join(" ")}}</span><span>&nbsp;</span>
-						</ng-container>
-					</ng-container>
-				</ng-container>
-				<ng-container *ngIf="this.type === displayTypes.scripture">
-					<ng-container *ngFor="let diff of verseDiff.v; index as i;">
-						<ng-container *ngIf="diff.t === diffTypes.Removed || diff.t === diffTypes.Unchanged">
-							<span [ngClass]="{'removed': diff.t == diffTypes.Removed}">{{diff.v.join(" ")}}</span><span>&nbsp;</span>
-						</ng-container>
-					</ng-container>
-				</ng-container>
-			</ng-container>
-		</div>
-	</div>
+  <div class="book-title">
+    {{ bookDiff.m.b }}
+  </div>
+  <div class="chapter" *ngFor="let chapterDiff of bookDiff.v">
+    <div class="chapter-title">
+      {{ chapterDiff.m.c }}
+    </div>
+    <div class="chapter-text">
+      <ng-container *ngFor="let verseDiff of chapterDiff.v">
+        <span class="verse-number">
+          {{ verseDiff.m.v }}
+        </span>
+        <ng-container *ngIf="this.type === displayTypes.diff">
+          <ng-container *ngFor="let diff of verseDiff.v; index as i">
+            <span
+              [ngClass]="{
+                removed: diff.t == diffTypes.Removed,
+                added: diff.t == diffTypes.Added
+              }"
+              >{{ diff.v.join(" ") }}</span
+            ><span>&nbsp;</span>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="this.type === displayTypes.attempt">
+          <ng-container *ngFor="let diff of verseDiff.v; index as i">
+            <ng-container
+              *ngIf="
+                diff.t === diffTypes.Added || diff.t === diffTypes.Unchanged
+              "
+            >
+              <span [ngClass]="{ added: diff.t == diffTypes.Added }">{{
+                diff.v.join(" ")
+              }}</span
+              ><span>&nbsp;</span>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="this.type === displayTypes.scripture">
+          <ng-container *ngFor="let diff of verseDiff.v; index as i">
+            <ng-container
+              *ngIf="
+                diff.t === diffTypes.Removed || diff.t === diffTypes.Unchanged
+              "
+            >
+              <span [ngClass]="{ removed: diff.t == diffTypes.Removed }">{{
+                diff.v.join(" ")
+              }}</span
+              ><span>&nbsp;</span>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
 </div>

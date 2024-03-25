@@ -94,14 +94,15 @@ export interface VerseDiff {
 }
 
 export interface VerseChange {
+  i: number; // Index
   t: DiffType; // Type
   v: string[]; // Value
 }
 
 export enum DiffType {
-  Added,
-  Removed,
-  Unchanged
+  Added = 0,
+  Removed = 1,
+  Unchanged = 2
 }
 
 export interface BibleWord {
@@ -122,3 +123,6 @@ export enum AnchorType {
   START,
   END
 }
+
+// Maps an index in the bible to a list of HeatmapMistakes
+export type Heatmap = Map<number, number[]>;

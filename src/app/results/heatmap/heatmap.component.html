@@ -1,1 +1,63 @@
-<p>heatmap works!</p>
+<div class="container">
+  <div class="toolbar">
+    <div class="left">
+      <mat-form-field>
+        <mat-label>Book</mat-label>
+        <mat-select
+          matSelect
+          class="book-select"
+          [(ngModel)]="this.book"
+          (ngModelChange)="this.resetChapter()"
+        >
+          <mat-option *ngFor="let book of getBooks()" [value]="book">
+            {{ book.m.b }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="chapter-select">
+        <mat-label>Verse</mat-label>
+        <mat-select
+          matSelect
+          [disabled]="!this.book"
+          [(ngModel)]="this.chapter"
+          (ngModelChange)="updateHeatmap()"
+        >
+          <mat-option
+            *ngFor="let chapter of this.book ? this.book.v : []"
+            [value]="chapter"
+          >
+            {{ chapter.m.c }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="right">
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <mat-select
+          matSelect
+          class="filter"
+          [(ngModel)]="this.filterValue"
+          (ngModelChange)="this.updateHeatmap()"
+        >
+          <mat-option [value]="filterValues.ALL_TIME">All Time</mat-option>
+          <mat-option [value]="filterValues.PAST_DAY">Past Day</mat-option>
+          <mat-option [value]="filterValues.PAST_WEEK">Past Week</mat-option>
+          <mat-option [value]="filterValues.PAST_MONTH">Past Month</mat-option>
+          <mat-option [value]="filterValues.PAST_YEAR">Past Year</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <app-bible-display
+    *ngIf="this.isValidPassage(); else noPassage"
+    [passage]="this.passage"
+    [heatmap]="this.heatmap.size > 0 ? this.heatmap : null"
+  >
+  </app-bible-display>
+  <ng-template #noPassage>
+    <div class="no-passage">
+      Select a passage to get started.
+    </div>
+  </ng-template>
+</div>

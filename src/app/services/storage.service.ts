@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BibleDiff, IResult, ResultBank } from '../classes/models';
+import { IResult, ResultBank } from '../classes/models';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +19,17 @@ export class StorageService {
 
   storeAttempt(result: IResult){
     this.result_bank.results.unshift(result);
-    localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
+    this.storeBank();
   }
 
   deleteAttempt(index: number){
     this.result_bank.results.splice(index, 1);
+    this.storeBank();
+  }
+
+  storeBank(){
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
-  } 
+  }
 
   getAttempts(){
     return this.result_bank.results;

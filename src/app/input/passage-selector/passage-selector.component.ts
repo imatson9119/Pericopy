@@ -30,10 +30,6 @@ export class PassageSelectorComponent {
     return this._bibleService.bible.v;
   }
 
-  getChapters(book: Book): Chapter[] {
-    return book.v;
-  }
-
   isValid(): boolean {
     return (
       this.b.m !== undefined &&

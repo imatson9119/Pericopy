@@ -1,0 +1,29 @@
+.container {
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .left {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+.chapter-select {
+  width: 100px;
+}
+
+.no-passage{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+  height: 100%;
+  color: #919191
+}

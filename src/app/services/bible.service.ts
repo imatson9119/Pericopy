@@ -109,6 +109,7 @@ export class BibleService {
                     verseDiff.v.push({
                       t: diffType,
                       v: [],
+                      i: cur_loc,
                     });
                   }
                   if (diffType == DiffType.Added) {

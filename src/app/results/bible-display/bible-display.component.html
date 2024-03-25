@@ -1,1 +1,36 @@
-<p>bible-display works!</p>
+<div class="book" *ngFor="let book of this.getBible()">
+  <ng-container *ngIf="intersection(book.m.i, book.m.i + book.m.l, passage.i, passage.j)">
+    <div class="book-title">
+      {{ book.m.b }}
+    </div>
+    <div class="chapter" *ngFor="let chapter of book.v">
+      <ng-container *ngIf="intersection(chapter.m.i, chapter.m.i + chapter.m.l, passage.i, passage.j)">
+        <div class="chapter-title">
+          {{ chapter.m.c }}
+        </div>
+        <div class="chapter-text" [style.display]="this.heatmap ? 'flex' : 'block'">
+          <ng-container *ngFor="let verse of chapter.v">
+            <ng-container *ngIf="intersection(verse.m.i, verse.m.i + verse.m.l, passage.i, passage.j)">
+              <span class="verse-number">{{ 
+                verse.m.v 
+              }}</span>
+              <span *ngIf="!this.heatmap; else heatmapTemplate" class="verse-text" >{{ 
+                verse.v.join(" ") 
+              }} </span>
+              <ng-template #heatmapTemplate>
+                <ng-container *ngFor="let word of verse.v; index as i">
+                  <ng-container *ngIf="!this.heatmap?.get(verse.m.i + i); else highlight">
+                    <span>{{word}}</span><span>&nbsp;</span>
+                  </ng-container>
+                  <ng-template #highlight>
+                    <span class="highlight" [style.background]="this.getColor(verse.m.i + i)">{{word}}</span><span>&nbsp;</span>
+                  </ng-template>
+                </ng-container>
+              </ng-template>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

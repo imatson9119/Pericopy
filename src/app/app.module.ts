@@ -32,6 +32,7 @@ import { BibleDisplayComponent } from './results/bible-display/bible-display.com
 import { PassageSelectorComponent } from './input/passage-selector/passage-selector.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatRippleModule} from '@angular/material/core';
+import { InfoComponent } from './info/info.component';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import {MatRippleModule} from '@angular/material/core';
     DiffDisplayComponent,
     BibleDisplayComponent,
     PassageSelectorComponent,
+    InfoComponent,
     
   ],
   imports: [

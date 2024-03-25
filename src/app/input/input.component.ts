@@ -122,6 +122,7 @@ export class InputComponent {
   processDiff(diff: BibleDiff){
     // Will want to make heatmap changes here as well
     let totalChanges = 0;
+    let timestamp = Date.now();
     for(let book of diff.v){
       for(let chapter of book.v){
         for(let verse of chapter.v){
@@ -137,7 +138,7 @@ export class InputComponent {
 
     this._storageService.storeAttempt({
       "diff": diff,
-      "timestamp": Date.now(),
+      "timestamp": timestamp,
       "score": score
     });
   }
