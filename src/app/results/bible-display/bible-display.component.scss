@@ -1,12 +1,12 @@
 .highlight {
-  padding: 0rem 0.2rem;
-  border-radius: 5px;
+  //   padding: 0rem 0.2rem;
+  //   border-radius: 5px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
 span {
-	text-wrap: wrap;
+  text-wrap: wrap;
 }
 
 .chapter {
@@ -16,10 +16,18 @@ span {
     margin-bottom: 1rem;
   }
   .chapter-text {
-	display: flex;
+    // display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
+}
+
+.highlight.start{
+  border-radius: 5px 0 0 5px;
+}
+
+.highlight.end{
+  border-radius: 0 5px 5px 0;
 }
 
 .book {

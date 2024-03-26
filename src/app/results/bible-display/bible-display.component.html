@@ -8,7 +8,7 @@
         <div class="chapter-title">
           {{ chapter.m.c }}
         </div>
-        <div class="chapter-text" [style.display]="this.heatmap ? 'flex' : 'block'">
+        <div class="chapter-text" >
           <ng-container *ngFor="let verse of chapter.v">
             <ng-container *ngIf="intersection(verse.m.i, verse.m.i + verse.m.l, passage.i, passage.j)">
               <span class="verse-number">{{ 
@@ -18,14 +18,20 @@
                 verse.v.join(" ") 
               }} </span>
               <ng-template #heatmapTemplate>
-                <ng-container *ngFor="let word of verse.v; index as i">
-                  <ng-container *ngIf="!this.heatmap?.get(verse.m.i + i); else highlight">
-                    <span>{{word}}</span><span>&nbsp;</span>
+                <span class="verse-text-hightlight">
+                  <ng-container *ngFor="let word of verse.v; index as i">
+                    <ng-container *ngIf="!this.heatmap?.get(verse.m.i + i); else highlight">
+                      <span>
+                        {{word}}
+                      </span>
+                    </ng-container>
+                    <ng-template #highlight>
+                      <span class="highlight" [ngClass]="{'start': i===0, 'end': i===verse.m.l-1}" [style.background]="this.getColor(verse.m.i + i)">
+                        {{word}}
+                      </span>
+                    </ng-template>
                   </ng-container>
-                  <ng-template #highlight>
-                    <span class="highlight" [style.background]="this.getColor(verse.m.i + i)">{{word}}</span><span>&nbsp;</span>
-                  </ng-template>
-                </ng-container>
+                </span>
               </ng-template>
             </ng-container>
           </ng-container>
