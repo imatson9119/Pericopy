@@ -5,8 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-pages": "ng build --base-href=/roman-road-webapp/",
-    "deploy-pages": "npx angular-cli-ghpages --dir=dist/roman-road-webapp",
+    "deploy": "npx angular-cli-ghpages --dir=dist/roman-road-webapp --cname=www.pericopy.net",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

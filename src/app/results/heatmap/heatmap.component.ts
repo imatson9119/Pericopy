@@ -29,7 +29,15 @@ export class HeatmapComponent {
   constructor(
     private _bibleService: BibleService,
     private _storageService: StorageService
-  ) {}
+  ) {
+    let lastAttempt = this._storageService.getAttempts()[0];
+    if (lastAttempt !== undefined) {
+      let start = this._bibleService.bible.get(lastAttempt.diff.i);
+      this.book = start.book;
+      this.chapter = start.chapter;
+      this.updateHeatmap();
+    }
+  }
 
   getBooks(): Book[] {
     return this._bibleService.bible.v;
