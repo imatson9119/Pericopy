@@ -121,20 +121,24 @@ export class InputComponent {
 
   processDiff(diff: BibleDiff){
     // Will want to make heatmap changes here as well
-    let totalChanges = 0;
+    let totalCorrect = 0;
+    let attemptLength = 0;
     let timestamp = Date.now();
     for(let book of diff.v){
       for(let chapter of book.v){
         for(let verse of chapter.v){
           for(let change of verse.v){
-            if (change.t === DiffType.Removed){
-              totalChanges= totalChanges + change.v.length;
+            if (change.t === DiffType.Unchanged){
+              totalCorrect += change.v.length;
+              attemptLength += change.v.length;
+            } else if(change.t === DiffType.Added){
+              attemptLength += change.v.length;
             }
           }
         }
       }
     }
-    let score = ((diff.j- diff.i) - totalChanges) / (diff.j - diff.i);
+    let score = totalCorrect / attemptLength;
 
     this._storageService.storeAttempt({
       "diff": diff,
