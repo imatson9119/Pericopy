@@ -1,4 +1,5 @@
 export interface IResult {
+  id: string;
   diff: BibleDiff;
   timestamp: number;
   score: number;

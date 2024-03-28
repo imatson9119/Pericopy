@@ -8,6 +8,7 @@ import { VerseSelectorComponent } from './verse-selector/verse-selector.componen
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
 import { BibleDiff, DiffType } from '../classes/models';
+import { v4 as uuidv4 } from 'uuid';
 
 declare const annyang: any;
 
@@ -145,6 +146,7 @@ export class InputComponent {
     let score = totalCorrect / attemptLength;
 
     this._storageService.storeAttempt({
+      "id": uuidv4(),
       "diff": diff,
       "timestamp": timestamp,
       "score": score
