@@ -4,6 +4,7 @@
 	height: 100%;
 	width: 100%;
 	align-items: center;
+	overflow: hidden;
 }
 
 .header{
@@ -20,8 +21,17 @@
 	font-size:large
 }
 .content-container{
+	width: 100%;
+	display: flex;
+	overflow: auto;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.width-limit {
+	width: 100%;
 	max-width: 1000px;
-	width:100%
 }
 
 .header-text {

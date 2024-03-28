@@ -1,4 +1,109 @@
 
-.tab-inner-container {
-  padding: 1rem;
+.result-container {
+  padding-top: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 100;
+}
+
+.result-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
+
+.result-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.result-subtitle {
+  color: #797979;
+  font-weight: 100;
+}
+
+.stat-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  height: 180px;
+  background: #48545b;
+  border-radius: 18px;
+  padding: .5rem;
+  box-sizing: border-box;
+  color: #e0e2e7;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.wordsRemoved {
+  background: #555143;
+}
+
+.wordsAdded {
+  background: #514049;
+}
+
+.stat-value {
+  font-size: 3.5rem;
+  font-weight: 300;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 4rem;
+}
+
+.stats-container-header {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 100;
+  color: #48545b;
+}
+.stat-label {
+  font-weight: 100;
+  color: rgba(255,255,255,.5);
+}
+
+// media rule
+@media (max-width: 768px) {
+  .result-container {
+    padding-top: 2rem;
+  }
+
+  .result-title {
+    font-size: 1.5rem;
+  }
+
+  .stat-container {
+    min-width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    padding: .25rem;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+  }
+
+
+  
+    .stats-container-header {
+      font-size: 1rem;
+    }
 }
