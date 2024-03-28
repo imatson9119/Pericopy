@@ -87,6 +87,23 @@ export function addToMapValue<T>(map: Map<T,number>, key: T, value: number): voi
   }
 }
 
+export function createReference(names: string[], start: number, end: number) {
+  let reference = names[0] + " " + names[1] + ":" + names[2];
+  if (start === 2){
+    return names[2];
+  }
+  if (end === 0) {
+    return names[0]
+  }
+  if (start === 1){
+    reference = reference.split(" ")[1];
+  }
+  if (end === 1){
+    reference = reference.split(":")[0];
+  }
+  return reference;
+}
+
 export function getWordChange(diff: Change[]): WordChange[] {
   let wordChanges: WordChange[] = [];
   for (let change of diff){

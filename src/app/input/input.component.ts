@@ -23,7 +23,7 @@ export class InputComponent {
   recording = false;
   
   @ViewChild('input') input: ElementRef | null = null;
-  @ViewChild('textareaStub') textareaStub: ElementRef | null = null;
+  @ViewChild('inputParent') inputParent: ElementRef | null = null;
 
 
   constructor(
@@ -100,12 +100,14 @@ export class InputComponent {
   }
 
   adjustInputHeight(){
-    if(this.input && this.textareaStub){
-      this.textareaStub.nativeElement.style.height = this.input.nativeElement.style.height;
-      this.input.nativeElement.style.height = 'auto';
+    if(this.input && this.inputParent){
+      let prevParentMinHeight = this.inputParent.nativeElement.style.minHeight;
+      this.inputParent.nativeElement.style.minHeight = this.inputParent.nativeElement.offsetHeight + 'px';
+      this.input.nativeElement.classList.add('measure-element');
       let height = this.input.nativeElement.scrollHeight;
       this.input.nativeElement.style.height = height + 'px';
-      this.textareaStub.nativeElement.style.height = height + 'px'; 
+      this.input.nativeElement.classList.remove('measure-element');
+      this.inputParent.nativeElement.style.minHeight = prevParentMinHeight;
     }
   }
 
@@ -127,7 +129,7 @@ export class InputComponent {
   processDiff(diff: BibleDiff){
     // Will want to make heatmap changes here as well
     let totalCorrect = 0;
-    let attemptLength = 0;
+    let totalWords = 0;
     let timestamp = Date.now();
     for(let book of diff.v){
       for(let chapter of book.v){
@@ -135,15 +137,13 @@ export class InputComponent {
           for(let change of verse.v){
             if (change.t === DiffType.Unchanged){
               totalCorrect += change.v.length;
-              attemptLength += change.v.length;
-            } else if(change.t === DiffType.Added){
-              attemptLength += change.v.length;
-            }
+            } 
+            totalWords += change.v.length;
           }
         }
       }
     }
-    let score = totalCorrect / attemptLength;
+    let score = totalCorrect / totalWords;
 
     this._storageService.storeAttempt({
       "id": uuidv4(),
