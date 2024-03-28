@@ -99,7 +99,8 @@ export class SingleAttemptComponent implements OnInit {
     if (!this.currentResult){
       return 'transparent';
     }
-    return numberToColorHsl(1-this.currentResult.score, .117, .32);
+    let weightedScore = Math.max(0,this.currentResult.score * 2 - 1)
+    return numberToColorHsl(1-weightedScore, .117, .32);
   }
 
   getAccuracy(): number {
