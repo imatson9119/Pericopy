@@ -22,6 +22,7 @@ export class InputComponent {
   recording = false;
   
   @ViewChild('input') input: ElementRef | null = null;
+  @ViewChild('textareaStub') textareaStub: ElementRef | null = null;
 
 
   constructor(
@@ -98,9 +99,12 @@ export class InputComponent {
   }
 
   adjustInputHeight(){
-    if(this.input){
+    if(this.input && this.textareaStub){
+      this.textareaStub.nativeElement.style.height = this.input.nativeElement.style.height;
       this.input.nativeElement.style.height = 'auto';
-      this.input.nativeElement.style.height = (this.input.nativeElement.scrollHeight) + 'px';
+      let height = this.input.nativeElement.scrollHeight;
+      this.input.nativeElement.style.height = height + 'px';
+      this.textareaStub.nativeElement.style.height = height + 'px'; 
     }
   }
 

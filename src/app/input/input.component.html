@@ -1,21 +1,24 @@
 <div class="input-container">
   <div class="header">Welcome to PeriCopy.</div>
   <div class="subheader">To get started, type some scripture below.</div>
-  <mat-form-field class="example-full-width">
-    <mat-label>Scripture here</mat-label>
-    <textarea
-      #input
-      [(ngModel)]="attempt"
-      matInput
-      cdkTextareaAutosize="true"
-      placeholder="In the beginning, God..."
-      (keydown)="this.onKeyDown($event)"
-      (input)="this.adjustInputHeight()"
-      (formdata)="this.adjustInputHeight()"
-      (ngModelChange)="this.adjustInputHeight()"
-      (click)="this.annyang.abort()"
-    ></textarea>
-  </mat-form-field>
+  <div class="input-height-container">
+    <mat-form-field class="flex-grow">
+      <mat-label>Scripture here</mat-label>
+      <textarea
+        #input
+        [(ngModel)]="attempt"
+        matInput
+        cdkTextareaAutosize="true"
+        placeholder="In the beginning, God..."
+        (keydown)="this.onKeyDown($event)"
+        (input)="this.adjustInputHeight()"
+        (formdata)="this.adjustInputHeight()"
+        (ngModelChange)="this.adjustInputHeight()"
+        (click)="this.annyang.abort()"
+      ></textarea>
+    </mat-form-field>
+    <div #textareaStub></div>
+  </div>
   <div class="button-container">
     <button (click)="submit()" [disabled]="attempt.length === 0" mat-flat-button color="primary">Submit</button>
     <button (click)="toggleVoice()" [ngClass]="{recording: this.recording}" class="record-button" mat-mini-fab aria-label="Dictate">
