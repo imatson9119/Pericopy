@@ -1,0 +1,36 @@
+.file-input {
+  display: none;
+}
+.file-upload {
+  box-sizing: border-box;
+  border: 4px dashed #b5b5b5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 5px;
+  cursor: pointer;
+  border-color: #b5b5b5;
+  transition: border 0.3s;
+  color: #b5b5b5;
+  transition: color 0.3s;
+
+  mat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 3rem;
+    color: #b5b5b5;
+    transition: color 0.3s;
+  }
+}
+
+.file-upload-hovered {
+  border: 4px dashed #607d8b;
+  color: #607d8b;
+  mat-icon {
+    color: #607d8b;
+  }
+}

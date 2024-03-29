@@ -6,6 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { getRelativeDate } from 'src/app/utils/utils';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 
 @Component({
   selector: 'app-history',
@@ -21,7 +23,7 @@ export class HistoryComponent implements AfterViewInit{
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
 
-  constructor(private _storageService: StorageService, private _router: Router) {
+  constructor(private _storageService: StorageService, private _router: Router, private dialog: MatDialog) {
   }
 
   ngAfterViewInit() {
@@ -65,5 +67,23 @@ export class HistoryComponent implements AfterViewInit{
 
   formatScore(score: number): string {
     return Math.round(score * 100).toString() + '%';
+  }
+
+  openImportDialog() {
+    this.dialog.open(ImportDialogComponent).afterClosed().subscribe(result => {
+      this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
+    });
+  }
+  
+  downloadAttempts() {
+    let attempts = this._storageService.result_bank;
+    let data = JSON.stringify(attempts);
+    let blob = new Blob([data], { type: 'text/json' });
+    let url = window.URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'pericopy_attempts.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }

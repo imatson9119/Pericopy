@@ -22,8 +22,10 @@ export class SingleAttemptComponent implements OnInit {
 
   currentResult: IResult | undefined = undefined;
   totalWords: number = 0;
-  wordsAdded: number = 0;
-  wordsRemoved: number = 0;
+  totalMistakes: number = 0;
+  longestSequence: number = 0;
+  
+
 
   constructor(private _router: Router, private _storageService: StorageService, private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
@@ -77,22 +79,26 @@ export class SingleAttemptComponent implements OnInit {
       return;
     }
     this.totalWords = 0;
-    this.wordsAdded = 0;
-    this.wordsRemoved = 0;
+    this.totalMistakes = 0;
+    this.longestSequence = 0;
+    let currentSequence = 0;
     for(let bookDiff of this.currentResult.diff.v){
       for(let chapterDiff of bookDiff.v){
         for(let verseDiff of chapterDiff.v){
           for(let change of verseDiff.v){
-            if (change.t === DiffType.Added){
-              this.wordsAdded += change.v.length;
-            } else if (change.t === DiffType.Removed){
-              this.wordsRemoved += change.v.length;
+            if (change.t === DiffType.Added || change.t === DiffType.Removed){
+              this.longestSequence = Math.max(this.longestSequence, currentSequence);
+              currentSequence = 0;
+              this.totalMistakes += change.v.length;
+            } else {
+              currentSequence += change.v.length;
             }
             this.totalWords += change.v.length;
           }
         }
       }
     }
+    this.longestSequence = Math.max(this.longestSequence, currentSequence);
   }
 
   getColor(){

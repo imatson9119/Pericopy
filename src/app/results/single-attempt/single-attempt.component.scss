@@ -1,4 +1,3 @@
-
 .result-container {
   padding-top: 4rem;
   padding-left: 1rem;
@@ -27,6 +26,7 @@
 .result-subtitle {
   color: #797979;
   font-weight: 100;
+  font-size: 1rem;
 }
 
 .stat-container {
@@ -36,7 +36,7 @@
   height: 180px;
   background: #48545b;
   border-radius: 18px;
-  padding: .5rem;
+  padding: 0.5rem;
   box-sizing: border-box;
   color: #e0e2e7;
   justify-content: center;
@@ -77,13 +77,16 @@
 }
 .stat-label {
   font-weight: 100;
-  color: rgba(255,255,255,.5);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
 }
 
 // media rule
 @media (max-width: 768px) {
   .result-container {
     padding-top: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   .result-title {
@@ -94,16 +97,63 @@
     min-width: 120px;
     height: 120px;
     border-radius: 12px;
-    padding: .25rem;
+    padding: 0.25rem;
   }
 
   .stat-value {
     font-size: 2.5rem;
   }
 
+  .stats-container {
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+  }
 
+  .stats-container-header {
+    font-size: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-label {
+    font-size: .8rem;
+  }
+
+  .result-subtitle {
+    font-size: .8rem;
+  }
   
-    .stats-container-header {
-      font-size: 1rem;
-    }
+}
+
+// media rule
+@media (max-width: 600px) {
+  .result-container {
+    padding-top: 1rem;
+  }
+
+  .result-title {
+    font-size: 1.2rem;
+  }
+
+  .stat-container {
+    min-width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    padding: 0.2rem;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  .stats-container-header {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: .6rem;
+  }
 }

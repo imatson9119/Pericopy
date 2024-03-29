@@ -32,11 +32,25 @@
 	border-radius: 5px 5px 0 0;
 }
 
-.history-header {
-	font-weight: 300;
-    font-size: 1.3rem;
+.history-header{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
     margin-bottom: 1rem;
     margin-top: 2rem;
+}
+
+.history-actions {
+	display: flex;
+	gap: 1rem;
+}
+
+.history-title {
+	font-weight: 300;
+    font-size: 1.3rem;
 }
 
 .full-width {

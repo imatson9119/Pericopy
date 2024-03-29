@@ -33,6 +33,10 @@ import { PassageSelectorComponent } from './input/passage-selector/passage-selec
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatRippleModule} from '@angular/material/core';
 import { InfoComponent } from './info/info.component';
+import { ImportDialogComponent } from './results/history/import-dialog/import-dialog.component';
+import { FileUploadComponent } from './results/history/file-upload/file-upload.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { FileDropDirective } from './utils/file-drop.directive';
 
 
 @NgModule({
@@ -49,7 +53,9 @@ import { InfoComponent } from './info/info.component';
     BibleDisplayComponent,
     PassageSelectorComponent,
     InfoComponent,
-    
+    ImportDialogComponent,
+    FileUploadComponent,
+    FileDropDirective,
   ],
   imports: [
     BrowserModule,
@@ -70,7 +76,8 @@ import { InfoComponent } from './info/info.component';
     MatTooltipModule,
     MatSortModule,
     MatSnackBarModule,
-    MatRippleModule
+    MatRippleModule,
+    MatProgressBarModule
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent]
