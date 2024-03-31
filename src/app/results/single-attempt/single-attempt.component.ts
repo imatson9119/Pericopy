@@ -15,10 +15,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./single-attempt.component.scss']
 })
 export class SingleAttemptComponent implements OnInit {
-  result_bank: ResultBank = {"results": []}
+  result_bank: ResultBank = {"version":1,"results": new Map()};
   diffTypes = DiffType;
   displayTypes = DisplayType;
-  resultIndex = -1;
+  resultId = "";
 
   currentResult: IResult | undefined = undefined;
   totalWords: number = 0;
@@ -31,21 +31,22 @@ export class SingleAttemptComponent implements OnInit {
 
   ngOnInit(): void {
     this.result_bank = this._storageService.getBank();
-    let index = this._router.parseUrl(this._router.url).queryParams['i'];
-    if(index != undefined){
-      this.setResult(parseInt(index));
+    let id = this._router.parseUrl(this._router.url).queryParams['id'];
+    if(id != undefined){
+      this.setResult(id);
     } else {
-      this.setResult(0);
+      this._router.navigateByUrl('/history');
     }
   }
 
-  setResult(index: number): void {
-    if(index < 0 || index > this.result_bank.results.length){
+  setResult(id: string): void {
+    if(!this.result_bank.results.has(id)){
+      console.log(`Result with id ${id} not found.`)
       this._router.navigateByUrl('/history');
       return;
     }
-    this.resultIndex = index;
-    this.currentResult = this.result_bank.results[index];
+    this.resultId = id;
+    this.currentResult = this.result_bank.results.get(id);
     this.generateResultStats();
   }
 
@@ -58,12 +59,12 @@ export class SingleAttemptComponent implements OnInit {
   }
 
   deleteResult(): void {
-    if(this.currentResult === undefined || this.resultIndex === -1){
+    if(this.currentResult === undefined || this.resultId === ""){
       return;
     }
     this.dialog.open(DeleteAttemptDialogComponent).afterClosed().subscribe(result => {
       if(result){
-        this._storageService.deleteAttempt(this.resultIndex);
+        this._storageService.deleteAttempt(this.resultId);
         this.snackbar.open('Result deleted.', 'Dismiss', {duration: 2000});
         this._router.navigateByUrl('/history');
       }

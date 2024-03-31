@@ -30,7 +30,7 @@ export class HeatmapComponent {
     private _bibleService: BibleService,
     private _storageService: StorageService
   ) {
-    let lastAttempt = this._storageService.getAttempts()[0];
+    let lastAttempt = this._storageService.getLastAttempt();
     if (lastAttempt !== undefined) {
       let start = this._bibleService.bible.get(lastAttempt.diff.i);
       this.book = start.book;
@@ -89,7 +89,7 @@ export class HeatmapComponent {
     let chapterStart = this.chapter.m.i;
     let chapterEnd = this.chapter.m.i + this.chapter.m.l;
     let filterTimestamp = this.getFilterTimestamp();
-    let results: IResult[] = this._storageService.getAttempts().filter((a) => {
+    let results: IResult[] = [...this._storageService.getAttempts().values()].filter((a) => {
       return (
         a.timestamp > filterTimestamp &&
         ((a.diff.i >= chapterStart && a.diff.i <= chapterEnd) ||

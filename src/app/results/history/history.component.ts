@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
 import { IResult } from 'src/app/classes/models';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { getRelativeDate } from 'src/app/utils/utils';
-import { MatSort } from '@angular/material/sort';
+import { getRelativeDate, replacer } from 'src/app/utils/utils';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 
@@ -14,32 +14,34 @@ import { ImportDialogComponent } from './import-dialog/import-dialog.component';
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements AfterViewInit{
+export class HistoryComponent implements AfterViewInit {
 
-  displayedColumns: string[] = ['title', 'score', 'time', 'actions'];
+  displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
   dataSource = new MatTableDataSource<IResult>(this.getDataSource());
   filterValue = ''
   
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort | null = null;
+  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);;
 
   constructor(private _storageService: StorageService, private _router: Router, private dialog: MatDialog) {
   }
 
+
   ngAfterViewInit() {
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch(property) {
+        case 'time': return item.timestamp;
+        case 'title': return item.diff.p;
+        case 'score': return item.score;
+        default: return '';
+      }
+    };
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = (data, filter) => {
       return data.diff.p.toLowerCase().includes(filter);
     }
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch(property) {
-        case 'title': return item.diff.p;
-        case 'score': return item.score;
-        case 'time': return item.timestamp;
-        default: return '';
-      }
-    }
+    this.dataSource.sort = this.sort;
+    
   }
 
   applyFilter(event: Event) {
@@ -53,8 +55,8 @@ export class HistoryComponent implements AfterViewInit{
     return this._storageService.getAttempts();
   }
 
-  loadResult(index: number) {
-    this._router.navigate(['/results'], { queryParams: { i: index } }); 
+  loadResult(id: string) {
+    this._router.navigate(['/results'], { queryParams: { id: id } }); 
   }
 
   getRelativeTime(timestamp: number): string | null{
@@ -62,7 +64,7 @@ export class HistoryComponent implements AfterViewInit{
   }
 
   getDataSource(){
-    return this.getAttempts().map((a, i) => {return {...a, index: i}});
+    return [...this.getAttempts().values()]
   }
 
   formatScore(score: number): string {
@@ -76,8 +78,8 @@ export class HistoryComponent implements AfterViewInit{
   }
   
   downloadAttempts() {
-    let attempts = this._storageService.result_bank;
-    let data = JSON.stringify(attempts);
+    let attempts = this._storageService.resultBank;
+    let data = JSON.stringify(attempts, replacer, 2);
     let blob = new Blob([data], { type: 'text/json' });
     let url = window.URL.createObjectURL(blob);
     let a = document.createElement('a');

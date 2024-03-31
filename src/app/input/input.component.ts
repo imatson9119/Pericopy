@@ -84,8 +84,8 @@ export class InputComponent {
     if (!diff) {
       throw new Error('Error getting diff');
     }
-    this.processDiff(diff);
-    this.router.navigateByUrl('results');
+    let id = this.processDiff(diff);
+    this.router.navigate(['/results'], { queryParams: { id: id } }); 
   }
 
   canAutoLock(anchorList: [BiblePassage, number][], attempt: string) {
@@ -126,7 +126,7 @@ export class InputComponent {
     }
   }
 
-  processDiff(diff: BibleDiff){
+  processDiff(diff: BibleDiff): string {
     // Will want to make heatmap changes here as well
     let totalCorrect = 0;
     let totalWords = 0;
@@ -144,12 +144,15 @@ export class InputComponent {
       }
     }
     let score = totalCorrect / totalWords;
+    let id = uuidv4();
 
     this._storageService.storeAttempt({
-      "id": uuidv4(),
+      "id": id,
       "diff": diff,
       "timestamp": timestamp,
       "score": score
     });
+
+    return id;
   }
 }

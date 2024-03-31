@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IResult, ResultBank } from '../classes/models';
+import { replacer, reviver } from '../utils/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -7,49 +8,68 @@ import { IResult, ResultBank } from '../classes/models';
 export class StorageService {
 
   result_bank_storage_key = "result_bank"
-  result_bank: ResultBank = {"results": []};
-  storedIds = new Set<string>();
+  resultBank: ResultBank = {"version": 1, "results": new Map()};
 
   constructor() { 
-    let stored_result_bank = localStorage.getItem(this.result_bank_storage_key);
-    if(stored_result_bank != null) {
-      this.result_bank = JSON.parse(stored_result_bank);
-      this.result_bank.results = this.result_bank.results.sort((a, b) =>b.timestamp - a.timestamp);
-      this.result_bank.results.forEach(result => {
-        this.storedIds.add(result.id);
-      });
+    this.initBank();
+  }
+
+  initBank() {
+    let storedResultBank = localStorage.getItem(this.result_bank_storage_key);
+    if (storedResultBank == null){
+      this.storeBank();
+      return;
+    }
+    let resultBank = JSON.parse(storedResultBank, reviver);
+    if (resultBank.version == undefined){
+      this.loadVersionZero(resultBank);
+      this.storeBank();
+      return;
+    }
+    this.resultBank = resultBank;
+  }
+  
+  loadVersionZero(oldBank: any) {
+    for (let result of oldBank.results){
+      this.resultBank.results.set(result.id, result);
     }
   }
 
   storeAttempt(result: IResult){
-    this.result_bank.results.unshift(result);
-    if (this.storedIds.has(result.id)){
-      return;
-    }
-    this.storedIds.add(result.id);
+    this.resultBank.results.set(result.id, result); 
     this.storeBank();
   }
 
-  deleteAttempt(index: number){
-    this.storedIds.delete(this.result_bank.results[index].id);
-    this.result_bank.results.splice(index, 1);
+  deleteAttempt(id: string){
+    this.resultBank.results.delete(id);
     this.storeBank();
   }
 
   storeBank(){
-    localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.result_bank));
+    localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.resultBank, replacer));
   }
 
   getAttempts(){
-    return this.result_bank.results;
+    return this.resultBank.results;
+  }
+
+  getLastAttempt(){
+    let attempts = this.getAttempts();
+    let lastAttempt = undefined;
+    for(let attempt of attempts.values()){
+      if (lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp){
+        lastAttempt = attempt;
+      }
+    }
+    return lastAttempt;
   }
 
   getBank(): ResultBank {
-    return this.result_bank;
+    return this.resultBank;
   }
 
   joinBanks(bank: ResultBank){
-    for(let result of bank.results){
+    for(let result of bank.results.values()){
       this.storeAttempt(result);
     }
     this.storeBank();

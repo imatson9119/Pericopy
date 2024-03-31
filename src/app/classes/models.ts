@@ -6,7 +6,8 @@ export interface IResult {
 }
 
 export interface ResultBank {
-  results: IResult[];
+  version: number;
+  results: Map<string, IResult>;
 }
 
 export interface WordMap {

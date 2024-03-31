@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { StorageService } from 'src/app/services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
+import { reviver } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-import-dialog',
@@ -21,7 +22,7 @@ export class ImportDialogComponent {
     if(this.fileUpload){
       this.fileUpload.getFiles().forEach(file => {
         file.text().then(text => {
-          let data = JSON.parse(text);
+          let data = JSON.parse(text, reviver);
           this._storageService.joinBanks(data) 
         });
       });
