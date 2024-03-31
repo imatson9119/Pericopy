@@ -1,4 +1,4 @@
-<div class="book" *ngFor="let book of this.getBible()">
+<div class="book" *ngFor="let book of this.getBooks()">
   <ng-container *ngIf="intersection(book.m.i, book.m.i + book.m.l, passage.i, passage.j)">
     <div class="book-title">
       {{ book.m.b }}

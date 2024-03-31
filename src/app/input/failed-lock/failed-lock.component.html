@@ -4,10 +4,10 @@
   below!</span>
   <form class="verse-selector-container" #f="ngForm" (ngSubmit)="submit()">
     <div class="start-container verse-selector">
-      <app-passage-selector label="Start Verse" #start></app-passage-selector>
+      <app-verse-selector #start></app-verse-selector>
     </div>
     <div class="end-container verse-selector">
-      <app-passage-selector label="End Verse" #end></app-passage-selector>
+      <app-verse-selector #end></app-verse-selector>
     </div>
   </form>
   <div class="verse-preview">

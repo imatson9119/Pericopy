@@ -18,7 +18,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import { VerseSelectorComponent } from './input/verse-selector/verse-selector.component';
+import { FailedLockComponent } from './input/failed-lock/failed-lock.component';
 import { HistoryComponent } from './results/history/history.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -37,6 +37,8 @@ import { ImportDialogComponent } from './results/history/import-dialog/import-di
 import { FileUploadComponent } from './results/history/file-upload/file-upload.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { FileDropDirective } from './utils/file-drop.directive';
+import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
+import { VerseSelectorPopupComponent } from './verse-selector/verse-selector-popup/verse-selector-popup.component';
 
 
 @NgModule({
@@ -46,7 +48,7 @@ import { FileDropDirective } from './utils/file-drop.directive';
     NavbarComponent,
     SingleAttemptComponent,
     HeatmapComponent,
-    VerseSelectorComponent,
+    FailedLockComponent,
     HistoryComponent,
     DeleteAttemptDialogComponent,
     DiffDisplayComponent,
@@ -56,6 +58,8 @@ import { FileDropDirective } from './utils/file-drop.directive';
     ImportDialogComponent,
     FileUploadComponent,
     FileDropDirective,
+    VerseSelectorComponent,
+    VerseSelectorPopupComponent,
   ],
   imports: [
     BrowserModule,

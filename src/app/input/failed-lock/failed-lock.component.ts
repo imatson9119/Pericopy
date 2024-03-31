@@ -3,25 +3,25 @@ import { BibleService } from '../../services/bible.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BiblePassage } from '../../classes/BiblePassage';
 import { abbreviateBookName } from 'src/app/utils/utils';
-import { PassageSelectorComponent } from '../passage-selector/passage-selector.component';
+import { VerseSelectorComponent } from 'src/app/verse-selector/verse-selector.component';
 
 @Component({
-  selector: 'app-verse-selector',
-  templateUrl: './verse-selector.component.html',
-  styleUrls: ['./verse-selector.component.scss'],
+  selector: 'app-failed-lock',
+  templateUrl: './failed-lock.component.html',
+  styleUrls: ['./failed-lock.component.scss'],
 })
-export class VerseSelectorComponent {
+export class FailedLockComponent {
   nWordsToPreview = 40;
   attemptLength = 0;
   dedupedAnchors: BiblePassage[] = [];
   abbreviateBookName = abbreviateBookName;
 
-  @ViewChild('start') start: PassageSelectorComponent | undefined = undefined;
-  @ViewChild('end') end: PassageSelectorComponent | undefined = undefined;
+  @ViewChild('start') start: VerseSelectorComponent | undefined = undefined;
+  @ViewChild('end') end: VerseSelectorComponent | undefined = undefined;
 
   constructor(
     private _bibleService: BibleService,
-    private _dialogRef: MatDialogRef<VerseSelectorComponent>,
+    private _dialogRef: MatDialogRef<FailedLockComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.attemptLength = this.data.attempt.split(/\s+/).length;
@@ -41,17 +41,17 @@ export class VerseSelectorComponent {
   }
 
   submit() {
-    if (this.start && this.end && this.start.isValid() && this.end.isValid()){
-      this._dialogRef.close([this.start.v.m.i, this.end.v.m.i + this.end.v.m.l]);
+    if (this.start && this.end && this.start.finishedSelection && this.end.finishedSelection){
+      this._dialogRef.close([this.start.verse.m.i, this.end.verse.m.i + this.end.verse.m.l]);
     }
   }
 
   getPreview(): string{
     if (this.isValid()) {
       // @ts-ignore
-      let startIndex: number = this.start?.v.m.i;
+      let startIndex: number = this.start.verse.m.i;
       // @ts-ignore
-      let endIndex: number = this.end?.v.m.i + this.end?.v.m.l;
+      let endIndex: number = this.end.verse.m.i + this.end.verse.m.l;
       if (endIndex - startIndex > this.nWordsToPreview) {
         let startText = this._bibleService.bible.getText(
           startIndex,
@@ -72,22 +72,22 @@ export class VerseSelectorComponent {
     return (
       this.start != undefined &&
       this.end != undefined &&
-      this.start.isValid() &&
-      this.end.isValid() && 
-      this.start.v.m.i <= this.end.v.m.i
+      this.start.finishedSelection &&
+      this.end.finishedSelection && 
+      this.start.verse.m.i <= this.end.verse.m.i
     );
   }
 
   selectPassage(passage: BiblePassage) {
     if(this.start && this.end){
-      this.start.reset();
-      this.end.reset();
-      this.start.b = passage.b1;
-      this.start.c = passage.c1;
-      this.start.v = passage.v1;
-      this.end.b = passage.b2;
-      this.end.c = passage.c2;
-      this.end.v = passage.v2;
+      this.start.book = passage.b1;
+      this.start.chapter = passage.c1;
+      this.start.verse = passage.v1;
+      this.end.book = passage.b2;
+      this.end.chapter = passage.c2;
+      this.end.verse = passage.v2;
+      this.start.finishedSelection = true;
+      this.end.finishedSelection = true;
     }
   }
 }

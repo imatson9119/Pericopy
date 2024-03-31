@@ -1,13 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
-import { hslToRgb, numberToColorHsl } from 'src/app/utils/utils';
-import { quickColor } from 'src/app/utils/utils';
+import { numberToColorHsl } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-bible-display',
   templateUrl: './bible-display.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./bible-display.component.scss']
 })
 export class BibleDisplayComponent {
@@ -20,8 +20,10 @@ export class BibleDisplayComponent {
     
   }
 
-  getBible() {
-    return this._bibleService.bible.v;
+  getBooks() {
+    return this._bibleService.bible.v.filter(book => this.intersection(
+      book.m.i, book.m.i + book.m.l, this.passage.i, this.passage.j
+    ));
   }
   
   intersection(i1: number, i2: number, j1: number, j2: number): boolean {

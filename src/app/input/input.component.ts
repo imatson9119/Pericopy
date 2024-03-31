@@ -4,7 +4,7 @@ import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
-import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
+import { FailedLockComponent } from './failed-lock/failed-lock.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { sanitizeText } from '../utils/utils';
 import { BibleDiff, DiffType } from '../classes/models';
@@ -63,7 +63,7 @@ export class InputComponent {
     this.annyang.abort();
     let anchors = this._bibleService.bible.anchorText(this.attempt);
     if (!this.canAutoLock(anchors, this.attempt)) {
-      this._dialog.open(VerseSelectorComponent, {
+      this._dialog.open(FailedLockComponent, {
         data: { anchors: anchors, attempt: this.attempt },
       }).afterClosed().subscribe((result: [number, number]) => {
         if (result) {

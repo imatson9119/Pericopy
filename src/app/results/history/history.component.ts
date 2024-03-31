@@ -21,7 +21,7 @@ export class HistoryComponent implements AfterViewInit {
   filterValue = ''
   
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);;
+  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
   constructor(private _storageService: StorageService, private _router: Router, private dialog: MatDialog) {
   }
@@ -74,6 +74,7 @@ export class HistoryComponent implements AfterViewInit {
   openImportDialog() {
     this.dialog.open(ImportDialogComponent).afterClosed().subscribe(result => {
       this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
+      this.dataSource.sort = this.sort;
     });
   }
   
