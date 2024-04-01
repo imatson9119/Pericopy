@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Verse, Chapter, Book } from '../classes/models';
 import { VerseSelectorPopupComponent } from './verse-selector-popup/verse-selector-popup.component';
@@ -11,6 +11,9 @@ import { VerseSelectorPopupComponent } from './verse-selector-popup/verse-select
 export class VerseSelectorComponent {
   @Input()
   selectionLevel: string = 'verse';
+  
+  @Output()
+  change = new EventEmitter<any>()
 
   verse: Verse | any = null;
   chapter: Chapter | any = null;
@@ -34,6 +37,7 @@ export class VerseSelectorComponent {
         this.chapter = result.chapter;
         this.verse = result.verse;
         this.finishedSelection = true;
+        this.change.emit({book: this.book, chapter: this.chapter, verse: this.verse});
       }
     });
   }

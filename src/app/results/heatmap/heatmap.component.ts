@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Book, Chapter, DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { IResult } from 'src/app/classes/models';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
+import { VerseSelectorComponent } from 'src/app/verse-selector/verse-selector.component';
 
 enum FilterValues {
   PAST_DAY = 'Past Day',
@@ -26,6 +27,8 @@ export class HeatmapComponent {
   heatmap: Heatmap = new Map();
   passage: BiblePassage = {} as BiblePassage;
 
+  @ViewChild('selector') reference: VerseSelectorComponent | any = null;
+
   constructor(
     private _bibleService: BibleService,
     private _storageService: StorageService
@@ -37,6 +40,12 @@ export class HeatmapComponent {
       this.chapter = start.chapter;
       this.updateHeatmap();
     }
+  }
+
+  updateReference() {
+    this.book = this.reference.book;
+    this.chapter = this.reference.chapter;
+    this.updateHeatmap();
   }
 
   getBooks(): Book[] {

@@ -20,11 +20,15 @@ export class VerseSelectorPopupComponent {
     this.selectionLevel = data.selectionLevel;
     if(data.book){
       this.value.book = data.book;
-      this.selectionStage++;
+      if (this.selectionLevel !== 'book'){
+        this.selectionStage = 1;
+      }
     }
     if(data.chapter){
       this.value.chapter = data.chapter;
-      this.selectionStage++;
+      if (this.selectionLevel !== 'chapter' && this.selectionLevel !== 'book'){
+        this.selectionStage = 2;
+      }
     }
     if(data.verse){
       this.value.verse = data.verse;
