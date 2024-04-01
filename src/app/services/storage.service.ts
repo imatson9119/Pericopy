@@ -45,6 +45,10 @@ export class StorageService {
     this.storeBank();
   }
 
+  getAttempt(id: string): IResult | undefined {
+    return this.resultBank.results.get(id);
+  }
+
   storeBank(){
     localStorage.setItem(this.result_bank_storage_key, JSON.stringify(this.resultBank, replacer));
   }

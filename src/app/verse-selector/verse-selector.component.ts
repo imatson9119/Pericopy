@@ -13,13 +13,22 @@ export class VerseSelectorComponent {
   selectionLevel: string = 'verse';
   
   @Output()
-  change = new EventEmitter<any>()
+  select = new EventEmitter<any>()
 
+  @Input()
   verse: Verse | any = null;
+
+  @Input()
   chapter: Chapter | any = null;
+
+  @Input()
   book: Book | any = null;
 
+  @Input()
   finishedSelection: boolean = false;
+
+  @Input()
+  disabled: boolean = false;
 
   constructor(private dialog: MatDialog) { }
 
@@ -37,7 +46,7 @@ export class VerseSelectorComponent {
         this.chapter = result.chapter;
         this.verse = result.verse;
         this.finishedSelection = true;
-        this.change.emit({book: this.book, chapter: this.chapter, verse: this.verse});
+        this.select.emit({book: this.book, chapter: this.chapter, verse: this.verse});
       }
     });
   }
@@ -52,5 +61,26 @@ export class VerseSelectorComponent {
     } else {
       return `Select ${this.selectionLevel}`;
     }
+  }
+
+  reset() {
+    this.verse = null;
+    this.chapter = null;
+    this.book = null;
+    this.finishedSelection = false;
+  }
+
+  setValue(book: Book | null = null, chapter: Chapter | null = null, verse: Verse | null = null) {
+    this.book = book;
+    this.chapter = chapter;
+    this.verse = verse;
+    if (this.selectionLevel === 'book' && this.book) {
+      this.finishedSelection = true;
+    } else if (this.selectionLevel === 'chapter' && this.book && this.chapter) {
+      this.finishedSelection = true;
+    } else if (this.selectionLevel === 'verse' && this.book && this.chapter && this.verse) {
+      this.finishedSelection = true;
+    }
+    this.select.emit({book: this.book, chapter: this.chapter, verse: this.verse});
   }
 }

@@ -1,6 +1,21 @@
 <div class="input-container">
-  <div class="header">Welcome to PeriCopy.</div>
-  <div class="subheader">To get started, type some scripture below.</div>
+  <div class="toolbar">
+    <div class="verse-selector-container">
+      <div class="start-container verse-selector">
+        <div class="verse-selector-header">Start Verse</div>
+        <app-verse-selector (select)="this.detectPassage=false" #start></app-verse-selector>
+      </div>
+      <div class="end-container verse-selector">
+        <div class="verse-selector-header">End Verse</div>
+        <app-verse-selector #end></app-verse-selector>
+      </div>
+    </div>
+    <button mat-flat-button (select)="this.detectPassage=false" [ngClass]="{on:this.detectPassage,off:!this.detectPassage}" color="primary" [color]="" (click)="this.togglePassageSelection()">
+      Detect Passage
+      <mat-icon *ngIf="this.detectPassage">check</mat-icon>
+      <mat-icon *ngIf="!this.detectPassage">close</mat-icon>
+    </button>
+  </div>
   <div #inputParent class="input-height-container">
     <mat-form-field class="flex-grow">
       <mat-label>Scripture here</mat-label>
@@ -16,7 +31,7 @@
     </mat-form-field>
   </div>
   <div class="button-container">
-    <button (click)="submit()" [disabled]="attempt.length === 0" mat-flat-button color="primary">Submit</button>
+    <button (click)="submit()" [disabled]="!valid()" mat-flat-button color="primary">Submit</button>
     <button (click)="toggleVoice()" [ngClass]="{recording: this.recording}" class="record-button" mat-mini-fab aria-label="Dictate">
       <mat-icon>mic</mat-icon>
     </button>

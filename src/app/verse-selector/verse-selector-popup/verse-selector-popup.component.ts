@@ -41,40 +41,42 @@ export class VerseSelectorPopupComponent {
 
   selectBook(book: Book){
     this.value.book = book;
+    this.value.chapter = null;
+    this.value.verse = null;
     if (this.selectionLevel === 'book'){
-      this.close();
+      this.submit();
     }
     this.selectionStage++;
   }
 
   selectChapter(chapter: any){
     this.value.chapter = chapter;
+    this.value.verse = null;
     if (this.selectionLevel === 'chapter'){
-      this.close();
+      this.submit();
     }
     this.selectionStage++;
   }
 
   selectVerse(verse: any){
     this.value.verse = verse;
-    this.close();
+    this.submit();
   }
 
   close() {
+    this.dialogRef.close();
+  }
+
+  submit() {
     this.dialogRef.close(this.value);
   }
 
   goToChapters() {
     this.selectionStage = 1;
-    this.value.chapter = null;
-    this.value.verse = null;
   }
 
   goToBooks() {
     this.selectionStage = 0;
-    this.value.verse = null;
-    this.value.chapter = null;
-    this.value.book = null;
   }
 
 }

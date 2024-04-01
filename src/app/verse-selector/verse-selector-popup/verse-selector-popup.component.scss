@@ -9,16 +9,28 @@ mat-dialog-content {
 	justify-content: center;
 	
 	button {
+		color: black;
 		width: 40px;
 		height: 40px;
 		background: none;
 		border: none;
 		cursor: pointer;
 		transition: background-color 0.3s;
+		border-radius: 5px;
 	}
 	
 	button:hover {
 		background-color: #e1eef3;
+	}
+
+	button.selected {
+		color: white;
+		background-color: #607d8b;
+	}
+
+	button.selected:hover {
+		color: white;
+		background-color: #73909e;
 	}
 }
 
@@ -30,7 +42,7 @@ mat-dialog-content {
 	margin-top: 1rem;
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     color: #5e5e5e;
     font-size: 1rem;

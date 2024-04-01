@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { Book, Chapter, DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -19,7 +19,7 @@ enum FilterValues {
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
-export class HeatmapComponent {
+export class HeatmapComponent implements AfterViewInit{
   book: Book = {} as Book;
   chapter: Chapter = {} as Chapter;
   filterValues = FilterValues;
@@ -33,12 +33,14 @@ export class HeatmapComponent {
     private _bibleService: BibleService,
     private _storageService: StorageService
   ) {
+    
+  }
+
+  ngAfterViewInit(): void {
     let lastAttempt = this._storageService.getLastAttempt();
     if (lastAttempt !== undefined) {
       let start = this._bibleService.bible.get(lastAttempt.diff.i);
-      this.book = start.book;
-      this.chapter = start.chapter;
-      this.updateHeatmap();
+      this.reference.setValue(start.book, start.chapter);
     }
   }
 

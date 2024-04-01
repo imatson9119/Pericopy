@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
-import { DiffType, Heatmap } from 'src/app/classes/models';
+import { DiffType, Heatmap, Verse } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { numberToColorHsl } from 'src/app/utils/utils';
 
@@ -42,6 +42,20 @@ export class BibleDisplayComponent {
     return numberToColorHsl(score);
   }
 
-  
+  trackByWord(index: number, item: any) {
+    return index;
+  }  
+
+  trackByVerse(index: number, item: Verse) {
+    return item.m.i;
+  }
+
+  trackByChapter(index: number, item: any) {
+    return item.m.i;
+  }
+
+  trackByBook(index: number, item: any) {
+    return item.m.i;
+  }
 
 }

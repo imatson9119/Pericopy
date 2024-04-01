@@ -72,7 +72,10 @@ export class SingleAttemptComponent implements OnInit {
   }
 
   editResult(): void {
-
+    if(this.currentResult === undefined || this.resultId === ""){
+      return;
+    }
+    this._router.navigate(['/test'], { queryParams: { id: this.resultId } });
   }
 
   generateResultStats(): void {

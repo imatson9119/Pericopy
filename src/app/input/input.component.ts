@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
@@ -6,9 +6,10 @@ import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FailedLockComponent } from './failed-lock/failed-lock.component';
 import { BiblePassage } from '../classes/BiblePassage';
-import { sanitizeText } from '../utils/utils';
+import { getAttemptText, sanitizeText } from '../utils/utils';
 import { BibleDiff, DiffType } from '../classes/models';
 import { v4 as uuidv4 } from 'uuid';
+import { VerseSelectorComponent } from '../verse-selector/verse-selector.component';
 
 declare const annyang: any;
 
@@ -17,14 +18,17 @@ declare const annyang: any;
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
 })
-export class InputComponent {
+export class InputComponent implements AfterViewChecked {
   attempt = '';
   annyang = annyang;
   recording = false;
+  detectPassage = true;
+  editingId = '';
   
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
-
+  @ViewChild('start') startReference: VerseSelectorComponent | any = null;
+  @ViewChild('end') endReference: VerseSelectorComponent | any = null;
 
   constructor(
     private _storageService: StorageService,
@@ -33,6 +37,12 @@ export class InputComponent {
     private _dialog: MatDialog,
     private ngZone: NgZone
   ) {
+    let id = this.router.parseUrl(this.router.url).queryParams['id'];
+    if(id != undefined){
+      this.editResult(id);
+    } else {
+      this.router.navigateByUrl('/test');
+    }
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
       if(userSaid && userSaid.length > 0){
         ngZone.run(() => {
@@ -56,22 +66,53 @@ export class InputComponent {
     });
   }
 
+  ngAfterViewChecked(): void {
+    this.adjustInputHeight();
+  }
+
+  valid() {
+    return this.attempt.trim().length > 0 && (
+      this.detectPassage ?  
+        true : 
+        this.startReference.finishedSelection && 
+        this.endReference.finishedSelection &&
+        this.startReference.verse.m.i <= this.endReference.verse.m.i
+      );
+  }
+
+  editResult(id: string) {
+    let result = this._storageService.getAttempt(id);
+    if (result === undefined) {
+      this.router.navigateByUrl('/test');
+      return;
+    }
+    this.attempt = getAttemptText(result);
+    this.editingId = id;
+  }
+
   submit() {
-    if(this.attempt.length === 0){
+    if (!this.valid()) {
       return;
     }
     this.annyang.abort();
-    let anchors = this._bibleService.bible.anchorText(this.attempt);
-    if (!this.canAutoLock(anchors, this.attempt)) {
-      this._dialog.open(FailedLockComponent, {
-        data: { anchors: anchors, attempt: this.attempt },
-      }).afterClosed().subscribe((result: [number, number]) => {
-        if (result) {
-          this.getAndStoreDiff(this._bibleService.bible.getPassage(result[0], result[1]));
-        }
-      });
-    } else {
-      this.getAndStoreDiff(anchors[0][0]);
+    if(this.detectPassage){
+      let anchors = this._bibleService.bible.anchorText(this.attempt);
+      if (!this.canAutoLock(anchors, this.attempt)) {
+        this._dialog.open(FailedLockComponent, {
+          data: { anchors: anchors, attempt: this.attempt },
+        }).afterClosed().subscribe((result: [number, number]) => {
+          if (result) {
+            this.getAndStoreDiff(this._bibleService.bible.getPassage(result[0], result[1]));
+          }
+        });
+      } else {
+        this.getAndStoreDiff(anchors[0][0]);
+      }
+    }
+    else {
+      let start = this.startReference.verse.m.i;
+      let end = this.endReference.verse.m.i + this.endReference.verse.m.l;
+      this.getAndStoreDiff(this._bibleService.bible.getPassage(start, end));
     }
   }
 
@@ -144,7 +185,7 @@ export class InputComponent {
       }
     }
     let score = totalCorrect / totalWords;
-    let id = uuidv4();
+    let id = this.editingId ? this.editingId : uuidv4();
 
     this._storageService.storeAttempt({
       "id": id,
@@ -154,5 +195,13 @@ export class InputComponent {
     });
 
     return id;
+  }
+
+  togglePassageSelection() {
+    this.detectPassage = !this.detectPassage;
+    if(this.detectPassage){
+      this.startReference.reset();
+      this.endReference.reset();
+    }
   }
 }
