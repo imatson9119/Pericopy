@@ -1,0 +1,50 @@
+.main-container {
+  padding: 1rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 100;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 100;
+}
+
+.scripture-text {
+  font-style: italic;
+  padding-left: 1rem;
+  margin-left: 1rem;
+  border-left: 3px #aaa solid;
+}
+
+.scripture-reference {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.question {
+  margin-top: 1rem;
+
+  .question-text {
+    font-weight: 500;
+    font-size: 1.2rem;
+  }
+  .answer {
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+}
+
+.section {
+  margin-top: 4rem;
+}
+
+.hr {
+  width: 100%;
+  border: 0;
+  height: 1px;
+  background-color: #999999;
+}

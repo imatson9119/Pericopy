@@ -5,6 +5,7 @@ import { HistoryComponent } from './results/history/history.component';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
 import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { InfoComponent } from './info/info.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   { path: 'test', component: InputComponent },
@@ -12,7 +13,7 @@ const routes: Routes = [
   { path: 'history', component: HistoryComponent },
   { path: 'heatmap', component: HeatmapComponent },
   { path: 'info', component: InfoComponent },
-  { path: '',   redirectTo: '/test', pathMatch: 'full' },
+  { path: '', component: HomeComponent },
   { path: '**', redirectTo: '/test',}
 ];
 

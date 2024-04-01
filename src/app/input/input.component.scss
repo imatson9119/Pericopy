@@ -1,3 +1,8 @@
+h2 {
+  font-size: 1.8rem;
+  font-weight: 100;
+}
+
 .input-container {
   display: flex;
   flex-direction: column;
@@ -13,14 +18,25 @@
   gap: 1rem;
   flex-wrap: wrap;
   align-items:flex-end;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
+
+.mat-mdc-unelevated-button{
+  transition: background-color 0.3s;
+}
+
 .off.mat-mdc-unelevated-button:not(:disabled) {
   background-color:#555555;
 }
+
+.off.mat-mdc-unelevated-button:not(:disabled) {
+  background-color:#555555;
+}
+
 .on.mat-mdc-unelevated-button:not(:disabled) {
   background-color: #848b60;
 }
+
 .button-container {
   display: flex;
   gap: 1rem;

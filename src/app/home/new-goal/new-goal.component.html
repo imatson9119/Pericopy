@@ -1,7 +1,6 @@
-<h2 mat-dialog-title>Select Passage</h2>
+<h2 mat-dialog-title>Create a New Goal</h2>
 <mat-dialog-content class="mat-typography dialog-content">
-  <span class="message-text">Oops, it looks like we couldn't find the passage you were reciting. Specify
-  below!</span>
+  <span class="message-text">Create a new goal to track your progress as you recite passages!</span>
   <div class="verse-selector-container">
     <div class="start-container verse-selector">
       <div class="verse-selector-header">Start Verse</div>
@@ -17,15 +16,6 @@
     <div class="verse-preview-content">
       {{ getPreview() }}
     </div>
-  </div>
-  <div class="button-container">
-    <button
-      *ngFor="let passage of dedupedAnchors"
-      (click)="selectPassage(passage)"
-      mat-raised-button
-    >
-      {{ passage }}
-    </button>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

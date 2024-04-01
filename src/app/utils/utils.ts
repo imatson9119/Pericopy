@@ -193,6 +193,11 @@ export function replacer(key: any, value: any) {
       dataType: 'Map',
       value: Array.from(value.entries()), // or with spread: value: [...value]
     };
+  } else if (value instanceof Set){
+    return {
+      dataType: 'Set',
+      value: Array.from(value.values())
+    }
   } else {
     return value;
   }
@@ -203,8 +208,15 @@ export function reviver(key: any, value: any) {
     if (value.dataType === 'Map') {
       return new Map(value.value);
     }
+    if (value.dataType === 'Set') {
+      return new Set(value.value);
+    }
   }
   return value;
+}
+
+export function intersection(start1: number, end1: number, start2: number, end2: number): boolean {
+  return start1 <= (end2-1) && start2 <= (end1-1);
 }
 
 export function getAttemptText(result: IResult): string {

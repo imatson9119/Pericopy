@@ -1,0 +1,51 @@
+
+.container {
+	padding: 1rem;
+}
+
+.verse-selector-container {
+	margin-top: 2rem;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.verse-selector {
+	display: flex;
+	flex-direction: column;
+}
+
+.verse-selector-header {
+	font-size: 0.8rem;
+	font-weight: 500;
+	color: #555555;
+}
+
+.dialog-content{
+	max-width: 600px;
+}
+
+.message-text{
+	font-size: .9rem;
+}
+
+.verse-preview {
+	margin-top: 1rem;
+	border-radius: 5px;
+	padding: 1rem;
+	background-color: #f0f0f0;
+}
+.verse-preview-header {
+	color:#555555;
+	margin-bottom: .1rem;
+	font-size:small;
+	font-weight: 500;
+}
+.verse-preview-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	font-size: .8rem;
+}

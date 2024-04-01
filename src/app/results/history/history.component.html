@@ -1,19 +1,5 @@
 <div class="container">
-  <div class="history-header">
-      <div class="history-title">
-        Your Attempts
-      </div>
-    <div class="history-actions">
-      <button color="primary" mat-flat-button (click)="this.openImportDialog()">
-        Import
-        <mat-icon color="white">upload_outline</mat-icon>
-      </button>
-      <button color="primary" mat-flat-button (click)="this.downloadAttempts()">
-        Export
-        <mat-icon color="white">download</mat-icon>
-      </button>
-    </div>
-  </div> 
+  <h2>Attempt History</h2>
   <mat-form-field class="full-width">
     <mat-label>Filter</mat-label>
     <input matInput value="" [(ngModel)]="filterValue" (keyup)="this.applyFilter($event)">
@@ -56,4 +42,16 @@
     aria-label="Select page"
   >
   </mat-paginator>
+  <div class="history-header">
+    <div class="history-actions">
+      <button color="primary" mat-flat-button (click)="this.openImportDialog()">
+        Import
+        <mat-icon color="white">upload_outline</mat-icon>
+      </button>
+      <button color="primary" mat-flat-button (click)="this.downloadAttempts()">
+        Export
+        <mat-icon color="white">download</mat-icon>
+      </button>
+    </div>
+  </div> 
 </div>

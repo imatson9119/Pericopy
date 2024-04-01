@@ -30,6 +30,9 @@ export class VerseSelectorComponent {
   @Input()
   disabled: boolean = false;
 
+  @Input()
+  off: boolean = false;
+
   constructor(private dialog: MatDialog) { }
 
   openSelectionMenu() {

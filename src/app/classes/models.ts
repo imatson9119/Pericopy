@@ -1,3 +1,5 @@
+import { BiblePassage } from "./BiblePassage";
+
 export interface IResult {
   id: string;
   diff: BibleDiff;
@@ -119,6 +121,20 @@ export interface Reference {
   book: string;
   chapter: number;
   verse: number;
+}
+
+export interface GoalBank {
+  version: number;
+  goals: Map<string, Goal>;
+}
+
+export interface Goal {
+  id: string;
+  t: number;
+  title: string;
+  i: number;
+  j: number;
+  attempts: Set<string>;
 }
 
 export enum AnchorType {

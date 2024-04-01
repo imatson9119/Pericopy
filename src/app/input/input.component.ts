@@ -6,7 +6,7 @@ import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FailedLockComponent } from './failed-lock/failed-lock.component';
 import { BiblePassage } from '../classes/BiblePassage';
-import { getAttemptText, sanitizeText } from '../utils/utils';
+import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
 import { BibleDiff, DiffType } from '../classes/models';
 import { v4 as uuidv4 } from 'uuid';
 import { VerseSelectorComponent } from '../verse-selector/verse-selector.component';
@@ -186,7 +186,7 @@ export class InputComponent implements AfterViewChecked {
     }
     let score = totalCorrect / totalWords;
     let id = this.editingId ? this.editingId : uuidv4();
-
+    
     this._storageService.storeAttempt({
       "id": id,
       "diff": diff,
@@ -194,6 +194,13 @@ export class InputComponent implements AfterViewChecked {
       "score": score
     });
 
+    for (let goal of this._storageService.getGoals().values()) {
+      if (intersection(goal.i, goal.j, diff.i, diff.j)) {
+        goal.attempts.add(id);
+      }
+    }
+    this._storageService.storeGoals();
+    
     return id;
   }
 

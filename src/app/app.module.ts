@@ -40,6 +40,9 @@ import { FileDropDirective } from './utils/file-drop.directive';
 import { VerseSelectorComponent } from './verse-selector/verse-selector.component';
 import { VerseSelectorPopupComponent } from './verse-selector/verse-selector-popup/verse-selector-popup.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HomeComponent } from './home/home.component';
+import { NewGoalComponent } from './home/new-goal/new-goal.component';
+import { DeleteGoalDialogComponent } from './home/delete-goal-dialog/delete-goal-dialog.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +63,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     FileDropDirective,
     VerseSelectorComponent,
     VerseSelectorPopupComponent,
+    HomeComponent,
+    NewGoalComponent,
+    DeleteGoalDialogComponent,
   ],
   imports: [
     BrowserModule,

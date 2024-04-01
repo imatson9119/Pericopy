@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { DiffType, Heatmap, Verse } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
-import { numberToColorHsl } from 'src/app/utils/utils';
+import { intersection, numberToColorHsl } from 'src/app/utils/utils';
 
 @Component({
   selector: 'app-bible-display',
@@ -12,6 +12,7 @@ import { numberToColorHsl } from 'src/app/utils/utils';
 })
 export class BibleDisplayComponent {
   diffTypes = DiffType;
+  intersection = intersection;
   
   @Input() passage: BiblePassage = {} as BiblePassage;
   @Input() heatmap: Heatmap | null = null;
@@ -21,15 +22,11 @@ export class BibleDisplayComponent {
   }
 
   getBooks() {
-    return this._bibleService.bible.v.filter(book => this.intersection(
+    return this._bibleService.bible.v.filter(book => intersection(
       book.m.i, book.m.i + book.m.l, this.passage.i, this.passage.j
     ));
   }
   
-  intersection(i1: number, i2: number, j1: number, j2: number): boolean {
-    return i1 <= (j2-1) && j1 <= (i2-1);
-  }
-
   getColor(i: number){
     if (!this.heatmap){
       return 'transparent';

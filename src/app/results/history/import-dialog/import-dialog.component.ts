@@ -23,7 +23,7 @@ export class ImportDialogComponent {
       this.fileUpload.getFiles().forEach(file => {
         file.text().then(text => {
           let data = JSON.parse(text, reviver);
-          this._storageService.joinBanks(data) 
+          this._storageService.importBank(data) 
         });
       });
     }
