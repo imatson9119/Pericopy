@@ -60,26 +60,14 @@ export class BiblePassage {
     this.commonality = this.b1 === this.b2 ? this.c1 === this.c2 ? this.v1 === this.v2 ? 3 : 2 : 1 : 0;
   }
   toString() {
-
     let startRef = [this.b1.m.b, this.c1.m.c.toString(), this.v1.m.v.toString()];
     let endRef = [this.b2.m.b, this.c2.m.c.toString(), this.v2.m.v.toString()];
-
-    // How much of the start reference should be included in the output
     let startRefVerbosity: number = Math.max(this.startGranularity, this.endGranularity);
-
-    // How much of the end reference should be included in the output. This is more complicated.
     let endRefVerbosity: number = Math.max(0,startRefVerbosity + 1 - this.commonality);
-    console.log("startRefVerbosity", startRefVerbosity);
-    console.log("endRefVerbosity", endRefVerbosity);
-
-
     let startRefText = "";
     let endRefText = "";
-
     startRefText = createReference(startRef, 0, startRefVerbosity);
     endRefText = endRefVerbosity === 0 ? "" : createReference(endRef, 3-endRefVerbosity-(2-startRefVerbosity), 2-(2-startRefVerbosity));
-
     return startRefText + (endRefText ? "-" + endRefText : "");
-    
   }
 }

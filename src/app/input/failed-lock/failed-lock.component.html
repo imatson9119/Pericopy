@@ -2,14 +2,16 @@
 <mat-dialog-content class="mat-typography dialog-content">
   <span class="message-text">Oops, it looks like we couldn't find the passage you were reciting. Specify
   below!</span>
-  <form class="verse-selector-container" #f="ngForm" (ngSubmit)="submit()">
+  <div class="verse-selector-container">
     <div class="start-container verse-selector">
+      <div class="verse-selector-header">Start Verse</div>
       <app-verse-selector #start></app-verse-selector>
     </div>
     <div class="end-container verse-selector">
+      <div class="verse-selector-header">End Verse</div>
       <app-verse-selector #end></app-verse-selector>
     </div>
-  </form>
+  </div>
   <div class="verse-preview">
     <div class="verse-preview-header">Verse Preview</div>
     <div class="verse-preview-content">

@@ -1,18 +1,41 @@
 <ng-container *ngIf="this.selectionStage===0">
-	<h2 mat-dialog-title>Select Book</h2>
+	<h2 mat-dialog-title>Select a Book</h2>
 	<mat-dialog-content class="mat-typography dialog-content">
-		<button *ngFor="let book of this.getBooks()" (click)="this.selectBook(book)">{{this.abbreviateBookName(book.m.b)}}</button>
+		<span class="section-header">Old Testament</span>
+		<div class="button-container">
+			<button *ngFor="let book of this.getBooks().slice(0, 39)" (click)="this.selectBook(book)">{{this.abbreviateBookName(book.m.b)}}</button>
+		</div>
+		<span class="section-header">New Testament</span>
+		<div class="button-container">
+			<button *ngFor="let book of this.getBooks().slice(39)" (click)="this.selectBook(book)">{{this.abbreviateBookName(book.m.b)}}</button>
+		</div>
 	</mat-dialog-content>
 </ng-container>
 <ng-container *ngIf="this.selectionStage===1">
-	<h2 mat-dialog-title>Select Chapter</h2>
+	<div mat-dialog-title class="header-container">
+		<button mat-icon-button (click)="this.goToBooks()">
+			<mat-icon>arrow_back</mat-icon>
+		</button>
+		<span>Select Chapter</span>
+	</div>
 	<mat-dialog-content class="mat-typography dialog-content">
-		<button *ngFor="let chapter of this.value['book'].v" (click)="this.selectChapter(chapter)">{{chapter.m.c}}</button>
+		<span class="section-header">{{this.value['book'].m.b}}</span>
+		<div class="button-container">
+			<button *ngFor="let chapter of this.value['book'].v" (click)="this.selectChapter(chapter)">{{chapter.m.c}}</button>
+		</div>
 	</mat-dialog-content>
 </ng-container>
 <ng-container *ngIf="this.selectionStage===2">
-	<h2 mat-dialog-title>Select Verse</h2>
+	<div mat-dialog-title class="header-container">
+		<button mat-icon-button (click)="this.goToChapters()">
+			<mat-icon>arrow_back</mat-icon>
+		</button>
+		<span>Select Verse</span>
+	</div>
 	<mat-dialog-content class="mat-typography dialog-content">
-		<button *ngFor="let verse of this.value['chapter'].v" (click)="this.selectVerse(verse)">{{verse.m.v}}</button>
+		<span class="section-header">{{this.value['book'].m.b}} {{this.value['chapter'].m.c}}</span>
+		<div class="button-container">
+			<button *ngFor="let verse of this.value['chapter'].v" (click)="this.selectVerse(verse)">{{verse.m.v}}</button>
+		</div>
 	</mat-dialog-content>
 </ng-container>

@@ -15,8 +15,20 @@
 	margin-top: 2rem;
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 	flex-wrap: wrap;
 	gap: 1rem;
+}
+
+.verse-selector {
+	display: flex;
+	flex-direction: column;
+}
+
+.verse-selector-header {
+	font-size: 0.8rem;
+	font-weight: 500;
+	color: #555555;
 }
 
 .dialog-content{

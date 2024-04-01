@@ -18,6 +18,17 @@ export class VerseSelectorPopupComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<VerseSelectorPopupComponent>, private dialog: MatDialog, private _bibleService: BibleService) { 
     this.selectionLevel = data.selectionLevel;
+    if(data.book){
+      this.value.book = data.book;
+      this.selectionStage++;
+    }
+    if(data.chapter){
+      this.value.chapter = data.chapter;
+      this.selectionStage++;
+    }
+    if(data.verse){
+      this.value.verse = data.verse;
+    }
   }
 
   getBooks() {
@@ -47,6 +58,19 @@ export class VerseSelectorPopupComponent {
 
   close() {
     this.dialogRef.close(this.value);
+  }
+
+  goToChapters() {
+    this.selectionStage = 1;
+    this.value.chapter = null;
+    this.value.verse = null;
+  }
+
+  goToBooks() {
+    this.selectionStage = 0;
+    this.value.verse = null;
+    this.value.chapter = null;
+    this.value.book = null;
   }
 
 }

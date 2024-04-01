@@ -22,7 +22,12 @@ export class VerseSelectorComponent {
 
   openSelectionMenu() {
     this.dialog.open(VerseSelectorPopupComponent, {
-      data: { selectionLevel: this.selectionLevel},
+      data: {
+        selectionLevel: this.selectionLevel,
+        book: this.book,
+        chapter: this.chapter,
+        verse: this.verse,
+      },
     }).afterClosed().subscribe((result: any) => {
       if (result) {
         this.book = result.book; 
