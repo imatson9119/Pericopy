@@ -8,9 +8,16 @@ import { StorageService } from './services/storage.service';
 })
 export class AppComponent {
   title = 'roman-road-webapp';
+  bibleVersion: string = 'esv'
+  supportedBibleVersions: string[] = ['esv'];
+
   constructor(private _storageService: StorageService) {}
   
   getAttempts() {
     return this._storageService.getAttempts();
+  }
+
+  setBibleVersion(version: string) {
+
   }
 }
