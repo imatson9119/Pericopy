@@ -86,7 +86,7 @@ export class InputComponent implements AfterViewChecked {
       this.router.navigateByUrl('/test');
       return;
     }
-    this.attempt = getAttemptText(result);
+    this.attempt = result.raw ? result.raw : getAttemptText(result);
     this.editingId = id;
   }
 
@@ -191,7 +191,8 @@ export class InputComponent implements AfterViewChecked {
       "id": id,
       "diff": diff,
       "timestamp": timestamp,
-      "score": score
+      "score": score,
+      "raw": this.attempt,
     });
 
     for (let goal of this._storageService.getGoals().values()) {

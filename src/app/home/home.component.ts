@@ -27,6 +27,8 @@ export class HomeComponent {
   }
   
   getStats() {
+    let memorizedVerses: Set<number> = new Set();
+
     for (let result of this.attempts.values()) {
       if (result.score < .85) {
         continue;
@@ -34,14 +36,15 @@ export class HomeComponent {
       for (let bookDiff of result.diff.v) {
         for (let chapterDiff of bookDiff.v) {
           for (let verseDiff of chapterDiff.v) {
+            memorizedVerses.add(verseDiff.m.i);
             for (let wordDiff of verseDiff.v) {
               this.totalWords+=wordDiff.v.length;
             }
-            this.totalVerses++;
           }
         }
       }
     }
+    this.totalVerses = memorizedVerses.size;
   }
 
   getGoalsAsArray() {

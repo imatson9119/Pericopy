@@ -5,6 +5,7 @@ export interface IResult {
   diff: BibleDiff;
   timestamp: number;
   score: number;
+  raw: string;
 }
 
 export interface ResultBank {
