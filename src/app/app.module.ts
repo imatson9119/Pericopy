@@ -43,6 +43,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HomeComponent } from './home/home.component';
 import { NewGoalComponent } from './home/new-goal/new-goal.component';
 import { DeleteGoalDialogComponent } from './home/delete-goal-dialog/delete-goal-dialog.component';
+import { MenuModule } from 'primeng/menu';
+
 
 @NgModule({
   declarations: [
