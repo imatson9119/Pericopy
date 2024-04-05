@@ -67,10 +67,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "roman-road-webapp:build:production"
+              "buildTarget": "roman-road-webapp:build:production"
             },
             "development": {
-              "browserTarget": "roman-road-webapp:build:development"
+              "buildTarget": "roman-road-webapp:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -78,7 +78,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "roman-road-webapp:build"
+            "buildTarget": "roman-road-webapp:build"
           }
         },
         "test": {
