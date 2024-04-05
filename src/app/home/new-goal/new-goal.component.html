@@ -4,11 +4,11 @@
   <div class="verse-selector-container">
     <div class="start-container verse-selector">
       <div class="verse-selector-header">Start Verse</div>
-      <app-verse-selector #start></app-verse-selector>
+      <app-verse-selector [(value)]="startRef" #start></app-verse-selector>
     </div>
     <div class="end-container verse-selector">
       <div class="verse-selector-header">End Verse</div>
-      <app-verse-selector #end></app-verse-selector>
+      <app-verse-selector [(value)]="endRef" #end></app-verse-selector>
     </div>
   </div>
   <div class="verse-preview">

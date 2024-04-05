@@ -15,6 +15,8 @@ export class FailedLockComponent {
   attemptLength = 0;
   dedupedAnchors: BiblePassage[] = [];
   abbreviateBookName = abbreviateBookName;
+  startRef: any = {};
+  endRef: any = {};
 
   @ViewChild('start') start: VerseSelectorComponent | undefined = undefined;
   @ViewChild('end') end: VerseSelectorComponent | undefined = undefined;
@@ -42,7 +44,7 @@ export class FailedLockComponent {
 
   submit() {
     if (this.start && this.end && this.start.finishedSelection && this.end.finishedSelection){
-      this._dialogRef.close([this.start.verse.m.i, this.end.verse.m.i + this.end.verse.m.l]);
+      this._dialogRef.close([this.startRef.verse.m.i, this.endRef.verse.m.i + this.endRef.verse.m.l]);
     }
   }
 
@@ -74,7 +76,7 @@ export class FailedLockComponent {
       this.end != undefined &&
       this.start.finishedSelection &&
       this.end.finishedSelection && 
-      this.start.verse.m.i <= this.end.verse.m.i
+      this.startRef.verse.m.i <= this.endRef.verse.m.i
     );
   }
 

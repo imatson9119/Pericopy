@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
@@ -18,12 +18,14 @@ declare const annyang: any;
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
 })
-export class InputComponent implements AfterViewChecked {
+export class InputComponent implements AfterViewChecked, AfterViewInit {
   attempt = '';
   annyang = annyang;
   recording = false;
   detectPassage = true;
   editingId = '';
+  startRef: any = {};
+  endRef: any = {};
   
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
@@ -37,12 +39,6 @@ export class InputComponent implements AfterViewChecked {
     private _dialog: MatDialog,
     private ngZone: NgZone
   ) {
-    let id = this.router.parseUrl(this.router.url).queryParams['id'];
-    if(id != undefined){
-      this.editResult(id);
-    } else {
-      this.router.navigateByUrl('/test');
-    }
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
       if(userSaid && userSaid.length > 0){
         ngZone.run(() => {
@@ -66,6 +62,15 @@ export class InputComponent implements AfterViewChecked {
     });
   }
 
+  ngAfterViewInit(): void {
+    let id = this.router.parseUrl(this.router.url).queryParams['id'];
+    if(id != undefined){
+      this.editResult(id);
+    } else {
+      this.router.navigateByUrl('/test');
+    }
+  }
+
   ngAfterViewChecked(): void {
     this.adjustInputHeight();
   }
@@ -74,8 +79,8 @@ export class InputComponent implements AfterViewChecked {
     return this.attempt.trim().length > 0 && (
       this.detectPassage ?  
         true : 
-        this.startReference.finishedSelection && 
-        this.endReference.finishedSelection &&
+        this.startReference && this.startReference.valid && 
+        this.endReference && this.endReference.valid &&
         this.startReference.verse.m.i <= this.endReference.verse.m.i
       );
   }
@@ -87,6 +92,11 @@ export class InputComponent implements AfterViewChecked {
       return;
     }
     this.attempt = result.raw ? result.raw : getAttemptText(result);
+    this.detectPassage = false;
+    let start = this._bibleService.bible.get(result.diff.i);
+    let end = this._bibleService.bible.get(result.diff.j - 1);
+    this.startRef = {'verse': start.verse, 'chapter': start.chapter, 'book': start.book};
+    this.endRef = {'verse': end.verse, 'chapter': end.chapter, 'book': end.book};
     this.editingId = id;
   }
 
@@ -207,9 +217,5 @@ export class InputComponent implements AfterViewChecked {
 
   togglePassageSelection() {
     this.detectPassage = !this.detectPassage;
-    if(this.detectPassage){
-      this.startReference.reset();
-      this.endReference.reset();
-    }
   }
 }

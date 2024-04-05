@@ -4,14 +4,14 @@
     <div class="verse-selector-container">
       <div class="start-container verse-selector">
         <div class="verse-selector-header">Start Verse</div>
-        <app-verse-selector [off]="this.detectPassage" (select)="this.detectPassage=false" #start></app-verse-selector>
+        <app-verse-selector [off]="this.detectPassage" [(value)]="startRef" (select)="this.detectPassage=false" #start></app-verse-selector>
       </div>
       <div class="end-container verse-selector">
         <div class="verse-selector-header">End Verse</div>
-        <app-verse-selector [off]="this.detectPassage" #end></app-verse-selector>
+        <app-verse-selector [off]="this.detectPassage" [(value)]="endRef" (select)="this.detectPassage=false" #end></app-verse-selector>
       </div>
     </div>
-    <button mat-flat-button (select)="this.detectPassage=false" [ngClass]="{on:this.detectPassage,off:!this.detectPassage}" color="primary" [color]="" (click)="this.togglePassageSelection()">
+    <button mat-flat-button [ngClass]="{on:this.detectPassage,off:!this.detectPassage}" color="primary" [color]="" (click)="this.togglePassageSelection()">
       Detect Passage
       <mat-icon *ngIf="this.detectPassage">check</mat-icon>
       <mat-icon *ngIf="!this.detectPassage">close</mat-icon>
