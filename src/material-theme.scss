@@ -15,8 +15,8 @@ $headline5: mat.define-typography-level(24px, inherit, 400, 'Roboto', 0.0000em);
 $headline6: mat.define-typography-level(20px, inherit, 500, 'Roboto', 0.0075em); // H2
 $subtitle1: mat.define-typography-level(16px, inherit, 400, 'Roboto', 0.0094em); // H3
 $subtitle2: mat.define-typography-level(15px, inherit, 500, 'Roboto', 0.0067em); // H4
-$body1: mat.define-typography-level(14px, inherit, 500, 'Roboto', 0.0179em); // Base body text
-$body2: mat.define-typography-level(14px, inherit, 400, 'Roboto', 0.0179em);
+$body1: mat.define-typography-level(1rem, inherit, 500, 'Roboto', 0.0179em); // Base body text
+$body2: mat.define-typography-level(1rem, inherit, 400, 'Roboto', 0.0179em);
 $caption: mat.define-typography-level(14px, inherit, 500, 'Roboto', 0.0893em);
 $button: mat.define-typography-level(12px, inherit, 400, 'Roboto', 0.0333em);
 $input: mat.define-typography-level(inherit, 1.125, 400, 'Roboto', 1.5px);
