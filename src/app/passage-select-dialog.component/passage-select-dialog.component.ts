@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { BibleService } from '../../services/bible.service';
+import { BibleService } from '../services/bible.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { BiblePassage } from '../../classes/BiblePassage';
+import { BiblePassage } from '../classes/BiblePassage';
 import { abbreviateBookName } from 'src/app/utils/utils';
 import { VerseSelectorComponent } from 'src/app/verse-selector/verse-selector.component';
 import { Bible } from 'src/app/classes/Bible';
@@ -9,39 +9,43 @@ import { Subscription } from 'rxjs';
 import { BiblePointer } from 'src/app/classes/models';
 
 @Component({
-  selector: 'app-failed-lock',
-  templateUrl: './failed-lock.component.html',
-  styleUrls: ['./failed-lock.component.scss'],
+  selector: 'app-passage-select-dialog',
+  templateUrl: './passage-select-dialog.component.html',
+  styleUrls: ['./passage-select-dialog.component.scss'],
 })
-export class FailedLockComponent implements OnDestroy {
+export class PassageSelectDialogComponent implements OnDestroy {
   nWordsToPreview = 40;
-  attemptLength = 0;
-  dedupedAnchors: BiblePassage[] = [];
+  providedOptions: BiblePassage[] = [];
   abbreviateBookName = abbreviateBookName;
   startRef: BiblePointer | undefined = undefined;
   endRef: BiblePointer | undefined = undefined;
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
+  title = 'Select a passage';
+  subtitle = 'Please select a passage from the Bible.';
 
   @ViewChild('start') start: VerseSelectorComponent | undefined = undefined;
   @ViewChild('end') end: VerseSelectorComponent | undefined = undefined;
 
   constructor(
     private _bibleService: BibleService,
-    private _dialogRef: MatDialogRef<FailedLockComponent>,
+    private _dialogRef: MatDialogRef<PassageSelectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.attemptLength = this.data.attempt.split(/\s+/).length;
-    this.dedupedAnchors = this.dedupeAnchors(this.data.anchors);
-    this.subscriptions.push(this._bibleService.curBible.subscribe(
-      (bible) => {
+    if (data) {
+      if (data.title) this.title = data.title;
+      if (data.subtitle) this.subtitle = data.subtitle;
+      if (this.data.options) this.providedOptions = this.dedupeAnchors(this.data.options);
+    }
+    this.subscriptions.push(
+      this._bibleService.curBible.subscribe((bible) => {
         this.bible = bible;
-      }
-    ));
+      })
+    );
   }
 
   ngOnDestroy(): void {
-      this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   dedupeAnchors(anchors: [BiblePassage, number][]): BiblePassage[] {
@@ -57,12 +61,15 @@ export class FailedLockComponent implements OnDestroy {
   }
 
   submit() {
-    if (this.startRef && this.endRef && this.isValid()){
-      this._dialogRef.close([this.startRef.verse.m.i, this.endRef.verse.m.i + this.endRef.verse.m.l]);
+    if (this.startRef && this.endRef && this.isValid()) {
+      this._dialogRef.close([
+        this.startRef.verse.m.i,
+        this.endRef.verse.m.i + this.endRef.verse.m.l,
+      ]);
     }
   }
 
-  getPreview(): string{
+  getPreview(): string {
     if (this.isValid() && this.bible) {
       // @ts-ignore
       let startIndex: number = this.start.verse.m.i;
@@ -81,12 +88,13 @@ export class FailedLockComponent implements OnDestroy {
       }
       return this.bible.getText(startIndex, endIndex);
     }
-    return "";
+    return '';
   }
 
   isValid(): boolean {
     return (
-      this.startRef !== undefined && this.endRef !== undefined &&
+      this.startRef !== undefined &&
+      this.endRef !== undefined &&
       this.startRef.verse.m.i <= this.endRef.verse.m.i
     );
   }
@@ -96,13 +104,13 @@ export class FailedLockComponent implements OnDestroy {
       book: passage.b1,
       chapter: passage.c1,
       verse: passage.v1,
-      index: 0
+      index: 0,
     };
     this.endRef = {
       book: passage.b2,
       chapter: passage.c2,
       verse: passage.v2,
-      index: 0
+      index: 0,
     };
   }
 }

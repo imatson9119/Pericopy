@@ -1,7 +1,6 @@
-<h2 mat-dialog-title>Select Passage</h2>
+<h2 mat-dialog-title>{{title}}</h2>
 <mat-dialog-content class="mat-typography dialog-content">
-  <span class="message-text">Oops, it looks like we couldn't find the passage you were reciting. Specify
-  below!</span>
+  <span class="message-text">{{subtitle}}</span>
   <div class="verse-selector-container">
     <div class="start-container verse-selector">
       <div class="verse-selector-header">Start Verse</div>
@@ -20,7 +19,7 @@
   </div>
   <div class="button-container">
     <button
-      *ngFor="let passage of dedupedAnchors"
+      *ngFor="let passage of providedOptions"
       (click)="selectPassage(passage)"
       mat-raised-button
     >

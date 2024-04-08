@@ -2,13 +2,13 @@ import { Component, OnDestroy } from '@angular/core';
 import { Goal, IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
-import { NewGoalComponent } from './new-goal/new-goal.component';
 import { BibleService } from '../services/bible.service';
 import { intersection } from '../utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
+import { PassageSelectDialogComponent } from '../passage-select-dialog.component/passage-select-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -109,8 +109,23 @@ export class HomeComponent implements OnDestroy {
     return Math.round(totalCovered / (goal.j - goal.i)*100);
   }
 
-  addGoal() { 
-    this.dialog.open(NewGoalComponent).afterClosed().subscribe((range: [number,number] | undefined) => {
+  addGoal() {
+    if (!this.bible) {
+      return;
+    }
+    let last5Attempts  = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
+    let passages = [last5Attempts.map((a) => {
+      return this.bible?.getPassage(a.diff.i, a.diff.j)
+    })]
+
+    this.dialog.open(PassageSelectDialogComponent, {
+      data: {
+        title: 'Create a New Goal',
+        subtitle:
+          "Select a passage to track your progress and gain insights on your proficiency!",
+        options: passages,
+      },
+    }).afterClosed().subscribe((range: [number,number] | undefined) => {
       if (range && this.bible) {
         this._storageService.storeGoal({
           id: uuidv4(),

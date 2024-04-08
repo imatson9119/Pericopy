@@ -18,7 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { FailedLockComponent } from './input/failed-lock/failed-lock.component';
+import { PassageSelectDialogComponent } from './passage-select-dialog.component/passage-select-dialog.component';
 import { HistoryComponent } from './results/history/history.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -29,7 +29,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { DeleteAttemptDialogComponent } from './results/single-attempt/delete-attempt-dialog/delete-attempt-dialog.component';
 import { DiffDisplayComponent } from './results/diff-display/diff-display.component';
 import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
-import { PassageSelectorComponent } from './input/passage-selector/passage-selector.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRippleModule } from '@angular/material/core';
 import { InfoComponent } from './info/info.component';
@@ -41,7 +40,6 @@ import { VerseSelectorComponent } from './verse-selector/verse-selector.componen
 import { VerseSelectorPopupComponent } from './verse-selector/verse-selector-popup/verse-selector-popup.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HomeComponent } from './home/home.component';
-import { NewGoalComponent } from './home/new-goal/new-goal.component';
 import { DeleteGoalDialogComponent } from './home/delete-goal-dialog/delete-goal-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -53,12 +51,11 @@ import { HttpClientModule } from '@angular/common/http';
     NavbarComponent,
     SingleAttemptComponent,
     HeatmapComponent,
-    FailedLockComponent,
+    PassageSelectDialogComponent,
     HistoryComponent,
     DeleteAttemptDialogComponent,
     DiffDisplayComponent,
     BibleDisplayComponent,
-    PassageSelectorComponent,
     InfoComponent,
     ImportDialogComponent,
     FileUploadComponent,
@@ -66,7 +63,6 @@ import { HttpClientModule } from '@angular/common/http';
     VerseSelectorComponent,
     VerseSelectorPopupComponent,
     HomeComponent,
-    NewGoalComponent,
     DeleteGoalDialogComponent,
   ],
   imports: [

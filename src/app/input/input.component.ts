@@ -1,10 +1,18 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FailedLockComponent } from './failed-lock/failed-lock.component';
+import { PassageSelectDialogComponent } from '../passage-select-dialog.component/passage-select-dialog.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
 import { BibleDiff, BiblePointer, DiffType } from '../classes/models';
@@ -19,7 +27,9 @@ declare const annyang: any;
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
 })
-export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestroy {
+export class InputComponent
+  implements AfterViewChecked, AfterViewInit, OnDestroy
+{
   attempt = '';
   annyang = annyang;
   recording = false;
@@ -29,8 +39,7 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
   endRef: BiblePointer | undefined = undefined;
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
-  
-  
+
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
 
@@ -41,15 +50,18 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
     private _dialog: MatDialog,
     private ngZone: NgZone
   ) {
-    this.subscriptions.push(this._bibleService.curBible.subscribe(
-      (bible) => {
+    this.subscriptions.push(
+      this._bibleService.curBible.subscribe((bible) => {
         this.bible = bible;
-      }
-    ));
+      })
+    );
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
-      if(userSaid && userSaid.length > 0){
+      if (userSaid && userSaid.length > 0) {
         ngZone.run(() => {
-          if (this.attempt.length > 0 && this.attempt[this.attempt.length - 1] !== " "){
+          if (
+            this.attempt.length > 0 &&
+            this.attempt[this.attempt.length - 1] !== ' '
+          ) {
             this.attempt += ' ';
           }
           this.attempt += userSaid[0].trim();
@@ -71,7 +83,7 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
 
   ngAfterViewInit(): void {
     let id = this.router.parseUrl(this.router.url).queryParams['id'];
-    if(id != undefined){
+    if (id != undefined) {
       this.editResult(id);
     } else {
       this.router.navigateByUrl('/test');
@@ -87,12 +99,14 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
   }
 
   valid() {
-    return this.attempt.trim().length > 0 && (
-      this.detectPassage ?  
-        true : 
-        this.startRef && this.endRef &&
-        this.startRef.verse.m.i <= this.endRef.verse.m.i
-      );
+    return (
+      this.attempt.trim().length > 0 &&
+      (this.detectPassage
+        ? true
+        : this.startRef &&
+          this.endRef &&
+          this.startRef.verse.m.i <= this.endRef.verse.m.i)
+    );
   }
 
   editResult(id: string) {
@@ -128,21 +142,28 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
       return;
     }
     this.annyang.abort();
-    if(this.detectPassage){
+    if (this.detectPassage) {
       let anchors = this.bible.anchorText(this.attempt);
       if (!this.canAutoLock(anchors, this.attempt)) {
-        this._dialog.open(FailedLockComponent, {
-          data: { anchors: anchors, attempt: this.attempt },
-        }).afterClosed().subscribe((result: [number, number]) => {
-          if (result && this.bible) {
-            this.getAndStoreDiff(this.bible.getPassage(result[0], result[1]));
-          }
-        });
+        this._dialog
+          .open(PassageSelectDialogComponent, {
+            data: {
+              title: 'Select a Passage',
+              subtitle:
+                "Oops, it looks like we couldn't find the passage you were reciting. Specify below!",
+              options: anchors,
+            },
+          })
+          .afterClosed()
+          .subscribe((result: [number, number]) => {
+            if (result && this.bible) {
+              this.getAndStoreDiff(this.bible.getPassage(result[0], result[1]));
+            }
+          });
       } else {
         this.getAndStoreDiff(anchors[0][0]);
       }
-    }
-    else {
+    } else {
       if (!this.startRef || !this.endRef) {
         return;
       }
@@ -153,19 +174,15 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
   }
 
   getAndStoreDiff(passage: BiblePassage) {
-    if(!this.bible){
+    if (!this.bible) {
       return;
     }
-    let diff = this.bible.getBibleDiff(
-      this.attempt,
-      passage.i,
-      passage.j
-    );
+    let diff = this.bible.getBibleDiff(this.attempt, passage.i, passage.j);
     if (!diff) {
       throw new Error('Error getting diff');
     }
     let id = this.processDiff(diff);
-    this.router.navigate(['/results'], { queryParams: { id: id } }); 
+    this.router.navigate(['/results'], { queryParams: { id: id } });
   }
 
   canAutoLock(anchorList: [BiblePassage, number][], attempt: string) {
@@ -179,10 +196,11 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
     );
   }
 
-  adjustInputHeight(){
-    if(this.input && this.inputParent){
+  adjustInputHeight() {
+    if (this.input && this.inputParent) {
       let prevParentMinHeight = this.inputParent.nativeElement.style.minHeight;
-      this.inputParent.nativeElement.style.minHeight = this.inputParent.nativeElement.offsetHeight + 'px';
+      this.inputParent.nativeElement.style.minHeight =
+        this.inputParent.nativeElement.offsetHeight + 'px';
       this.input.nativeElement.classList.add('measure-element');
       let height = this.input.nativeElement.scrollHeight;
       this.input.nativeElement.style.height = height + 'px';
@@ -211,13 +229,13 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
     let totalCorrect = 0;
     let totalWords = 0;
     let timestamp = Date.now();
-    for(let book of diff.v){
-      for(let chapter of book.v){
-        for(let verse of chapter.v){
-          for(let change of verse.v){
-            if (change.t === DiffType.Unchanged){
+    for (let book of diff.v) {
+      for (let chapter of book.v) {
+        for (let verse of chapter.v) {
+          for (let change of verse.v) {
+            if (change.t === DiffType.Unchanged) {
               totalCorrect += change.v.length;
-            } 
+            }
             totalWords += change.v.length;
           }
         }
@@ -225,13 +243,13 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
     }
     let score = totalCorrect / totalWords;
     let id = this.editingId ? this.editingId : uuidv4();
-    
+
     this._storageService.storeAttempt({
-      "id": id,
-      "diff": diff,
-      "timestamp": timestamp,
-      "score": score,
-      "raw": this.attempt,
+      id: id,
+      diff: diff,
+      timestamp: timestamp,
+      score: score,
+      raw: this.attempt,
     });
 
     for (let goal of this._storageService.getGoals().values()) {
@@ -240,7 +258,7 @@ export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestro
       }
     }
     this._storageService.storeGoals();
-    
+
     return id;
   }
 
