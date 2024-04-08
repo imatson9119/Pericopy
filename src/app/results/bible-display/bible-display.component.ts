@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Bible } from 'src/app/classes/Bible';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { DiffType, Heatmap, Verse } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
@@ -15,14 +17,17 @@ export class BibleDisplayComponent {
   intersection = intersection;
   
   @Input() passage: BiblePassage = {} as BiblePassage;
+  @Input() bible: Bible | undefined = undefined;
   @Input() heatmap: Heatmap | null = null;
 
-  constructor(private _bibleService: BibleService) {
-    
-  }
+  constructor() {}
+
 
   getBooks() {
-    return this._bibleService.bible.v.filter(book => intersection(
+    if (this.bible === undefined) {
+      return []; 
+    }
+    return this.bible.v.filter(book => intersection(
       book.m.i, book.m.i + book.m.l, this.passage.i, this.passage.j
     ));
   }

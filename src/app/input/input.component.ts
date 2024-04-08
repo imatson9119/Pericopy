@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
@@ -7,9 +7,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { FailedLockComponent } from './failed-lock/failed-lock.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
-import { BibleDiff, DiffType } from '../classes/models';
+import { BibleDiff, BiblePointer, DiffType } from '../classes/models';
 import { v4 as uuidv4 } from 'uuid';
-import { VerseSelectorComponent } from '../verse-selector/verse-selector.component';
+import { Bible } from '../classes/Bible';
+import { Subscription } from 'rxjs';
 
 declare const annyang: any;
 
@@ -18,19 +19,20 @@ declare const annyang: any;
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
 })
-export class InputComponent implements AfterViewChecked, AfterViewInit {
+export class InputComponent implements AfterViewChecked, AfterViewInit, OnDestroy {
   attempt = '';
   annyang = annyang;
   recording = false;
   detectPassage = true;
   editingId = '';
-  startRef: any = {};
-  endRef: any = {};
+  startRef: BiblePointer | undefined = undefined;
+  endRef: BiblePointer | undefined = undefined;
+  bible: Bible | undefined = undefined;
+  subscriptions: Subscription[] = [];
+  
   
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
-  @ViewChild('start') startReference: VerseSelectorComponent | any = null;
-  @ViewChild('end') endReference: VerseSelectorComponent | any = null;
 
   constructor(
     private _storageService: StorageService,
@@ -39,6 +41,11 @@ export class InputComponent implements AfterViewChecked, AfterViewInit {
     private _dialog: MatDialog,
     private ngZone: NgZone
   ) {
+    this.subscriptions.push(this._bibleService.curBible.subscribe(
+      (bible) => {
+        this.bible = bible;
+      }
+    ));
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
       if(userSaid && userSaid.length > 0){
         ngZone.run(() => {
@@ -75,17 +82,23 @@ export class InputComponent implements AfterViewChecked, AfterViewInit {
     this.adjustInputHeight();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
   valid() {
     return this.attempt.trim().length > 0 && (
       this.detectPassage ?  
         true : 
-        this.startReference && this.startReference.valid && 
-        this.endReference && this.endReference.valid &&
-        this.startReference.verse.m.i <= this.endReference.verse.m.i
+        this.startRef && this.endRef &&
+        this.startRef.verse.m.i <= this.endRef.verse.m.i
       );
   }
 
   editResult(id: string) {
+    if (!this.bible) {
+      return;
+    }
     let result = this._storageService.getAttempt(id);
     if (result === undefined) {
       this.router.navigateByUrl('/test');
@@ -93,26 +106,36 @@ export class InputComponent implements AfterViewChecked, AfterViewInit {
     }
     this.attempt = result.raw ? result.raw : getAttemptText(result);
     this.detectPassage = false;
-    let start = this._bibleService.bible.get(result.diff.i);
-    let end = this._bibleService.bible.get(result.diff.j - 1);
-    this.startRef = {'verse': start.verse, 'chapter': start.chapter, 'book': start.book};
-    this.endRef = {'verse': end.verse, 'chapter': end.chapter, 'book': end.book};
+    let start = this.bible.get(result.diff.i);
+    let end = this.bible.get(result.diff.j - 1);
+    this.startRef = {
+      book: start.book,
+      chapter: start.chapter,
+      verse: start.verse,
+      index: 0,
+    };
+    this.endRef = {
+      book: end.book,
+      chapter: end.chapter,
+      verse: end.verse,
+      index: 0,
+    };
     this.editingId = id;
   }
 
   submit() {
-    if (!this.valid()) {
+    if (!this.valid() || !this.bible) {
       return;
     }
     this.annyang.abort();
     if(this.detectPassage){
-      let anchors = this._bibleService.bible.anchorText(this.attempt);
+      let anchors = this.bible.anchorText(this.attempt);
       if (!this.canAutoLock(anchors, this.attempt)) {
         this._dialog.open(FailedLockComponent, {
           data: { anchors: anchors, attempt: this.attempt },
         }).afterClosed().subscribe((result: [number, number]) => {
-          if (result) {
-            this.getAndStoreDiff(this._bibleService.bible.getPassage(result[0], result[1]));
+          if (result && this.bible) {
+            this.getAndStoreDiff(this.bible.getPassage(result[0], result[1]));
           }
         });
       } else {
@@ -120,14 +143,20 @@ export class InputComponent implements AfterViewChecked, AfterViewInit {
       }
     }
     else {
-      let start = this.startReference.verse.m.i;
-      let end = this.endReference.verse.m.i + this.endReference.verse.m.l;
-      this.getAndStoreDiff(this._bibleService.bible.getPassage(start, end));
+      if (!this.startRef || !this.endRef) {
+        return;
+      }
+      let start = this.startRef.verse.m.i;
+      let end = this.endRef.verse.m.i + this.endRef.verse.m.l;
+      this.getAndStoreDiff(this.bible.getPassage(start, end));
     }
   }
 
   getAndStoreDiff(passage: BiblePassage) {
-    let diff = this._bibleService.getBibleDiff(
+    if(!this.bible){
+      return;
+    }
+    let diff = this.bible.getBibleDiff(
       this.attempt,
       passage.i,
       passage.j

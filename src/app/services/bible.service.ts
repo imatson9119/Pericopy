@@ -1,156 +1,102 @@
 import { Injectable } from '@angular/core';
-import bibleFile from 'src/assets/bible-esv-min.json';
-import wordMapFile from 'src/assets/word_map.json';
 import {
   IBible,
-  BibleDiff,
-  BookDiff,
-  ChapterDiff,
-  DiffType,
-  VerseDiff,
-  WordChange,
   WordMap,
   WordMapFile,
 } from '../classes/models';
-import { diffWords } from 'diff';
-import { cleanWhitespace, getWordChange, sanitizeText } from 'src/app/utils/utils';
 import { Bible } from '../classes/Bible';
+import { BehaviorSubject, Observable, map, of, shareReplay, zip } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BibleService {
-  bible: Bible;
-  wordMap: WordMap = {};
+  bibleUrl = 'https://imatson9119.github.io/bible-parser';
+  private bibles: { [key: string]: Bible | undefined | Observable<Bible>} = {
+    esv: undefined,
+    kjv: undefined,
+    nasb: undefined,
+    net: undefined,
+    nirv: undefined,
+    niv: undefined,
+    nkjv: undefined,
+    nlt: undefined,
+    nrsv: undefined,
+  };
+  curVersion = '';
+  private curBibleSubject: BehaviorSubject<Bible | undefined> = new BehaviorSubject<Bible | undefined>(undefined);
+  _curBible = this.curBibleSubject.asObservable();
 
-  constructor() {
-    for (let word in wordMapFile) {
-      this.wordMap[word] = new Set((wordMapFile as WordMapFile)[word]);
-    }
-    this.bible = new Bible(bibleFile as IBible, this.wordMap);
+  constructor(private http: HttpClient) {
   }
 
-
-  getPassageTitle(start_loc: number, end_loc: number): string {
-    return this.bible.getPassage(start_loc, end_loc).toString();
+  get curBible(): Observable<Bible | undefined>{
+    return this._curBible;
   }
 
-  getBibleDiff(
-    attempt: string,
-    start_loc: number,
-    end_loc: number
-  ): BibleDiff | undefined {
-    if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
-      return undefined;
+  getSupportedVersions(): string[] {
+    return Object.keys(this.bibles);
+  }
+
+  setVersion(version: string): Observable<boolean> {
+    if (version === this.curVersion) {
+      return of(true);
     }
-    let scripture = this.bible.getText(start_loc, end_loc);
-    if (!scripture) {
-      console.log('Error getting text');
-      return undefined;
-    }
-    let diff: WordChange[] = getWordChange(
-      diffWords(sanitizeText(scripture), sanitizeText(attempt), {
-        ignoreCase: true,
-        ignoreWhitespace: true,
-      })
-    );
-    let scripture_arr = cleanWhitespace(scripture).split(' ');
-    let attempt_arr = cleanWhitespace(attempt).split(' ');
-    let scripture_index = 0;
-    let attempt_index = 0;
-    let diff_index = 0;
-    let change_index = 0;
-    let cur_loc = start_loc;
-    let done = false;
-    let bibleDiff: BibleDiff = {
-      m: this.bible.m,
-      p: this.getPassageTitle(start_loc, end_loc) || '',
-      i: start_loc,
-      j: end_loc,
-      v: [],
-    };
-    
-    console.log("scripture:\n", scripture);
-    console.log("attempt:\n", attempt)
-    console.log("sanitized scripture:\n", sanitizeText(scripture));
-    console.log("sanitized attempt:\n", sanitizeText(attempt));
-    console.log("scripture_arr:\n", scripture_arr);
-    console.log("attempt_arr:\n", attempt_arr)
-    console.log("diff:\n", diff)
-    console.log("bible diff\n", bibleDiff);
-    for (let book of this.bible.v) {
-      if (cur_loc < book.m.i + book.m.l && !done) {
-        let bookDiff: BookDiff = {
-          m: book.m,
-          v: [],
-        };
-        for (let chapter of book.v) {
-          if (cur_loc < chapter.m.i + chapter.m.l && !done) {
-            let chapterDiff: ChapterDiff = {
-              m: chapter.m,
-              v: [],
-            };
-            for (let verse of chapter.v) {
-              if (cur_loc < verse.m.i + verse.m.l && !done) {
-                let verseDiff: VerseDiff = {
-                  m: verse.m,
-                  v: [],
-                };
-                while (
-                  cur_loc < verse.m.i + verse.m.l &&
-                  diff_index < diff.length &&
-                  change_index < diff[diff_index].v.length
-                ) {
-                  let diffType = diff[diff_index].t;
-                  if (
-                    verseDiff.v.length == 0 ||
-                    diffType != verseDiff.v[verseDiff.v.length - 1].t
-                  ) {
-                    verseDiff.v.push({
-                      t: diffType,
-                      v: [],
-                      i: cur_loc,
-                    });
-                  }
-                  if (diffType == DiffType.Added) {
-                    verseDiff.v[verseDiff.v.length - 1].v.push(
-                      attempt_arr[attempt_index]
-                    );
-                    attempt_index += 1;
-                  } else if (diffType == DiffType.Removed) {
-                    verseDiff.v[verseDiff.v.length - 1].v.push(
-                      scripture_arr[scripture_index]
-                    );
-                    scripture_index += 1;
-                    cur_loc += 1;
-                  } else {
-                    verseDiff.v[verseDiff.v.length - 1].v.push(
-                      scripture_arr[scripture_index]
-                    );
-                    attempt_index += 1;
-                    scripture_index += 1;
-                    cur_loc += 1;
-                  }
-                  change_index += 1;
-                  if (change_index == diff[diff_index].v.length) {
-                    change_index = 0;
-                    diff_index += 1;
-                  }
-                  if (diff_index == diff.length) {
-                    done = true;
-                    break;
-                  }
-                }
-                chapterDiff.v.push(verseDiff);
-              }
-            }
-            bookDiff.v.push(chapterDiff);
-          }
+    let requestedBible = this.bibles[version];
+    if (requestedBible === undefined) {
+      let loadObservable = this.getBible(version);
+      loadObservable.subscribe((bible) => {
+        if (bible === undefined) {
+          return;
         }
-        bibleDiff.v.push(bookDiff);
-      }
+        this.curVersion = version;
+        this.curBibleSubject.next(bible);
+      });
+      return loadObservable.pipe(map((bible) => {
+        return bible !== undefined;
+      }));
+    } else if (requestedBible instanceof Bible){
+      this.curVersion = version;
+      this.curBibleSubject.next(requestedBible);
+      return of(true);
+    } else {
+      requestedBible.subscribe((bible) => {
+        if (bible === undefined) {
+          return;
+        }
+        this.curVersion = version;
+        this.curBibleSubject.next(bible);
+      });
+      return requestedBible.pipe(map((bible) => {
+        return bible !== undefined;
+      })); 
     }
-    console.log("bibleDiff:\n", bibleDiff);
-    return bibleDiff;
+  }
+
+  loadBible(version: string): Observable<Bible> {
+    let bible = this.http.get<any>(`${this.bibleUrl}/bibles/${version}.json`);
+    let wordMap = this.http.get<any>(`${this.bibleUrl}/word_maps/${version}.json`);
+    let observable = zip(bible, wordMap).pipe(
+      map(([bible, wordMap]) => {
+        let wordMapFile = wordMap as WordMapFile;
+        let wordMapObj: WordMap = {};
+        for (let word in wordMapFile) {
+          wordMapObj[word] = new Set(wordMapFile[word]);
+        }
+        let bibleObj = new Bible(bible as IBible, wordMapObj);
+        this.bibles[version] = bibleObj;
+        this.curBibleSubject.next(bibleObj);
+        return bibleObj;
+      }),
+      shareReplay(1)
+    );
+    this.bibles[version] = observable;
+    return observable;
+  }
+
+  getBible(version: string): Observable<Bible> {
+    let bible = this.bibles[version];
+    return bible instanceof Bible ? of(bible) : bible instanceof Observable ? bible : this.loadBible(version);
   }
 }

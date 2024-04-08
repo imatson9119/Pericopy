@@ -40,7 +40,7 @@
             <span class="button-text">{{this.bibleVersion.toUpperCase()}}</span>
           </button>
           <mat-menu #bibleVersionMenu="matMenu">
-            <button mat-menu-item *ngFor="let version of this.supportedBibleVersions" (click)="this.setBibleVersion(version)">
+            <button mat-menu-item *ngFor="let version of this.supportedVersions" (click)="this.setBibleVersion(version)">
               {{version.toUpperCase()}}
             </button>
           </mat-menu>

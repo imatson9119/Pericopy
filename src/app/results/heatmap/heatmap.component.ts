@@ -1,10 +1,12 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { Book, Chapter, DiffType, Heatmap } from 'src/app/classes/models';
+import { Component, OnDestroy } from '@angular/core';
+import { BiblePointer, Book, DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
 import { IResult } from 'src/app/classes/models';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
-import { VerseSelectorComponent } from 'src/app/verse-selector/verse-selector.component';
+import { Bible } from 'src/app/classes/Bible';
+import { Subscription } from 'rxjs';
+import { intersection } from 'src/app/utils/utils';
 
 enum FilterValues {
   PAST_DAY = 'Past Day',
@@ -19,53 +21,54 @@ enum FilterValues {
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
-export class HeatmapComponent implements AfterViewInit{
-  book: Book = {} as Book;
-  chapter: Chapter = {} as Chapter;
+export class HeatmapComponent implements OnDestroy {
   filterValues = FilterValues;
   filterValue = FilterValues.ALL_TIME;
   heatmap: Heatmap = new Map();
   passage: BiblePassage = {} as BiblePassage;
-
-  @ViewChild('selector') reference: VerseSelectorComponent | any = null;
+  bible: Bible | undefined = undefined;
+  subscriptions: Subscription[] = [];
+  reference: BiblePointer | undefined = undefined;
 
   constructor(
     private _bibleService: BibleService,
     private _storageService: StorageService
   ) {
-    
+    this.subscriptions.push(
+      this._bibleService.curBible.subscribe((bible) => {
+        this.bible = bible;
+        this.setSelectorToLastAttempt();
+      })
+    );
   }
 
-  ngAfterViewInit(): void {
-    let lastAttempt = this._storageService.getLastAttempt();
-    if (lastAttempt !== undefined) {
-      let start = this._bibleService.bible.get(lastAttempt.diff.i);
-      this.reference.setValue(start.book, start.chapter);
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  setSelectorToLastAttempt() {
+    if (!this.bible) {
+      return;
+    }
+    let lastAttempt = this._storageService.getLastAttempt(this.bible.m.t);
+    if (lastAttempt) {
+      let attemptStart = this.bible.get(lastAttempt.diff.i);
+      this.reference = {
+        book: attemptStart.book,
+        chapter: attemptStart.chapter,
+        verse: attemptStart.verse,
+        index: 0,
+      };
     }
   }
 
-  updateReference() {
-    this.book = this.reference.book;
-    this.chapter = this.reference.chapter;
-    this.updateHeatmap();
-  }
-
   getBooks(): Book[] {
-    return this._bibleService.bible.v;
+    if (this.bible === undefined) {
+      return [];
+    }
+    return this.bible.v;
   }
 
-  resetChapter() {
-    this.chapter = {} as Chapter;
-  }
-
-  isValidPassage(): boolean {
-    return (
-      this.book.m !== undefined &&
-      this.chapter.m !== undefined &&
-      this.chapter.m.i >= this.book.m.i &&
-      this.chapter.m.i + this.chapter.m.l <= this.book.m.i + this.book.m.l
-    );
-  }
 
   getFilterTimestamp(): number {
     let now = new Date().getTime();
@@ -84,47 +87,47 @@ export class HeatmapComponent implements AfterViewInit{
   }
 
   updateHeatmap() {
-    if (!this.isValidPassage()) {
+    if (!this.reference || !this.bible) {
       return;
     }
     this.passage = new BiblePassage(
-      this.chapter.m.i,
-      this.chapter.m.i + this.chapter.m.l,
-      this.book,
-      this.chapter,
-      this.chapter.v[0],
-      this.book,
-      this.chapter,
-      this.chapter.v[this.chapter.v.length - 1]
+      this.reference.chapter.m.i,
+      this.reference.chapter.m.i + this.reference.chapter.m.l,
+      this.reference.book,
+      this.reference.chapter,
+      this.reference.chapter.v[0],
+      this.reference.book,
+      this.reference.chapter,
+      this.reference.chapter.v[this.reference.chapter.v.length - 1]
     );
-    let chapterStart = this.chapter.m.i;
-    let chapterEnd = this.chapter.m.i + this.chapter.m.l;
+    let chapterStart = this.reference.chapter.m.i;
+    let chapterEnd = this.reference.chapter.m.i + this.reference.chapter.m.l;
     let filterTimestamp = this.getFilterTimestamp();
-    let results: IResult[] = [...this._storageService.getAttempts().values()].filter((a) => {
+    let results: IResult[] = [
+      ...this._storageService.getAttempts().values(),
+    ].filter((a) => {
       return (
         a.timestamp > filterTimestamp &&
-        ((a.diff.i >= chapterStart && a.diff.i <= chapterEnd) ||
-          (a.diff.j >= chapterStart && a.diff.j <= chapterEnd) ||
-          (a.diff.i < chapterStart && a.diff.j > chapterEnd))
+        a.diff.m.t === this.bible?.m.t &&
+        intersection(a.diff.i, a.diff.j, chapterStart, chapterEnd)
       );
     });
     this.heatmap = new Map();
     for (let result of results) {
       this.updateHeatmapFromResult(result);
     }
-    console.log('Initialized heatmap');
-    console.log(this.heatmap);
   }
 
-
-
   updateHeatmapFromResult(result: IResult) {
+    if (!this.reference) {
+      return;
+    }
     for (let bookDiff of result.diff.v) {
-      if (this.book.m.b !== bookDiff.m.b) {
+      if (this.reference.book.m.b !== bookDiff.m.b) {
         continue;
       }
       for (let chapterDiff of bookDiff.v) {
-        if (this.chapter.m.c !== chapterDiff.m.c) {
+        if (this.reference.chapter.m.c !== chapterDiff.m.c) {
           continue;
         }
         for (let verseDiff of chapterDiff.v) {

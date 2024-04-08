@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Goal, IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,25 +7,40 @@ import { BibleService } from '../services/bible.service';
 import { intersection } from '../utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
+import { Bible } from '../classes/Bible';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy {
   attempts: Map<string,IResult> = new Map();
   totalWords: number = 0;
   totalVerses: number = 0;
   goals: Map<string, Goal> = new Map();
+  bible: Bible | undefined = undefined;
+  subscriptions: Subscription[] = [];
 
   constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService) {
-    this.attempts = this._storageService.getAttempts();
     this.goals = this._storageService.getGoals();
-    console.log(this.goals);
-    this.getStats();
+    this.attempts = this._storageService.getAttempts();
+    
+    this.subscriptions.push(this._bibleService.curBible.subscribe(
+      (bible) => {
+        this.bible = bible;
+        if(this.bible) {
+          this.getStats();
+        }
+      }
+    ));
   }
   
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   getStats() {
     let memorizedVerses: Set<number> = new Set();
 
@@ -94,15 +109,15 @@ export class HomeComponent {
     return Math.round(totalCovered / (goal.j - goal.i)*100);
   }
 
-  addGoal() {
+  addGoal() { 
     this.dialog.open(NewGoalComponent).afterClosed().subscribe((range: [number,number] | undefined) => {
-      if (range) {
+      if (range && this.bible) {
         this._storageService.storeGoal({
           id: uuidv4(),
           i: range[0],
           j: range[1],
           t: Date.now(),
-          title: this._bibleService.getPassageTitle(range[0], range[1]),
+          title: this.bible.getPassage(range[0], range[1]).toString(),
           attempts: new Set(this.getIntersectingAttempts(range[0], range[1]))
         });
       }

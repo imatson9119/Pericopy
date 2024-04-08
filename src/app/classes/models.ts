@@ -1,4 +1,4 @@
-import { BiblePassage } from "./BiblePassage";
+import { Bible } from "./Bible";
 
 export interface IResult {
   id: string;
@@ -58,6 +58,7 @@ export interface BookMetadata {
   l: number; // Length (words)
   nc: number; // Number of chapters
   nv: number; // Number of verses
+  bn: number; // Book number
 }
 
 export interface BookDiff {
@@ -85,6 +86,13 @@ export interface ChapterDiff {
 export interface Verse {
   m: VerseMetadata;
   v: string[];
+}
+
+export interface BiblePointer {
+  book: Book;
+  chapter: Chapter;
+  verse: Verse;
+  index: number;
 }
 
 export interface VerseMetadata {

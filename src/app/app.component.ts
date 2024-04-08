@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { StorageService } from './services/storage.service';
+import { BibleService } from './services/bible.service';
 
 @Component({
   selector: 'app-root',
@@ -8,16 +9,23 @@ import { StorageService } from './services/storage.service';
 })
 export class AppComponent {
   title = 'roman-road-webapp';
-  bibleVersion: string = 'esv'
-  supportedBibleVersions: string[] = ['esv'];
+  bibleVersion: string = localStorage.getItem('bibleVersion') || 'esv';
+  supportedVersions = this._bibleService.getSupportedVersions();
 
-  constructor(private _storageService: StorageService) {}
+  constructor(private _storageService: StorageService, private _bibleService: BibleService) {
+    this.setBibleVersion(this.bibleVersion);
+  }
   
   getAttempts() {
     return this._storageService.getAttempts();
   }
 
   setBibleVersion(version: string) {
-
+    this.bibleVersion = version;
+    this._bibleService.setVersion(version).subscribe(
+      (bible) => {
+        localStorage.setItem('bibleVersion', version);
+      }
+    );
   }
 }

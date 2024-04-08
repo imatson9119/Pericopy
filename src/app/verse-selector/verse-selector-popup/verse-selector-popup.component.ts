@@ -1,8 +1,10 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Input, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Book } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { abbreviateBookName } from '../../utils/utils';
+import { Bible } from 'src/app/classes/Bible';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-verse-selector-popup',
@@ -10,13 +12,15 @@ import { abbreviateBookName } from '../../utils/utils';
   styleUrls: ['./verse-selector-popup.component.scss']
 })
 export class VerseSelectorPopupComponent {
-
+  
   abbreviateBookName = abbreviateBookName;
   selectionStage: number = 0;
   selectionLevel: string = 'verse';
   value: any = {"book": null, "chapter": null, "verse": null};
+  subscriptions: Subscription[] = [];
+  bible: Bible | undefined = undefined;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<VerseSelectorPopupComponent>, private dialog: MatDialog, private _bibleService: BibleService) { 
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<VerseSelectorPopupComponent>, private dialog: MatDialog) { 
     this.selectionLevel = data.selectionLevel;
     if(data.book){
       this.value.book = data.book;
@@ -33,10 +37,15 @@ export class VerseSelectorPopupComponent {
     if(data.verse){
       this.value.verse = data.verse;
     }
+
+    this.bible = data.bible;
   }
 
   getBooks() {
-    return this._bibleService.bible.v;
+    if (this.bible === undefined) {
+      return [];
+    }
+    return this.bible.v;
   }
 
   selectBook(book: Book){

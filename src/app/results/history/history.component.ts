@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
 import { IResult } from 'src/app/classes/models';
@@ -8,24 +8,40 @@ import { getRelativeDate, replacer } from 'src/app/utils/utils';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
+import { Bible } from 'src/app/classes/Bible';
+import { BibleService } from 'src/app/services/bible.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements AfterViewInit {
+export class HistoryComponent implements AfterViewInit, OnDestroy {
 
   displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
-  dataSource = new MatTableDataSource<IResult>(this.getDataSource());
+  dataSource = new MatTableDataSource<IResult>([]);
   filterValue = ''
+  bible: Bible | undefined = undefined;
+  subscriptions: Subscription[] = [];
   
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
-  constructor(private _storageService: StorageService, private _router: Router, private dialog: MatDialog) {
+  constructor(private _storageService: StorageService, private _router: Router, private _bibleService: BibleService, private dialog: MatDialog) {
+    this.subscriptions.push(this._bibleService.curBible.subscribe(
+      (bible) => {
+        this.bible = bible;
+        this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    ));
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
 
   ngAfterViewInit() {
     this.dataSource.sortingDataAccessor = (item, property) => {
@@ -51,8 +67,8 @@ export class HistoryComponent implements AfterViewInit {
     this.dataSource.filter = this.filterValue.toLowerCase();
   }
 
-  getAttempts() {
-    return this._storageService.getAttempts();
+  getAttempts(translation: string = '') {
+    return this._storageService.getAttempts(translation);
   }
 
   loadResult(id: string) {
@@ -64,7 +80,10 @@ export class HistoryComponent implements AfterViewInit {
   }
 
   getDataSource(){
-    return [...this.getAttempts().values()]
+    if (this.bible === undefined) {
+      return [];
+    }
+    return [...this.getAttempts(this.bible.m.t).values()]
   }
 
   formatScore(score: number): string {

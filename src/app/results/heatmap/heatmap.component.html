@@ -2,10 +2,12 @@
   <h2>Recitation Heatmap</h2>
   <div class="toolbar">
     <div class="left">
-      <app-verse-selector 
+      <app-verse-selector
+        [bible]="this.bible"
         selectionLevel="chapter"
         #selector
-        (select)="this.updateReference()"
+        [(value)]="this.reference"
+        (select)="this.updateHeatmap()"
       ></app-verse-selector>
     </div>
     <div class="right">
@@ -27,7 +29,8 @@
     </div>
   </div>
   <app-bible-display
-    *ngIf="this.isValidPassage(); else noPassage"
+    *ngIf="this.reference && this.bible; else noPassage"
+    [bible]="this.bible"
     [passage]="this.passage"
     [heatmap]="this.heatmap.size > 0 ? this.heatmap : null"
   >

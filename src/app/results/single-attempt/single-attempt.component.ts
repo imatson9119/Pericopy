@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
@@ -7,6 +7,9 @@ import { numberToColorHsl } from 'src/app/utils/utils';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAttemptDialogComponent } from './delete-attempt-dialog/delete-attempt-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Bible } from 'src/app/classes/Bible';
+import { Subscription } from 'rxjs';
+import { BibleService } from 'src/app/services/bible.service';
 
 
 @Component({
@@ -14,7 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './single-attempt.component.html',
   styleUrls: ['./single-attempt.component.scss']
 })
-export class SingleAttemptComponent implements OnInit {
+export class SingleAttemptComponent implements OnInit, OnDestroy {
   result_bank: ResultBank = {"version":1,"results": new Map()};
   diffTypes = DiffType;
   displayTypes = DisplayType;
@@ -24,10 +27,12 @@ export class SingleAttemptComponent implements OnInit {
   totalWords: number = 0;
   totalMistakes: number = 0;
   longestSequence: number = 0;
+  bible: Bible | undefined = undefined;
+  subscriptions: Subscription[] = [];
   
 
 
-  constructor(private _router: Router, private _storageService: StorageService, private dialog: MatDialog, private snackbar: MatSnackBar) {}
+  constructor(private _router: Router, private _storageService: StorageService, private _bibleService: BibleService, private dialog: MatDialog, private snackbar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.result_bank = this._storageService.getBank();
@@ -37,6 +42,19 @@ export class SingleAttemptComponent implements OnInit {
     } else {
       this._router.navigateByUrl('/history');
     }
+
+    this.subscriptions.push(this._bibleService.curBible.subscribe(
+      (bible) => {
+        this.bible = bible;
+        if (this.bible?.m.t !== this.currentResult?.diff.m.t){
+          this._router.navigateByUrl('/history');
+        }
+      }
+    ));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   setResult(id: string): void {

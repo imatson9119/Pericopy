@@ -1,8 +1,9 @@
-import { BibleMetadata, BibleWord, Book, IBible, WordMap, AnchorType } from './models';
+import { BibleMetadata, BibleWord, Book, IBible, WordMap, AnchorType, DiffType, BibleDiff, BookDiff, ChapterDiff, VerseDiff, WordChange, BiblePointer } from './models';
 import { BiblePassage } from './BiblePassage';
 import { BibleIterator } from './BibleIterator';
 import { BibleReference } from './BibleReference';
-import { addToMapValue } from '../utils/utils';
+import { addToMapValue, cleanWhitespace, getWordChange, sanitizeText } from '../utils/utils';
+import { diffWords } from 'diff';
 
 export class Bible implements IBible {
   m: BibleMetadata;
@@ -18,6 +19,27 @@ export class Bible implements IBible {
     this.m = bible.m;
     this.v = bible.v;
     this.wordMap = wordMap;
+  }
+
+  getWithoutIndex(bookIndex: number, chapterIndex: number, verseIndex: number): BiblePointer {
+    if (bookIndex < 0 || bookIndex >= this.v.length) {
+      throw new Error(`Invalid book index ${bookIndex} passed to getWithoutIndex`);
+    }
+    let book = this.v[bookIndex];
+    if (chapterIndex < 0 || chapterIndex >= book.v.length) {
+      throw new Error(`Invalid chapter index ${chapterIndex} passed to getWithoutIndex`);
+    }
+    let chapter = book.v[chapterIndex];
+    if (verseIndex < 0 || verseIndex >= chapter.v.length) {
+      throw new Error(`Invalid verse index ${verseIndex} passed to getWithoutIndex`);
+    }
+    let verse = chapter.v[verseIndex];
+    return {
+      index: verse.m.i,
+      book: book,
+      chapter: chapter,
+      verse: verse,
+    };
   }
 
   get(index: number): BibleWord {
@@ -182,6 +204,117 @@ export class Bible implements IBible {
       }
     }
     return [...anchorProbabilities.entries()].sort((a, b) => b[1] - a[1]);
+  }
+
+  getBibleDiff(
+    attempt: string,
+    start_loc: number,
+    end_loc: number
+  ): BibleDiff | undefined {
+    if (start_loc < 0 || end_loc < 0 || start_loc > end_loc) {
+      return undefined;
+    }
+    let scripture = this.getText(start_loc, end_loc);
+    if (!scripture) {
+      console.log('Error getting text');
+      return undefined;
+    }
+    let diff: WordChange[] = getWordChange(
+      diffWords(sanitizeText(scripture), sanitizeText(attempt), {
+        ignoreCase: true,
+        ignoreWhitespace: true,
+      })
+    );
+    let scripture_arr = cleanWhitespace(scripture).split(' ');
+    let attempt_arr = cleanWhitespace(attempt).split(' ');
+    let scripture_index = 0;
+    let attempt_index = 0;
+    let diff_index = 0;
+    let change_index = 0;
+    let cur_loc = start_loc;
+    let done = false;
+    let bibleDiff: BibleDiff = {
+      m: this.m,
+      p: this.getPassage(start_loc, end_loc).toString() || '',
+      i: start_loc,
+      j: end_loc,
+      v: [],
+    };
+
+    for (let book of this.v) {
+      if (cur_loc < book.m.i + book.m.l && !done) {
+        let bookDiff: BookDiff = {
+          m: book.m,
+          v: [],
+        };
+        for (let chapter of book.v) {
+          if (cur_loc < chapter.m.i + chapter.m.l && !done) {
+            let chapterDiff: ChapterDiff = {
+              m: chapter.m,
+              v: [],
+            };
+            for (let verse of chapter.v) {
+              if (cur_loc < verse.m.i + verse.m.l && !done) {
+                let verseDiff: VerseDiff = {
+                  m: verse.m,
+                  v: [],
+                };
+                while (
+                  cur_loc < verse.m.i + verse.m.l &&
+                  diff_index < diff.length &&
+                  change_index < diff[diff_index].v.length
+                ) {
+                  let diffType = diff[diff_index].t;
+                  if (
+                    verseDiff.v.length == 0 ||
+                    diffType != verseDiff.v[verseDiff.v.length - 1].t
+                  ) {
+                    verseDiff.v.push({
+                      t: diffType,
+                      v: [],
+                      i: cur_loc,
+                    });
+                  }
+                  if (diffType == DiffType.Added) {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      attempt_arr[attempt_index]
+                    );
+                    attempt_index += 1;
+                  } else if (diffType == DiffType.Removed) {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      scripture_arr[scripture_index]
+                    );
+                    scripture_index += 1;
+                    cur_loc += 1;
+                  } else {
+                    verseDiff.v[verseDiff.v.length - 1].v.push(
+                      scripture_arr[scripture_index]
+                    );
+                    attempt_index += 1;
+                    scripture_index += 1;
+                    cur_loc += 1;
+                  }
+                  change_index += 1;
+                  if (change_index == diff[diff_index].v.length) {
+                    change_index = 0;
+                    diff_index += 1;
+                  }
+                  if (diff_index == diff.length) {
+                    done = true;
+                    break;
+                  }
+                }
+                chapterDiff.v.push(verseDiff);
+              }
+            }
+            bookDiff.v.push(chapterDiff);
+          }
+        }
+        bibleDiff.v.push(bookDiff);
+      }
+    }
+    console.log('bibleDiff:\n', bibleDiff);
+    return bibleDiff;
   }
 
 }

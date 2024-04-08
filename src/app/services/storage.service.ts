@@ -91,15 +91,21 @@ export class StorageService {
     localStorage.setItem(this.resultBankStorageKey, JSON.stringify(this.resultBank, replacer));
   }
 
-  getAttempts(){
-    return this.resultBank.results;
+  getAttempts(version: string = ''){
+    let attempts = new Map<string, IResult>();
+    for(let attempt of this.resultBank.results.values()){
+      if (version == '' || attempt.diff.m.t == version){
+        attempts.set(attempt.id, attempt);
+      }
+    }
+    return attempts;
   }
 
-  getLastAttempt(){
+  getLastAttempt(version: string = ''){
     let attempts = this.getAttempts();
     let lastAttempt = undefined;
     for(let attempt of attempts.values()){
-      if (lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp){
+      if ((lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp) && (version == '' || attempt.diff.m.t == version)){
         lastAttempt = attempt;
       }
     }
