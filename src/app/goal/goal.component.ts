@@ -146,11 +146,25 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
   }
 
   loadStats() {
+    if (!this.goal) {
+      return;
+    }
+
+
     let data = [0, 0, 0];
     for (let attempt of this.attempts.values()) {
       for(let bookDiff of attempt.diff.v){
+        if(!intersection(this.goal.i, this.goal.j, bookDiff.m.i, bookDiff.m.i + bookDiff.m.l)){
+          continue;
+        }
         for(let chapterDiff of bookDiff.v){
+          if(!intersection(this.goal.i, this.goal.j, chapterDiff.m.i, chapterDiff.m.i + chapterDiff.m.l)){
+            continue;
+          }
           for(let verseDiff of chapterDiff.v){
+            if (!intersection(this.goal.i, this.goal.j, verseDiff.m.i, verseDiff.m.i + verseDiff.m.l)){
+              continue;
+            }
             for (let diff of verseDiff.v){
               data[diff.t] += diff.v.length;
             }
