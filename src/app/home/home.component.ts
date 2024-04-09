@@ -3,12 +3,14 @@ import { Goal, IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BibleService } from '../services/bible.service';
-import { intersection } from '../utils/utils';
+import { getRelativeDate, intersection } from '../utils/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
+import { DeleteGoalDialogComponent } from '../goal/delete-goal-dialog/delete-goal-dialog.component';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { PassageSelectDialogComponent } from '../passage-select-dialog.component/passage-select-dialog.component';
+import { Router } from '@angular/router';
+import { BiblePassage } from '../classes/BiblePassage';
 
 @Component({
   selector: 'app-home',
@@ -23,14 +25,14 @@ export class HomeComponent implements OnDestroy {
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
 
-  constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService) {
-    this.goals = this._storageService.getGoals();
-    this.attempts = this._storageService.getAttempts();
+  constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router) {
     
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
         this.bible = bible;
         if(this.bible) {
+          this.attempts = this._storageService.getAttempts(this.bible.m.t);
+          this.goals = this._storageService.getGoals(this.bible.m.t);
           this.getStats();
         }
       }
@@ -42,6 +44,9 @@ export class HomeComponent implements OnDestroy {
   }
 
   getStats() {
+    if (!this.bible) {
+      return;
+    }
     let memorizedVerses: Set<number> = new Set();
 
     for (let result of this.attempts.values()) {
@@ -76,47 +81,18 @@ export class HomeComponent implements OnDestroy {
     return attempts;
   }
 
-  getGoalProgress(goal: Goal) {
-    let ranges: [number,number][] = [];
-    let updatedGoal = false;
-    for (let [index, resultId] of goal.attempts.entries()) {
-      let result = this.attempts.get(resultId);
-      if (!result) {
-        goal.attempts.delete(index);
-        continue;
-      }
-      if (result.score < .85 || !intersection(result.diff.i, result.diff.j, goal.i, goal.j)) {
-        continue;
-      }
-      ranges.push([Math.max(goal.i,result.diff.i), Math.min(goal.j,result.diff.j)]);
-    }
-    if (updatedGoal) {
-      this._storageService.storeGoals();
-    }
-    // Sort the ranges in ascending order of start bound
-    ranges.sort((a,b) => a[0] - b[0]);
-    let totalCovered = 0;
-    let covered = 0;
-    for (let range of ranges) {
-      if (range[0] <= covered) {
-        totalCovered += Math.max(0, range[1] - covered);
-        covered = Math.max(covered, range[1]);
-      } else {
-        totalCovered += range[1] - range[0];
-        covered = range[1];
-      }
-    }
-    return Math.round(totalCovered / (goal.j - goal.i)*100);
-  }
-
   addGoal() {
     if (!this.bible) {
       return;
     }
-    let last5Attempts  = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
-    let passages = [last5Attempts.map((a) => {
-      return this.bible?.getPassage(a.diff.i, a.diff.j)
-    })]
+    let last5Attempts = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
+    let passages: BiblePassage[] = [];
+    for (let attempt of last5Attempts) {
+      let passage = this.bible.getPassage(attempt.diff.i, attempt.diff.j);
+      if (passage) {
+        passages.push(passage);
+      }
+    }
 
     this.dialog.open(PassageSelectDialogComponent, {
       data: {
@@ -127,28 +103,53 @@ export class HomeComponent implements OnDestroy {
       },
     }).afterClosed().subscribe((range: [number,number] | undefined) => {
       if (range && this.bible) {
-        this._storageService.storeGoal({
-          id: uuidv4(),
+        let id = uuidv4();
+        let goal: Goal = {
+          id: id,
           i: range[0],
           j: range[1],
           t: Date.now(),
           title: this.bible.getPassage(range[0], range[1]).toString(),
+          translation: this.bible.m.t,
           attempts: new Set(this.getIntersectingAttempts(range[0], range[1]))
-        });
+        }
+        this._storageService.storeGoal(goal);
+        this.goals.set(id, goal);
       }
     });
   }
 
-  deleteGoal(id: string) {
-    this.dialog.open(DeleteGoalDialogComponent).afterClosed().subscribe(result => {
-      if (result) {
-        this._storageService.deleteGoal(id);
+  getGoalText(goal: Goal) {
+    let wordsToPreview = 20;
+    if (!this.bible) {
+      return '';
+    }
+    return goal.j - goal.i <= wordsToPreview ? 
+      this.bible.getText(goal.i, goal.j) : 
+      this.bible.getText(goal.i, goal.i + wordsToPreview/2) + ' ... ' + this.bible.getText(goal.j - wordsToPreview/2, goal.j);
+  }
+
+  loadGoal(goalId: string) {
+    this.router.navigate(['/goal'], { queryParams: { id: goalId } });
+  }
+
+  getLastAttemptText(goal: Goal) {
+    let lastAttempt = undefined;
+    for (let attemptId of goal.attempts) {
+      let attempt = this.attempts.get(attemptId);
+      if (attempt && (lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp)) {
+        lastAttempt = attempt;
       }
-    });
+    }
+    return lastAttempt ? `Attempted ${getRelativeDate(lastAttempt.timestamp)}` : 'No attempts yet';
   }
 
   trackByGoalId(index: number, goal: Goal) {
     return goal.id;
+  }
+
+  makeAttempt() {
+    this.router.navigateByUrl('/input');
   }
 
 }

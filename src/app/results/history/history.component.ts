@@ -19,12 +19,12 @@ import { Subscription } from 'rxjs';
 })
 export class HistoryComponent implements AfterViewInit, OnDestroy {
 
-  displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
-  dataSource = new MatTableDataSource<IResult>([]);
   filterValue = ''
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   
+  displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
+  dataSource = new MatTableDataSource<IResult>([]);
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
@@ -57,7 +57,6 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
       return data.diff.p.toLowerCase().includes(filter);
     }
     this.dataSource.sort = this.sort;
-    
   }
 
   applyFilter(event: Event) {

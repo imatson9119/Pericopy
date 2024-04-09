@@ -6,6 +6,7 @@ import { SingleAttemptComponent } from './results/single-attempt/single-attempt.
 import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { InfoComponent } from './info/info.component';
 import { HomeComponent } from './home/home.component';
+import { GoalComponent } from './goal/goal.component';
 
 const routes: Routes = [
   { path: 'test', component: InputComponent },
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'history', component: HistoryComponent },
   { path: 'heatmap', component: HeatmapComponent },
   { path: 'info', component: InfoComponent },
+  { path: 'goal', component: GoalComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '/test',}
 ];

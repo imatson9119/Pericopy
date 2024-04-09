@@ -47,7 +47,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
       (bible) => {
         this.bible = bible;
         if (this.bible?.m.t !== this.currentResult?.diff.m.t){
-          this._router
+          this._router.navigateByUrl('/history')
         }
       }
     ));

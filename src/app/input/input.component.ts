@@ -151,7 +151,7 @@ export class InputComponent
               title: 'Select a Passage',
               subtitle:
                 "Oops, it looks like we couldn't find the passage you were reciting. Specify below!",
-              options: anchors,
+              options: anchors.map((a) => a[0]),
             },
           })
           .afterClosed()

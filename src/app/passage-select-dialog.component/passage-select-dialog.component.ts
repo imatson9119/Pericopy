@@ -35,7 +35,7 @@ export class PassageSelectDialogComponent implements OnDestroy {
     if (data) {
       if (data.title) this.title = data.title;
       if (data.subtitle) this.subtitle = data.subtitle;
-      if (this.data.options) this.providedOptions = this.dedupeAnchors(this.data.options);
+      if (data.options) this.providedOptions = this.dedupeAnchors(data.options);
     }
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
@@ -48,13 +48,13 @@ export class PassageSelectDialogComponent implements OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  dedupeAnchors(anchors: [BiblePassage, number][]): BiblePassage[] {
+  dedupeAnchors(anchors: BiblePassage[]): BiblePassage[] {
     let deduped: BiblePassage[] = [];
     let seen: Set<string> = new Set();
     for (let anchor of anchors) {
-      if (!seen.has(anchor[0].toString())) {
-        deduped.push(anchor[0]);
-        seen.add(anchor[0].toString());
+      if (!seen.has(anchor.toString())) {
+        deduped.push(anchor);
+        seen.add(anchor.toString());
       }
     }
     return deduped;

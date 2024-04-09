@@ -1,0 +1,79 @@
+<div class="result-container" *ngIf="this.bible; else loading">
+  <div class="result-header">
+    <div>
+      <div class="result-title">
+        {{ goal?.title }}
+      </div>
+      <div class="result-subtitle">
+        {{ goal ? this.getLastAttemptText(goal) : "" }}
+      </div>
+    </div>
+    <div class="result-actions">
+      <button
+        mat-icon-button
+        (click)="this.deleteGoal()"
+        matTooltip="Delete this goal"
+      >
+        <mat-icon color="primary">delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="goal-body" *ngIf="this.attempts.size > 0; else noAttempts">
+    <div class="accuracy-pie">
+      <p-chart type="doughnut" [data]="diffTypeData" [options]="{}"></p-chart>
+    </div>
+    <div class="attempts">
+      <table class="history-table" mat-table matSort matSortActive="time" matSortDirection="desc" matSortDisableClear [dataSource]="dataSource">
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by time">Time</th>
+          <td mat-cell *matCellDef="let attempt">{{ this.getRelativeTime(attempt.timestamp) }}</td>
+        </ng-container>
+    
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by passage">Passage</th>
+          <td mat-cell *matCellDef="let attempt">{{ attempt.diff.p }}</td>
+        </ng-container>
+    
+        <ng-container matColumnDef="score">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by score">Accuracy</th>
+          <td class="score" mat-cell *matCellDef="let attempt">{{ formatScore(attempt.score) }}</td>
+        </ng-container>
+    
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>View</th>
+          <td mat-cell *matCellDef="let attempt;">
+            <div class="attempt-actions">
+              <button mat-icon-button (click)="loadResult(attempt.id)" matTooltip="View this attempt">
+                <mat-icon>north_east</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+    
+        <tr class='history-table-header-row' mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <mat-paginator
+        class="history-paginator"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page"
+      >
+      </mat-paginator>
+    </div>
+  </div>
+  <ng-template #noAttempts>
+    <div class="no-attempts">
+      <mat-icon> query_stats </mat-icon>
+      <span> You haven't made any attempts at this goal yet. </span>
+      <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+        Go for it!
+      </button>
+    </div>
+  </ng-template>
+</div>
+<ng-template #loading>
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

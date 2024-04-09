@@ -40,9 +40,11 @@ import { VerseSelectorComponent } from './verse-selector/verse-selector.componen
 import { VerseSelectorPopupComponent } from './verse-selector/verse-selector-popup/verse-selector-popup.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HomeComponent } from './home/home.component';
-import { DeleteGoalDialogComponent } from './home/delete-goal-dialog/delete-goal-dialog.component';
+import { DeleteGoalDialogComponent } from './goal/delete-goal-dialog/delete-goal-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { GoalComponent } from './goal/goal.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ChartModule } from 'primeng/chart';
 
 @NgModule({
   declarations: [
@@ -64,6 +66,7 @@ import { HttpClientModule } from '@angular/common/http';
     VerseSelectorPopupComponent,
     HomeComponent,
     DeleteGoalDialogComponent,
+    GoalComponent,
   ],
   imports: [
     BrowserModule,
@@ -87,7 +90,9 @@ import { HttpClientModule } from '@angular/common/http';
     MatRippleModule,
     MatProgressBarModule,
     MatSlideToggleModule,
-    HttpClientModule
+    HttpClientModule,
+    MatProgressSpinnerModule,
+    ChartModule,
   ],
   providers: [StorageService, BibleService],
   bootstrap: [AppComponent],

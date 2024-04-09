@@ -1,10 +1,18 @@
-<div class="main-container">
+<div class="main-container" *ngIf="this.bible else loading">
   <h2>Welcome to PeriCopy!</h2>
   <p>Welcome to PeriCopy. Our goal is to enable you to quickly and effectively memorize large passages of scripture. Here, you can track your progress, set goals, and improve your scripture recitation skills.</p>
   <div class="no-stats" *ngIf="this.attempts.size === 0; else stats">
-    <span>
-      It looks like haven't recited any scripture quite yet. Click the "Test" button in the menu above to get started!
-    </span>
+    <div class="no-attempts">
+      <mat-icon>
+        query_stats
+      </mat-icon>
+      <span>
+        Looks like you haven't made any attempts yet.
+      </span>
+      <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+        Go for it!
+      </button>
+    </div>
   </div>
   <ng-template #stats>
     <div class="stats">
@@ -19,25 +27,23 @@
       </button>
     </div>
     <div class="hr"></div>
-    <div *ngIf="this.goals.size !== 0" class="goals-container">
-      <div class="goal" *ngFor="let goal of this.goals | keyvalue">
+    <div *ngIf="this.goals.size !== 0 && this.bible" class="goals-container">
+      <button class="goal" *ngFor="let goal of this.goals | keyvalue" (click)='this.loadGoal(goal.key)'>
         <div class="goal-header">
-          <div class="goal-title-subtitle">
-            <div class="goal-title">{{ goal.value.title }}</div>
-            <div class="goal-subtitle">{{ goal.value.attempts.size }} attempt{{goal.value.attempts.size > 1 ? "s" : ""}}</div>
-          </div>
-          <button mat-icon-button (click)="this.deleteGoal(goal.value.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <div class="goal-title">{{ goal.value.title }}</div>
+        </div>
+        <div class="goal-text">
+          {{getGoalText(goal.value)}}
         </div>
         <div class="goal-footer">
-          <div class="score">{{ getGoalProgress(goal.value) }}%</div>
-          <mat-progress-bar
-            mode="determinate"
-            [value]="getGoalProgress(goal.value)"
-          ></mat-progress-bar>
+          {{ this.getLastAttemptText(goal.value)}}
         </div>
-      </div>
+      </button>
     </div>
   </div>
 </div>
+<ng-template #loading>
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

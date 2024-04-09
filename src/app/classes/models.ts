@@ -1,4 +1,4 @@
-import { Bible } from "./Bible";
+
 
 export interface IResult {
   id: string;
@@ -138,12 +138,13 @@ export interface GoalBank {
 }
 
 export interface Goal {
-  id: string;
-  t: number;
-  title: string;
-  i: number;
-  j: number;
-  attempts: Set<string>;
+  id: string; // Unique identifier
+  t: number; // Timestamp
+  title: string; // Title
+  translation: string; // Translation
+  i: number; // Start index
+  j: number; // End index
+  attempts: Set<string>; // Attempt IDs
 }
 
 export enum AnchorType {

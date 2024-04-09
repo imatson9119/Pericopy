@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="this.bible else loading">
   <h2>Recitation Heatmap</h2>
   <div class="toolbar">
     <div class="left">
@@ -41,3 +41,8 @@
     </div>
   </ng-template>
 </div>
+<ng-template #loading>
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

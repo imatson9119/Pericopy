@@ -7,3 +7,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background:
 h2 {
 	margin-top: 2rem;
 }
+button {border: none;
+    background: none;
+    padding: 0;}
+
+.page-loader {
+	display:flex;
+	justify-content: center;
+	align-items: flex-end;
+	height: 30vh;
+}

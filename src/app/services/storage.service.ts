@@ -34,8 +34,14 @@ export class StorageService {
     localStorage.setItem(this.goalBankStorageKey, JSON.stringify(this.goalBank, replacer));
   }
 
-  getGoals() {
-    return this.goalBank.goals;
+  getGoals(translation: string = '') {
+    let goals = new Map<string, Goal>();
+    for(let goal of this.goalBank.goals.values()){
+      if (translation == '' || goal.translation == translation){
+        goals.set(goal.id, goal);
+      }
+    }
+    return goals;
   }
 
   deleteGoal(id: string){
