@@ -27,12 +27,78 @@ h2 {
   justify-content: space-between;
   gap: 1rem;
 }
+.stat-grid {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+}
 
 .accuracy-pie {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  
+  canvas {
+    max-height: 20rem;
+    max-width: 20rem;
+  }
+}
+
+.timeline {
   margin-top: 2rem;
+}
+
+.percent-memorized {
+  font-size: 6rem;
+  font-weight: 800;
+  color: #607d8b;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 90%;
+  .percent {
+    font-weight: 400;
+    color: #a7babd;
+  }
+  .word-count {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #ababab;
+  }
+}
+
+.stat-card{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+  background: white;
+
+  .stat-card-header {
+    align-self: flex-start;
+    
+    .stat-card-title {
+      font-size: 1rem;
+      font-weight: 100;
+    } 
+  
+    .stat-card-subtitle {
+      font-size: .8rem;
+      font-weight: 100;
+      color: #797979;
+    }
+  }
+  .stat-card-body {
+    width: 100%;
+    flex-grow: 1;
+  }
 }
 
 .result-subtitle {
@@ -60,7 +126,6 @@ h2 {
   span {
     margin-bottom: 2rem;
   }
-
 }
 
 .attempts {

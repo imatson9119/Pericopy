@@ -21,7 +21,7 @@ export class HomeComponent implements OnDestroy {
   attempts: Map<string,IResult> = new Map();
   totalWords: number = 0;
   totalVerses: number = 0;
-  goals: Map<string, Goal> = new Map();
+  goals: Goal[] = [];
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
 
@@ -32,7 +32,7 @@ export class HomeComponent implements OnDestroy {
         this.bible = bible;
         if(this.bible) {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
-          this.goals = this._storageService.getGoals(this.bible.m.t);
+          this.goals = [...this._storageService.getGoals(this.bible.m.t).values()].sort((a,b) => b.t - a.t);
           this.getStats();
         }
       }
@@ -67,9 +67,6 @@ export class HomeComponent implements OnDestroy {
     this.totalVerses = memorizedVerses.size;
   }
 
-  getGoalsAsArray() {
-    return Array.from(this.goals.values());
-  }
 
   getIntersectingAttempts(i: number, j: number) {
     let attempts: string[] = [];
@@ -114,7 +111,7 @@ export class HomeComponent implements OnDestroy {
           attempts: new Set(this.getIntersectingAttempts(range[0], range[1]))
         }
         this._storageService.storeGoal(goal);
-        this.goals.set(id, goal);
+        this.goals.unshift(goal);
       }
     });
   }

@@ -12,13 +12,16 @@ import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dial
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { accuracyChartConfig } from './chart-configs/accuracy-chart-config';
+import { timelineConfig } from './chart-configs/timeline-chart-config';
+import 'chartjs-adapter-luxon';
 
 @Component({
   selector: 'app-goal',
   templateUrl: './goal.component.html',
   styleUrl: './goal.component.scss',
 })
-export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
+export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   goalId = '';
   attempts: Map<string, IResult> = new Map();
 
@@ -27,23 +30,75 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
   subscriptions: Subscription[] = [];
   displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
   dataSource = new MatTableDataSource<IResult>([]);
-  diffTypeData = {
+  diffTypeConfig = accuracyChartConfig
+  timelineConfig = timelineConfig;
+  accuracyChart: any;
+  diffTypeData: any = {
     labels: [
       'Added',
+      'Added (last result)',
       'Removed',
-      'Correct'
+      'Removed (last result)',
+      'Correct',
+      'Correct (last result)',
     ],
     datasets: [{
-      label: 'Total',
+      label: 'Words',
       data: [0, 0, 0],
       backgroundColor: [
-        'rgb(255, 99, 132)',
+        'rgb(255 80 80)',
         'rgb(100, 100, 100)',
-        'rgb(140 211 132)'
+        'rgb(140 211 132)',
+      ],
+      hoverOffset: 4
+    },
+    {
+      label: 'Words',
+      data: [1, 2, 3],
+      backgroundColor: [
+        'rgb(255 150 150)',
+        'rgb(200, 200, 200)',
+        'rgb(187 253 179)',
       ],
       hoverOffset: 4
     }]
   };
+  timelineData: any = {
+    datasets: [
+      {
+        xAxisId: 'x',
+        yAxisId: 'y',
+        label: 'Accuracy',
+        data: [],
+        // fill: false,
+        // cubicInterpolationMode: 'monotone',
+        tension: 0.2,
+        borderColor: function(context: any) {
+          const chart = context.chart;
+          const {ctx, chartArea} = chart;
+  
+          if (!chartArea) {
+            // This case happens on initial chart load
+            return;
+          }
+          return getGradient(ctx, chartArea);
+        },
+      },
+      {
+        xAxisId: 'x',
+        yAxisId: 'y2',
+        label: 'Completion',
+        data: [],
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+        borderColor: '#4dc9f6',
+      }  
+    ],
+  };
+  percentMemorized = 0;
+  totalWords = 0;
+  totalWordsMemorized = 0;
   
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
@@ -145,14 +200,65 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
     this._router.navigateByUrl('/input');
   }
 
+  getPercentageMemorized(): number {
+    if (!this.goal) {
+      return 0;
+    }
+
+    let ranges: [number,number][] = [];
+    for (let attempt of this.attempts.values()) {
+      if (attempt.score > .8) {
+        ranges.push([attempt.diff.i, attempt.diff.j]);
+      }
+    }
+    let ret = this.getPercentageCoverage(this.goal.i, this.goal.j, ranges);
+    this.totalWords = this.goal.j - this.goal.i;
+    this.totalWordsMemorized = Math.round(this.totalWords * ret);
+    return Math.round(ret * 100);
+  }
+
+  getPercentageCoverage(i: number, j: number, ranges: [number,number][]): number {
+    let newRanges= [];
+    for (let [x, y] of ranges) {
+      if (intersection(i, j, x, y)) {
+        newRanges.push([Math.max(i,x), Math.min(j,y)]);
+      }
+    }
+    newRanges.sort((a,b) => a[0] - b[0]);
+    let totalCovered = 0;
+    let covered = 0;
+    for (let range of newRanges) {
+      if (range[0] <= covered) {
+        totalCovered += Math.max(0, range[1] - covered);
+        covered = Math.max(covered, range[1]);
+      } else {
+        totalCovered += range[1] - range[0];
+        covered = range[1];
+      }
+    }
+    return totalCovered / (j - i);
+  }
+
   loadStats() {
     if (!this.goal) {
       return;
     }
+    this.timelineData.datasets[0].data = [];
+    this.timelineData.datasets[1].data = [];
 
-
-    let data = [0, 0, 0];
-    for (let attempt of this.attempts.values()) {
+    // Calculate the number of words added, removed, and correct
+    let numWords = [0, 0, 0];
+    let numWordsLast = [0, 0, 0];
+    let maxTime = 0;
+    let ranges: [number,number][] = [];
+    for (let attempt of [...this.attempts.values()].sort((a, b) => a.timestamp - b.timestamp)) {
+      if(attempt.score > .8){
+        ranges.push([attempt.diff.i, attempt.diff.j]);
+      }
+      if (attempt.timestamp > maxTime) {
+        maxTime = attempt.timestamp;
+        numWordsLast = [0, 0, 0];
+      } 
       for(let bookDiff of attempt.diff.v){
         if(!intersection(this.goal.i, this.goal.j, bookDiff.m.i, bookDiff.m.i + bookDiff.m.l)){
           continue;
@@ -166,13 +272,30 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
               continue;
             }
             for (let diff of verseDiff.v){
-              data[diff.t] += diff.v.length;
+              numWords[diff.t] += diff.v.length;
+              numWordsLast[diff.t] += diff.v.length;
             }
           }
         }
       }
+      this.timelineData.datasets[0].data.push({x: attempt.timestamp, y: Math.round(100*(numWords[2]/(numWords[0] + numWords[1] + numWords[2])))});
+
+      // TODO: Change from method call to in place calculation in the loop above to avoid O(n^2) time complexity
+      this.timelineData.datasets[1].data.push({x: attempt.timestamp, y: Math.round(100 * this.getPercentageCoverage(this.goal.i, this.goal.j, ranges))});
     }
-    this.diffTypeData.datasets[0].data = data;
+
+    // Update each array to be a percentage
+    let totalWords = numWords[0] + numWords[1] + numWords[2];
+    if (totalWords > 0) {
+      numWords = numWords.map((num) => Math.round(num / totalWords* 100));
+    }
+    let totalWordsLast = numWordsLast[0] + numWordsLast[1] + numWordsLast[2];
+    if (totalWordsLast > 0) {
+      numWordsLast = numWordsLast.map((num) => Math.round(num / totalWordsLast* 100));
+    }
+    this.diffTypeData.datasets[0].data = numWords;
+    this.diffTypeData.datasets[1].data = numWordsLast;
+    this.percentMemorized = this.getPercentageMemorized();
   }
 
   formatScore(score: number): string {
@@ -186,4 +309,23 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit{
   loadResult(id: string) {
     this._router.navigate(['/results'], { queryParams: { id: id } }); 
   }
+
 }
+function getGradient(ctx :any, chartArea: any) {
+  let width, height, gradient;
+  const chartWidth = chartArea.right - chartArea.left;
+  const chartHeight = chartArea.bottom - chartArea.top;
+  if (!gradient || width !== chartWidth || height !== chartHeight) {
+    // Create the gradient because this is either the first render
+    // or the size of the chart has changed
+    width = chartWidth;
+    height = chartHeight;
+    gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+    gradient.addColorStop(1, 'rgb(75, 192, 192)'); // green
+    gradient.addColorStop(0.75, 'rgb(255, 205, 86)'); // yellow
+    gradient.addColorStop(0.5, 'rgb(255, 99, 132)'); // red
+  }
+
+  return gradient;
+}
+

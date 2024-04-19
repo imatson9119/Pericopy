@@ -27,16 +27,16 @@
       </button>
     </div>
     <div class="hr"></div>
-    <div *ngIf="this.goals.size !== 0 && this.bible" class="goals-container">
-      <button class="goal" *ngFor="let goal of this.goals | keyvalue" (click)='this.loadGoal(goal.key)'>
+    <div *ngIf="this.goals.length !== 0 && this.bible" class="goals-container">
+      <button class="goal" *ngFor="let goal of this.goals" (click)='this.loadGoal(goal.id)'>
         <div class="goal-header">
-          <div class="goal-title">{{ goal.value.title }}</div>
+          <div class="goal-title">{{ goal.title }}</div>
         </div>
         <div class="goal-text">
-          {{getGoalText(goal.value)}}
+          {{getGoalText(goal)}}
         </div>
         <div class="goal-footer">
-          {{ this.getLastAttemptText(goal.value)}}
+          {{ this.getLastAttemptText(goal)}}
         </div>
       </button>
     </div>

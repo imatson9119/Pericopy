@@ -44,7 +44,7 @@ import { DeleteGoalDialogComponent } from './goal/delete-goal-dialog/delete-goal
 import { HttpClientModule } from '@angular/common/http';
 import { GoalComponent } from './goal/goal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ChartModule } from 'primeng/chart';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -92,9 +92,9 @@ import { ChartModule } from 'primeng/chart';
     MatSlideToggleModule,
     HttpClientModule,
     MatProgressSpinnerModule,
-    ChartModule,
+    BaseChartDirective
   ],
-  providers: [StorageService, BibleService],
+  providers: [StorageService, BibleService, provideCharts(withDefaultRegisterables())],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
