@@ -14,6 +14,7 @@ import { BiblePassage } from '../classes/BiblePassage';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-home',
@@ -33,7 +34,7 @@ export class HomeComponent implements OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
-  constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router) {
+  constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router, private _snackBar: MatSnackBar) {
     
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
@@ -143,6 +144,14 @@ export class HomeComponent implements OnDestroy {
       },
     }).afterClosed().subscribe((range: [number,number] | undefined) => {
       if (range && this.bible) {
+        for (let goal of this.goals) {
+          if (goal.i === range[0] && goal.j === range[1] && goal.translation === this.bible.m.t) {
+            this._snackBar.open('Goal already exists for this passage', 'Close', {
+              duration: 5000,
+            });
+            return;
+          }
+        }
         let id = uuidv4();
         let goal: Goal = {
           id: id,
@@ -156,7 +165,6 @@ export class HomeComponent implements OnDestroy {
         this._storageService.storeGoal(goal);
         this.goals.unshift(goal);
         this.dataSource = new MatTableDataSource<Goal>(this.goals);
-
       }
     });
   }
