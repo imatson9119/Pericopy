@@ -28,7 +28,7 @@ declare const annyang: any;
   styleUrls: ['./input.component.scss'],
 })
 export class InputComponent
-  implements AfterViewChecked, AfterViewInit, OnDestroy
+  implements AfterViewChecked, OnDestroy
 {
   attempt = '';
   annyang = annyang;
@@ -53,6 +53,13 @@ export class InputComponent
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
         this.bible = bible;
+
+        let id = this.router.parseUrl(this.router.url).queryParams['id'];
+        if (id != undefined) {
+          this.editResult(id);
+        } else {
+          this.router.navigateByUrl('/test');
+        }
       })
     );
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
@@ -79,15 +86,6 @@ export class InputComponent
         this.recording = true;
       });
     });
-  }
-
-  ngAfterViewInit(): void {
-    let id = this.router.parseUrl(this.router.url).queryParams['id'];
-    if (id != undefined) {
-      this.editResult(id);
-    } else {
-      this.router.navigateByUrl('/test');
-    }
   }
 
   ngAfterViewChecked(): void {

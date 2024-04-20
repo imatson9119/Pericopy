@@ -1,4 +1,4 @@
-<div class="input-container">
+<div class="input-container" *ngIf="this.bible; else loading">
   <h2>Scripture Memory</h2>
   <div class="toolbar">
     <div class="verse-selector-container">
@@ -69,3 +69,8 @@
     </button>
   </div>
 </div>
+<ng-template #loading>
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>
