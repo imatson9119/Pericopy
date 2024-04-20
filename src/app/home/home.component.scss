@@ -41,6 +41,20 @@ h2 {
   font-weight: 100;
   margin-top: 2rem;
 }
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .mat-mdc-fab.mat-primary {
+    --mdc-fab-container-color: #4a555b;
+    --mat-fab-foreground-color: white;
+    --mat-fab-state-layer-color: white;
+  }
+}
+
 .stats {
   display: flex;
   justify-content: center;

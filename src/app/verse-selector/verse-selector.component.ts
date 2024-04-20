@@ -19,6 +19,12 @@ export class VerseSelectorComponent implements OnChanges {
   @Input()
   value: BiblePointer | undefined = undefined;
 
+  @Input()
+  type: 'button' | 'fab' = 'button';
+
+  @Input()
+  icon: string = 'book_2';
+
   @Output()
   valueChange = new EventEmitter<BiblePointer>();
   

@@ -8,23 +8,30 @@
       <span class="subtitle">"Let the word of Christ dwell in you richly"</span>
     </div>
   </div>
-  <div class="no-stats" *ngIf="this.attempts.size === 0; else stats">
-    <div class="no-attempts">
-      <mat-icon> query_stats </mat-icon>
-      <span> Looks like you haven't made any attempts yet. </span>
-      <button mat-raised-button color="primary" (click)="this.makeAttempt()">
-        Go for it!
-      </button>
-    </div>
+  <div class="toolbar">
+    <button class="test" mat-fab extended color="primary" routerLink="/test">
+      <mat-icon>edit_note</mat-icon>
+      Test
+    </button>
+    <button class='heatmap' mat-fab extended color="primary" routerLink="/heatmap">
+      <mat-icon>local_fire_department</mat-icon>
+      Heatmap
+    </button>
+    <button class="info" mat-fab extended color="primary" routerLink="/info">
+      <mat-icon>info</mat-icon>
+      Info
+    </button>
+    <button class="history" mat-fab extended color="primary" routerLink="/history">
+      <mat-icon>history</mat-icon>
+      History
+    </button>
   </div>
-  <ng-template #stats>
-    <div class="stats">
-      <span
-        >You've memorized <span class="emphasis">{{ totalVerses }}</span> verses
-        so far - keep it up!</span
-      >
-    </div>
-  </ng-template>
+  <div class="stats" *ngIf="this.attempts.size !== 0">
+    <span
+      >You've memorized <span class="emphasis">{{ totalVerses }}</span> verses
+      so far - keep it up!</span
+    >
+  </div>
   <div class="goals">
     <div class="goals-header">
       <div>Your Goals</div>
