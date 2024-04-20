@@ -244,20 +244,21 @@ export class InputComponent
     let score = totalCorrect / totalWords;
     let id = this.editingId ? this.editingId : uuidv4();
 
+    let goalsApplied = new Set<string>();
+    for (let goal of this._storageService.getGoals().values()) {
+      if (intersection(goal.i, goal.j, diff.i, diff.j)) {
+        goal.attempts.add(id);
+      }
+    }
+
     this._storageService.storeAttempt({
       id: id,
       diff: diff,
       timestamp: timestamp,
       score: score,
       raw: this.attempt,
+      goals: goalsApplied,
     });
-
-    for (let goal of this._storageService.getGoals().values()) {
-      if (intersection(goal.i, goal.j, diff.i, diff.j)) {
-        goal.attempts.add(id);
-      }
-    }
-    this._storageService.storeGoals();
 
     return id;
   }

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
 import { DisplayType } from '../diff-display/diff-display.component';
@@ -32,7 +33,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(private _router: Router, private _storageService: StorageService, private _bibleService: BibleService, private dialog: MatDialog, private snackbar: MatSnackBar) {}
+  constructor(private _router: Router, private _storageService: StorageService, private _bibleService: BibleService, private dialog: MatDialog, private snackbar: MatSnackBar, private _location: Location) {}
 
   ngOnInit(): void {
     this.result_bank = this._storageService.getBank();
@@ -46,9 +47,6 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
         this.bible = bible;
-        if (this.bible?.m.t !== this.currentResult?.diff.m.t){
-          this._router.navigateByUrl('/history')
-        }
       }
     ));
   }
@@ -84,7 +82,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
       if(result){
         this._storageService.deleteAttempt(this.resultId);
         this.snackbar.open('Result deleted.', 'Dismiss', {duration: 2000});
-        this._router.navigateByUrl('/history');
+        this._location.back();
       }
     });
   }

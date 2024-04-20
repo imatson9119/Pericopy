@@ -45,6 +45,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { GoalComponent } from './goal/goal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { DonatePopupComponent } from './info/donate-popup/donate-popup.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2
     HomeComponent,
     DeleteGoalDialogComponent,
     GoalComponent,
+    DonatePopupComponent
   ],
   imports: [
     BrowserModule,

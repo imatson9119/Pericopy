@@ -6,6 +6,7 @@ export interface IResult {
   timestamp: number;
   score: number;
   raw: string;
+  goals: Set<string>;
 }
 
 export interface ResultBank {

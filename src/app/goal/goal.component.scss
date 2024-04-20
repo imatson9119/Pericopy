@@ -7,17 +7,12 @@ h2 {
   padding-top: 4rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  margin-bottom: 4rem;
 }
 
 .result-title {
   font-size: 2rem;
   font-weight: 100;
-}
-
-.result-actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-grow: 1;
 }
 
 .result-header {
@@ -33,6 +28,10 @@ h2 {
   justify-content: center;
   flex-wrap: wrap;
   gap: 2rem;
+  margin-top: 2rem;
+}
+
+.tabs {
   margin-top: 2rem;
 }
 
@@ -128,6 +127,15 @@ h2 {
   }
 }
 
+.row {
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #eee;
+  }
+}
+
 .attempts {
   margin-top: 2rem;
 }
@@ -151,6 +159,13 @@ h2 {
 .attempt-actions {
   display: flex;
   flex-wrap: nowrap;
+}
+
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap-reverse;
+  margin-top: 1rem;
 }
 
 // media rule

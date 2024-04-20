@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Goal, IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,9 @@ import { Subscription } from 'rxjs';
 import { PassageSelectDialogComponent } from '../passage-select-dialog.component/passage-select-dialog.component';
 import { Router } from '@angular/router';
 import { BiblePassage } from '../classes/BiblePassage';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +27,11 @@ export class HomeComponent implements OnDestroy {
   goals: Goal[] = [];
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
+  filterValue = '';
+  displayedColumns: string[] = ['title', 'time', 'nAttempts'];
+  dataSource = new MatTableDataSource<Goal>([]);
+  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
+  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
   constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router) {
     
@@ -33,7 +41,11 @@ export class HomeComponent implements OnDestroy {
         if(this.bible) {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
           this.goals = [...this._storageService.getGoals(this.bible.m.t).values()].sort((a,b) => b.t - a.t);
+          this.dataSource = new MatTableDataSource<Goal>(this.goals);
           this.getStats();
+          setTimeout(()=>{
+            this.initSorting();
+          }, 10);
         }
       }
     ));
@@ -41,6 +53,37 @@ export class HomeComponent implements OnDestroy {
   
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  ngAfterViewInit() {
+    this.initSorting();
+  }
+
+  initSorting() {
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch(property) {
+        case 'time': return Math.max(...Array.from(item.attempts.values()).map(a => this.attempts.get(a)?.timestamp || 0));
+        case 'title': return item.title;
+        case 'nAttempts': return item.attempts.size;
+        default: return '';
+      }
+    };
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = (data, filter) => {
+      return data.title.toLowerCase().includes(filter);
+    }
+    this.dataSource.sort = this.sort;
+  }
+
+  navigateToGoal(row: Goal) {
+    this.router.navigate(['/goal'], { queryParams: { id: row.id } });
+  }
+
+  applyFilter(event: Event) {
+    if(this.dataSource.paginator != null){
+      this.dataSource.paginator.firstPage();
+    }
+    this.dataSource.filter = this.filterValue.toLowerCase();
   }
 
   getStats() {
@@ -112,6 +155,8 @@ export class HomeComponent implements OnDestroy {
         }
         this._storageService.storeGoal(goal);
         this.goals.unshift(goal);
+        this.dataSource = new MatTableDataSource<Goal>(this.goals);
+
       }
     });
   }

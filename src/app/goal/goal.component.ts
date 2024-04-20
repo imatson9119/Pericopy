@@ -15,6 +15,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { accuracyChartConfig } from './chart-configs/accuracy-chart-config';
 import { timelineConfig } from './chart-configs/timeline-chart-config';
 import 'chartjs-adapter-luxon';
+import { BiblePassage } from '../classes/BiblePassage';
 
 @Component({
   selector: 'app-goal',
@@ -27,8 +28,9 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
 
   goal: Goal | undefined = undefined;
   bible: Bible | undefined = undefined;
+  goalPassage: BiblePassage | undefined = undefined;
   subscriptions: Subscription[] = [];
-  displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
+  displayedColumns: string[] = ['time', 'title', 'score'];
   dataSource = new MatTableDataSource<IResult>([]);
   diffTypeConfig = accuracyChartConfig
   timelineConfig = timelineConfig;
@@ -127,13 +129,13 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
           if (this.bible?.m.t !== this.goal?.translation) {
             this._router.navigateByUrl('');
           }
-          this._storageService.getAttempts(this.bible.m.t).forEach((result) => {
-            if (this.goal && intersection(this.goal.i, this.goal.j, result.diff.i, result.diff.j)) {
-              this.attempts.set(result.id, result);
-            }
-          });
+          this.initAttempts()
+          this.goalPassage = this.bible.getPassage(this.goal!.i, this.goal!.j);
           this.dataSource.data = Array.from(this.attempts.values()).sort((a, b) => b.timestamp - a.timestamp);
           this.loadStats();
+          setTimeout(() => {
+            this.initSort();
+          },10);
         }
       })
     );
@@ -144,6 +146,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
+    this.initSort();
+  }
+
+  initSort() {
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch(property) {
         case 'time': return item.timestamp;
@@ -157,6 +163,23 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       return data.diff.p.toLowerCase().includes(filter);
     }
     this.dataSource.sort = this.sort;
+  }
+
+  initAttempts() {
+    if (!this.bible || !this.goal) {
+      return;
+    }
+    this.attempts = new Map();
+    this._storageService.getAttempts(this.bible!.m.t).forEach((result) => {
+      if (intersection(this.goal!.i, this.goal!.j, result.diff.i, result.diff.j)) {
+        this.attempts.set(result.id, result);
+        if (!result.goals) result.goals = new Set();
+        result.goals.add(this.goalId);
+      }
+    });
+    this.goal.attempts = new Set([...this.attempts.keys()]);
+    this._storageService.storeGoals();
+    this._storageService.storeAttempts();
   }
 
   setResult(id: string): void {
@@ -198,6 +221,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
 
   makeAttempt() {
     this._router.navigateByUrl('/input');
+  }
+
+  viewInHeatmap() {
+    this._router.navigate(['/heatmap'], { queryParams: { loc: this.goal?.i || 0 } });
   }
 
   getPercentageMemorized(): number {
@@ -311,6 +338,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
 }
+
 function getGradient(ctx :any, chartArea: any) {
   let width, height, gradient;
   const chartWidth = chartArea.right - chartArea.left;

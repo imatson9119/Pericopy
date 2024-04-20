@@ -1,14 +1,17 @@
-<div class="main-container" *ngIf="this.bible else loading">
-  <h2>Welcome to PeriCopy!</h2>
-  <p>Welcome to PeriCopy. Our goal is to enable you to quickly and effectively memorize large passages of scripture. Here, you can track your progress, set goals, and improve your scripture recitation skills.</p>
+<div class="main-container" *ngIf="this.bible; else loading">
+  <div class="logo-container">
+    <div class="left">
+      <img src="assets/logo.png" alt="PeriCopy Logo" class="logo" />
+    </div>
+    <div class="right">
+      <span class="title">PeriCopy</span>
+      <span class="subtitle">"Let the word of Christ dwell in you richly"</span>
+    </div>
+  </div>
   <div class="no-stats" *ngIf="this.attempts.size === 0; else stats">
     <div class="no-attempts">
-      <mat-icon>
-        query_stats
-      </mat-icon>
-      <span>
-        Looks like you haven't made any attempts yet.
-      </span>
+      <mat-icon> query_stats </mat-icon>
+      <span> Looks like you haven't made any attempts yet. </span>
       <button mat-raised-button color="primary" (click)="this.makeAttempt()">
         Go for it!
       </button>
@@ -16,7 +19,10 @@
   </div>
   <ng-template #stats>
     <div class="stats">
-      <span>You've memorized <span class="emphasis">{{ totalVerses }}</span> verses so far - keep it up!</span>
+      <span
+        >You've memorized <span class="emphasis">{{ totalVerses }}</span> verses
+        so far - keep it up!</span
+      >
     </div>
   </ng-template>
   <div class="goals">
@@ -28,17 +34,84 @@
     </div>
     <div class="hr"></div>
     <div *ngIf="this.goals.length !== 0 && this.bible" class="goals-container">
-      <button class="goal" *ngFor="let goal of this.goals" (click)='this.loadGoal(goal.id)'>
-        <div class="goal-header">
-          <div class="goal-title">{{ goal.title }}</div>
-        </div>
-        <div class="goal-text">
-          {{getGoalText(goal)}}
-        </div>
-        <div class="goal-footer">
-          {{ this.getLastAttemptText(goal)}}
-        </div>
-      </button>
+      <mat-form-field class="full-width">
+        <mat-label>Filter</mat-label>
+        <input
+          matInput
+          value=""
+          [(ngModel)]="filterValue"
+          (keyup)="this.applyFilter($event)"
+        />
+        <mat-icon matSuffix>filter_list</mat-icon>
+      </mat-form-field>
+      <table
+        class="attempt-table"
+        mat-table
+        matSort
+        matSortActive="time"
+        matSortDirection="desc"
+        matSortDisableClear
+        [dataSource]="dataSource"
+      >
+        <ng-container matColumnDef="title">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            sortActionDescription="Sort by passage"
+          >
+            Passage
+          </th>
+          <td mat-cell *matCellDef="let goal">{{ goal.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="time">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            sortActionDescription="Sort by time"
+          >
+            Last Attempt
+          </th>
+          <td mat-cell *matCellDef="let goal">
+            {{ this.getLastAttemptText(goal) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nAttempts">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            sortActionDescription="Sort by number of attempts"
+          >
+            Attempts
+          </th>
+          <td class="score" mat-cell *matCellDef="let goal">
+            {{ goal.attempts.size }}
+          </td>
+        </ng-container>
+
+        <tr
+          class="history-table-header-row"
+          mat-header-row
+          *matHeaderRowDef="displayedColumns"
+        ></tr>
+        <tr
+          mat-row
+          class="row"
+          (click)="this.navigateToGoal(row)"
+          *matRowDef="let row; columns: displayedColumns"
+        ></tr>
+      </table>
+      <mat-paginator
+        class="history-paginator"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page"
+      >
+      </mat-paginator>
     </div>
   </div>
 </div>

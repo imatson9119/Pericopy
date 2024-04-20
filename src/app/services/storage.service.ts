@@ -45,11 +45,36 @@ export class StorageService {
   }
 
   deleteGoal(id: string){
+    if (this.goalBank.goals.has(id)){
+      let goal = this.goalBank.goals.get(id);
+      if (goal && goal.attempts){
+        for (let attemptId of goal.attempts){
+          let attempt = this.resultBank.results.get(attemptId);
+          if (attempt){
+            attempt.goals?.delete(id);
+          }
+        }
+        this.storeAttempts();
+      }
+    }
     this.goalBank.goals.delete(id);
     this.storeGoals();
   }
 
   storeGoal(goal: Goal){
+    if (goal.attempts) {
+      for (let attemptId of goal.attempts){
+        let attempt = this.resultBank.results.get(attemptId);
+        if (attempt){
+          attempt.goals?.add(goal.id);
+        } else {
+          goal.attempts.delete(attemptId);
+        }
+      }
+      this.storeAttempts();
+    } else {
+      goal.attempts = new Set();
+    }
     this.goalBank.goals.set(goal.id, goal);
     this.storeGoals();
   }
@@ -61,13 +86,13 @@ export class StorageService {
   initBank() {
     let storedResultBank = localStorage.getItem(this.resultBankStorageKey);
     if (storedResultBank === null){
-      this.storeBank();
+      this.storeAttempts();
       return;
     }
     let resultBank = JSON.parse(storedResultBank, reviver);
     if (resultBank.version == undefined){
       this.loadVersionZero(resultBank);
-      this.storeBank();
+      this.storeAttempts();
       return;
     }
     this.resultBank = resultBank;
@@ -80,20 +105,43 @@ export class StorageService {
   }
 
   storeAttempt(result: IResult){
+    if(result.goals){
+      for (let goalId of result.goals){
+        let goal = this.goalBank.goals.get(goalId);
+        if (goal){
+          goal.attempts?.add(result.id);
+        } else {
+          result.goals.delete(goalId);
+        }
+      }
+      this.storeGoals();
+    } else {
+      result.goals = new Set();
+    }
     this.resultBank.results.set(result.id, result); 
-    this.storeBank();
+    this.storeAttempts();
   }
 
   deleteAttempt(id: string){
+    let result = this.resultBank.results.get(id);
+    if (result && result.goals){
+      for (let goalId of result.goals){
+        let goal = this.goalBank.goals.get(goalId);
+        if (goal){
+          goal.attempts?.delete(id);
+        }
+      }
+      this.storeGoals();
+    }
     this.resultBank.results.delete(id);
-    this.storeBank();
+    this.storeAttempts();
   }
 
   getAttempt(id: string): IResult | undefined {
     return this.resultBank.results.get(id);
   }
 
-  storeBank(){
+  storeAttempts(){
     localStorage.setItem(this.resultBankStorageKey, JSON.stringify(this.resultBank, replacer));
   }
 
@@ -131,7 +179,7 @@ export class StorageService {
       }
       this.storeAttempt(result);
     }
-    this.storeBank();
+    this.storeAttempts();
     this.storeGoals();
   }
 }

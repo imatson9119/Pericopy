@@ -22,8 +22,9 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
   filterValue = ''
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
+  nAttempts = 0;
   
-  displayedColumns: string[] = ['time', 'title', 'score', 'actions'];
+  displayedColumns: string[] = ['time', 'title', 'score'];
   dataSource = new MatTableDataSource<IResult>([]);
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
@@ -33,8 +34,9 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
       (bible) => {
         this.bible = bible;
         this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        setTimeout(()=>{
+          this.initSorting();
+        }, 10);
       }
     ));
   }
@@ -44,6 +46,10 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    this.initSorting();
+  }
+
+  initSorting() {
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch(property) {
         case 'time': return item.timestamp;
@@ -82,7 +88,9 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
     if (this.bible === undefined) {
       return [];
     }
-    return [...this.getAttempts(this.bible.m.t).values()]
+    let attempts = this.getAttempts(this.bible.m.t);
+    this.nAttempts = attempts.size;
+    return [...attempts.values()]
   }
 
   formatScore(score: number): string {

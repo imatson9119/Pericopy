@@ -7,6 +7,7 @@ import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { Bible } from 'src/app/classes/Bible';
 import { Subscription } from 'rxjs';
 import { intersection } from 'src/app/utils/utils';
+import { Router } from '@angular/router';
 
 enum FilterValues {
   PAST_DAY = 'Past Day',
@@ -32,12 +33,14 @@ export class HeatmapComponent implements OnDestroy {
 
   constructor(
     private _bibleService: BibleService,
-    private _storageService: StorageService
+    private _storageService: StorageService,
+    private _router: Router,
   ) {
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
         this.bible = bible;
-        this.setSelectorToLastAttempt();
+        let loc = this._router.parseUrl(this._router.url).queryParams['loc'];
+        this.setInitialSelectorState(loc);
       })
     );
   }
@@ -46,20 +49,23 @@ export class HeatmapComponent implements OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  setSelectorToLastAttempt() {
+  setInitialSelectorState(loc: string | undefined) {
     if (!this.bible) {
       return;
     }
-    let lastAttempt = this._storageService.getLastAttempt(this.bible.m.t);
-    if (lastAttempt) {
-      let attemptStart = this.bible.get(lastAttempt.diff.i);
-      this.reference = {
-        book: attemptStart.book,
-        chapter: attemptStart.chapter,
-        verse: attemptStart.verse,
-        index: 0,
-      };
+    let i = 0;
+    if (loc) {
+      i = parseInt(loc);
+    } else {
+      i = this._storageService.getLastAttempt(this.bible.m.t)?.diff.i || 0;
     }
+    let attemptStart = this.bible.get(i);
+    this.reference = {
+      book: attemptStart.book,
+      chapter: attemptStart.chapter,
+      verse: attemptStart.verse,
+      index: 0,
+    };
   }
 
   getBooks(): Book[] {
