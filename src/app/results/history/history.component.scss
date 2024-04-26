@@ -84,6 +84,12 @@ td {
   flex-wrap: wrap-reverse;
   margin-top: 1rem;
   margin-bottom: 1rem;
+
+  .mat-mdc-fab.mat-primary {
+    --mdc-fab-container-color: #4a555b;
+    --mat-fab-foreground-color: white;
+    --mat-fab-state-layer-color: white;
+  }
 }
 
 .full-width {
@@ -111,16 +117,9 @@ td {
   }
 }
 
+
 // media rule
 @media (max-width: 600px) {
-  .result-container {
-    padding-top: 1rem;
-  }
-
-  .result-title {
-    font-size: 1.2rem;
-  }
-
   .mdc-data-table__cell,
   .mdc-data-table__header-cell {
     padding: 0rem 0.2rem;

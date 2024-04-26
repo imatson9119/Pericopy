@@ -78,6 +78,16 @@ h2 {
   font-size: 1rem;
 }
 
+.mat-mdc-fab.mat-primary {
+  --mdc-fab-container-color: #4a555b;
+  --mat-fab-foreground-color: white;
+  --mat-fab-state-layer-color: white;
+}
+
+.mat-icon.mat-primary {
+  --mat-icon-color: #4a555b;
+}
+
 // media rule
 @media (max-width: 768px) {
   .result-container {
@@ -122,11 +132,7 @@ h2 {
   .result-container {
     padding-top: 1rem;
   }
-
-  .result-title {
-    font-size: 1.2rem;
-  }
-
+  
   .stat-container {
     min-width: 80px;
     height: 80px;

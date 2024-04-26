@@ -42,7 +42,13 @@
   position: fixed;
   bottom: 1rem;
   right: 1rem;
+  
+}
 
+.mat-mdc-fab.mat-primary {
+  --mdc-fab-container-color: #4a555b;
+  --mat-fab-foreground-color: white;
+  --mat-fab-state-layer-color: white;
 }
 
 h2 {
