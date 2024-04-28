@@ -225,8 +225,8 @@ export class Bible implements IBible {
         ignoreWhitespace: true,
       })
     );
-    let scripture_arr = cleanWhitespace(scripture).split(' ');
-    let attempt_arr = cleanWhitespace(attempt).split(' ');
+    let scripture_arr = sanitizeText(scripture).split(' ');
+    let attempt_arr = sanitizeText(attempt).split(' ');
     let scripture_index = 0;
     let attempt_index = 0;
     let diff_index = 0;

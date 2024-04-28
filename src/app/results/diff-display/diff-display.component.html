@@ -11,43 +11,15 @@
         <span class="verse-number">
           {{ verseDiff.m.v }}
         </span>
-        <ng-container *ngIf="this.type === displayTypes.diff">
-          <ng-container *ngFor="let diff of verseDiff.v; index as i">
-            <span
-              [ngClass]="{
-                removed: diff.t == diffTypes.Removed,
-                added: diff.t == diffTypes.Added
-              }"
-              >{{ diff.v.join(" ") }}</span
-            ><span>&nbsp;</span>
+        <ng-container *ngFor="let vDiff of verseDiff.v; index as i"> 
+          <ng-container *ngIf="vDiff.t === diffTypes.Added && this.type !== displayTypes.scripture">
+            <span class="added">{{ vDiff.v.join(" ") }}</span><span>&nbsp;</span>
           </ng-container>
-        </ng-container>
-        <ng-container *ngIf="this.type === displayTypes.attempt">
-          <ng-container *ngFor="let diff of verseDiff.v; index as i">
-            <ng-container
-              *ngIf="
-                diff.t === diffTypes.Added || diff.t === diffTypes.Unchanged
-              "
-            >
-              <span [ngClass]="{ added: diff.t == diffTypes.Added }">{{
-                diff.v.join(" ")
-              }}</span
-              ><span>&nbsp;</span>
-            </ng-container>
+          <ng-container *ngIf="vDiff.t === diffTypes.Removed && this.type !== displayTypes.attempt">
+            <span class="removed">{{ scripture.slice(vDiff.i - diff!.i, vDiff.i + vDiff.v.length - this.diff!.i).join(" ") }}</span><span>&nbsp;</span>
           </ng-container>
-        </ng-container>
-        <ng-container *ngIf="this.type === displayTypes.scripture">
-          <ng-container *ngFor="let diff of verseDiff.v; index as i">
-            <ng-container
-              *ngIf="
-                diff.t === diffTypes.Removed || diff.t === diffTypes.Unchanged
-              "
-            >
-              <span [ngClass]="{ removed: diff.t == diffTypes.Removed }">{{
-                diff.v.join(" ")
-              }}</span
-              ><span>&nbsp;</span>
-            </ng-container>
+          <ng-container *ngIf="vDiff.t === diffTypes.Unchanged">
+            <span>{{ scripture.slice(vDiff.i - diff!.i, vDiff.i + vDiff.v.length - this.diff!.i).join(" ") }}</span><span>&nbsp;</span>
           </ng-container>
         </ng-container>
       </ng-container>

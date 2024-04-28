@@ -63,13 +63,14 @@
   <mat-tab-group>
     <mat-tab label="Difference">
       <div class="tab-inner-container">
-        <app-diff-display [diff]="this.currentResult?.diff"></app-diff-display>
+        <app-diff-display [diff]="this.currentResult?.diff" [bible]="this.bible"></app-diff-display>
       </div>
     </mat-tab>
     <mat-tab label="Attempt">
       <div class="tab-inner-container">
         <app-diff-display
           [type]="displayTypes.attempt"
+          [bible]="this.bible"
           [diff]="this.currentResult?.diff"
         ></app-diff-display>
       </div>
@@ -78,6 +79,7 @@
       <div class="tab-inner-container">
         <app-diff-display
           [type]="displayTypes.scripture"
+          [bible]="this.bible"
           [diff]="this.currentResult?.diff"
         ></app-diff-display>
       </div>
