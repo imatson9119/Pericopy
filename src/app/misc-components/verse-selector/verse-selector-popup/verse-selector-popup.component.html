@@ -1,0 +1,78 @@
+@if(this.selectionStage === 0) {
+  <div mat-dialog-title class="header-container">
+    <button mat-icon-button (click)="this.close()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>Select a Book</span>
+  </div>
+  <mat-dialog-content class="mat-typography dialog-content">
+    <span class="section-header">Old Testament</span>
+    <div class="button-container">
+      @for (book of this.getBooks().slice(0, 39); track book.m.i) {
+        <button
+          class="verse-selector-button"
+          [ngClass]="{ selected: this.value['book']?.m.b === book.m.b }"
+          (click)="this.selectBook(book)"
+        >
+          {{ this.abbreviateBookName(book.m.b) }}
+        </button>
+      }
+    </div>
+    <span class="section-header">New Testament</span>
+    <div class="button-container">
+      @for (book of this.getBooks().slice(39); track book.m.i) {
+        <button
+          class="verse-selector-button"
+          [ngClass]="{ selected: this.value['book']?.m.b === book.m.b }"
+          (click)="this.selectBook(book)"
+        >
+          {{ this.abbreviateBookName(book.m.b) }}
+        </button>
+      }
+    </div>
+  </mat-dialog-content>
+} @else if(this.selectionStage === 1) {
+  <div mat-dialog-title class="header-container">
+    <button mat-icon-button (click)="this.goToBooks()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>Select Chapter</span>
+  </div>
+  <mat-dialog-content class="mat-typography dialog-content">
+    <span class="section-header">{{ this.value["book"].m.b }}</span>
+    <div class="button-container">
+      @for (chapter of this.value['book'].v; track chapter.m.i) {
+        <button
+          class="verse-selector-button"
+          [ngClass]="{ selected: this.value['chapter']?.m.c === chapter.m.c }"
+          (click)="this.selectChapter(chapter)"
+        >
+          {{ chapter.m.c }}
+        </button>
+      }
+    </div>
+  </mat-dialog-content>
+} @else if(this.selectionStage === 2) {
+  <div mat-dialog-title class="header-container">
+    <button mat-icon-button (click)="this.goToChapters()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>Select Verse</span>
+  </div>
+  <mat-dialog-content class="mat-typography dialog-content">
+    <span class="section-header"
+      >{{ this.value["book"].m.b }} {{ this.value["chapter"].m.c }}</span
+    >
+    <div class="button-container">
+      @for(verse of this.value['chapter'].v; track verse.m.i) {
+        <button
+          class="verse-selector-button"
+          [ngClass]="{ selected: this.value['verse']?.m.v === verse.m.v }"
+          (click)="this.selectVerse(verse)"
+        >
+          {{ verse.m.v }}
+        </button>
+      }
+    </div>
+  </mat-dialog-content>
+}

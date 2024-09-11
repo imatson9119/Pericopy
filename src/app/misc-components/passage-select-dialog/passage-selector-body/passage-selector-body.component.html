@@ -1,0 +1,35 @@
+<div class="verse-selector-container">
+  <div class="start-container verse-selector">
+    <div class="verse-selector-header">Start Verse</div>
+    <app-verse-selector
+      [bible]="this.bible"
+      [(value)]="startRef"
+      (valueChange)="this.startRefChangeMethod()"
+      [selectionType]="SelectionType.START"
+      #start
+    ></app-verse-selector>
+  </div>
+  <div class="end-container verse-selector">
+    <div class="verse-selector-header">End Verse</div>
+    <app-verse-selector
+      [bible]="this.bible"
+      [(value)]="endRef"
+      (valueChange)="this.endRefChangeMethod()"
+      [selectionType]="SelectionType.END"
+      #end
+    ></app-verse-selector>
+  </div>
+</div>
+<div class="verse-preview">
+  <div class="verse-preview-header">Passage Preview</div>
+  <div class="verse-preview-content">
+    {{ getPreview() }}
+  </div>
+</div>
+<div class="button-container">
+  @for (passage of this.providedOptions; track passage.id) {
+  <button (click)="selectPassage(passage)" mat-raised-button>
+    {{ passage }}
+  </button>
+  }
+</div>

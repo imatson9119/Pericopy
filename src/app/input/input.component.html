@@ -1,0 +1,90 @@
+@if (this.bible) {
+  <div class="input-container">
+    <h2>Scripture Memory</h2>
+    <div class="subtitle">
+      <p>
+        Test your recitation accuracy. Type or dictate scripture below and
+        your attempt will compared to the actual text, stored, and counted
+        towards any goals.
+      </p>
+    </div>
+    <div class="toolbar">
+      <div class="verse-selector-container">
+        <div class="start-container verse-selector">
+          <div class="verse-selector-header">Start Verse</div>
+          <app-verse-selector
+            [bible]="this.bible"
+            [off]="this.detectPassage"
+            [(value)]="startRef"
+            (select)="this.detectPassage = false"
+            [selectionType]="SelectionType.START"
+            #start
+          ></app-verse-selector>
+        </div>
+        <div class="end-container verse-selector">
+          <div class="verse-selector-header">End Verse</div>
+          <app-verse-selector
+            [bible]="this.bible"
+            [off]="this.detectPassage"
+            [(value)]="endRef"
+            (select)="this.detectPassage = false"
+            [selectionType]="SelectionType.END"
+            #end
+          ></app-verse-selector>
+        </div>
+      </div>
+      <button
+        mat-flat-button
+        [ngClass]="{ on: this.detectPassage, off: !this.detectPassage }"
+        color="primary"
+        [color]=""
+        (click)="this.togglePassageSelection()"
+      >
+        Detect Passage
+        @if(this.detectPassage) {
+          <mat-icon>check</mat-icon>
+        } @else {
+          <mat-icon>close</mat-icon>
+        }
+      </button>
+    </div>
+    <div #inputParent class="input-height-container">
+      <mat-form-field class="flex-grow">
+        <mat-label>Scripture here</mat-label>
+        <textarea
+          autofocus
+          #input
+          [(ngModel)]="attempt"
+          matInput
+          placeholder="In the beginning, God..."
+          (keydown)="this.onKeyDown($event)"
+          (ngModelChange)="this.adjustInputHeight()"
+          (click)="this.annyang.abort()"
+        ></textarea>
+      </mat-form-field>
+    </div>
+    <div class="button-container">
+      <button
+        (click)="submit()"
+        [disabled]="!valid()"
+        mat-flat-button
+        color="primary"
+      >
+        Submit
+      </button>
+      <button
+        (click)="toggleVoice()"
+        [ngClass]="{ recording: this.recording }"
+        class="record-button"
+        mat-mini-fab
+        aria-label="Dictate"
+        >
+        <mat-icon>mic</mat-icon>
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+}

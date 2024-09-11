@@ -1,0 +1,9 @@
+<div
+  #input
+  class="input"
+  placeholder="In the beginning, God..."
+  (input)="this.onChange($event)"
+  (keydown)="this.onKeyDown($event)"
+  (paste)="this.handlePaste($event)"
+  contenteditable="true"
+></div>

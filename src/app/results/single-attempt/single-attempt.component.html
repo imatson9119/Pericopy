@@ -1,0 +1,94 @@
+@if(this.bible) {
+  <div class="result-container">
+    <div class="result-header">
+      <div>
+        <div class="result-title">
+          {{ this.currentResult?.diff?.p }}
+        </div>
+        <div class="result-subtitle">
+          {{  
+            this.currentResult?.timestamp | date: 'longDate'}}
+        </div>
+      </div>
+      <div class="result-actions">
+        <button
+          mat-icon-button
+          (click)="this.deleteResult()"
+          matTooltip="Delete this attempt"
+        >
+          <mat-icon color="primary">delete</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="this.editResult()"
+          matTooltip="Edit this attempt"
+          >
+          <mat-icon color="primary">edit</mat-icon>
+        </button>
+      </div>
+    </div> 
+    <div class="stats-container">
+      <div class="stat-container accuracy" [style.background]="this.getColor()">
+        <div class="stat-value">
+          {{this.getAccuracy()}}%
+        </div>
+        <div class="stat-label">
+          accuracy
+        </div>
+      </div>
+      <div class="stat-container words">
+        <div class="stat-value">
+          {{this.totalWords}}
+        </div>
+        <div class="stat-label">
+          words
+        </div>
+      </div>
+      <div class="stat-container wordsAdded">
+        <div class="stat-value">
+          {{this.totalMistakes}}
+        </div>
+        <div class="stat-label">
+          mistakes
+        </div>
+      </div>
+      <div class="stat-container wordsRemoved">
+        <div class="stat-value">
+          {{this.longestSequence}}
+        </div>
+        <div class="stat-label">
+          word streak
+        </div>
+      </div>
+    </div>
+    <mat-tab-group>
+      <mat-tab label="Difference">
+        <div class="tab-inner-container">
+          <app-diff-display [diff]="this.currentResult?.diff" [bible]="this.bible"></app-diff-display>
+        </div>
+      </mat-tab>
+      <mat-tab label="Attempt">
+        <div class="tab-inner-container">
+          <app-diff-display
+            [type]="displayTypes.attempt"
+            [bible]="this.bible"
+            [diff]="this.currentResult?.diff"
+          ></app-diff-display>
+        </div>
+      </mat-tab>
+      <mat-tab label="Scripture">
+        <div class="tab-inner-container">
+          <app-diff-display
+            [type]="displayTypes.scripture"
+            [bible]="this.bible"
+            [diff]="this.currentResult?.diff"
+          ></app-diff-display>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+} @else {
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+}

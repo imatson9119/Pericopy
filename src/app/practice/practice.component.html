@@ -1,0 +1,88 @@
+@if(this.bible){
+  <div class="input-container">
+    <h2>Practice Recitation</h2>
+    <div class="subtitle">
+      <p>
+        Here you can practice reciting scripture with error detection along
+        the way. Just start typing and we'll automatically determine the passage
+        you're working on.
+      </p>
+    </div>
+    <div class="toolbar">
+      <button
+        [disabled]="!this.passage || this.inputState != InputState.ERRORS"
+        mat-fab
+        extended
+        color="primary"
+        (click)="this.fixErrors()"
+        matTooltip="Fix errors (ctrl + enter)"
+      >
+        <mat-icon>fact_check</mat-icon>
+        Fix errors
+      </button>
+      <button
+        [disabled]="!this.passage"
+        mat-fab
+        extended
+        color="primary"
+        (click)="this.nextWord()"
+        matTooltip="Adds the next word (tab)"
+      >
+        <mat-icon>lightbulb</mat-icon>
+        Next word
+      </button>
+    </div>
+    <app-practice-input-div 
+      #input
+      (click)="this.annyang.abort()" 
+      [bible]='this.bible'
+      (onInputStateChange)="this.inputState = $event"
+      (onPassageChange)="this.passage = $event"
+    >
+    </app-practice-input-div>
+    <div class="button-container">
+      <div class="passage">
+        <div class="passage-label">
+          {{ this.inputState !== this.InputState.NO_LOCK && this.passage ? this.passage.toString() : "No passage linked" }}
+        </div>
+        @if(this.inputState == InputState.WAITING) {
+          <mat-spinner
+            matTooltip="Checking your input..."
+            diameter="20"
+          ></mat-spinner>
+        } @else if(this.inputState == InputState.NO_LOCK) {
+          <mat-icon
+            class="no-lock-icon"
+            matTooltip="Unable to link to a passage"
+            >link_off</mat-icon
+          >
+        } @else if(this.inputState == InputState.CORRECT) {
+          <mat-icon
+            class="correct-icon"
+            matTooltip="All correct"
+            >check</mat-icon
+          >
+        } @else if(this.inputState == InputState.ERRORS) {
+          <mat-icon
+            class="errors-icon"
+            matTooltip="Errors detected"
+            >error</mat-icon
+          >
+        }
+      </div>
+      <button
+        (click)="toggleVoice()"
+        [ngClass]="{ recording: this.recording }"
+        class="record-button"
+        mat-mini-fab
+        aria-label="Dictate"
+      >
+        <mat-icon>mic</mat-icon>
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+}

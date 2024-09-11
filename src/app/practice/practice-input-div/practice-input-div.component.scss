@@ -1,0 +1,28 @@
+.input[contenteditable="true"]:empty:before {
+  content: attr(placeholder);
+  color: #aaa;
+  pointer-events: none;
+  display: block; /* For Firefox */
+}
+
+.input {
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 5px 5px 0 0;
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 1px solid #aaaaaa;
+  outline: none;
+  transition: background-color 0.3s;
+  margin-bottom: 1px;
+  white-space: pre-wrap;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  color: #000;
+}
+
+.input:focus {
+  border-bottom: 2px solid #536a75;
+  background-color: #eeeeee;
+  margin-bottom: 0px;
+}

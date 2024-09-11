@@ -1,0 +1,58 @@
+@if(this.bible) {
+  <div class="container">
+    <h2>Recitation Heatmap</h2>
+    <div class="subtitle">
+      <p>
+        View a heatmap of recitation attempts for a specific passage. The heatmap
+        will show the most frequently missed areas of the passage, allowing you 
+        to target your practice.
+      </p>
+    </div>
+    <br>
+    <div class="toolbar">
+      <div class="left">
+        <app-verse-selector
+          type="fab"
+          [bible]="this.bible"
+          selectionLevel="chapter"
+          #selector
+          [(value)]="this.reference"
+          (select)="this.updateHeatmap()"
+        ></app-verse-selector>
+      </div>
+      <div class="right">
+        <mat-form-field>
+          <mat-label>Filter</mat-label>
+          <mat-select
+            matSelect
+            class="filter"
+            [(ngModel)]="this.filterValue"
+            (ngModelChange)="this.updateHeatmap()"
+          >
+            <mat-option [value]="filterValues.ALL_TIME">All Time</mat-option>
+            <mat-option [value]="filterValues.PAST_DAY">Past Day</mat-option>
+            <mat-option [value]="filterValues.PAST_WEEK">Past Week</mat-option>
+            <mat-option [value]="filterValues.PAST_MONTH">Past Month</mat-option>
+            <mat-option [value]="filterValues.PAST_YEAR">Past Year</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    @if(this.reference) {
+      <app-bible-display
+        [bible]="this.bible"
+        [passage]="this.passage"
+        [heatmap]="this.heatmap.size > 0 ? this.heatmap : null"
+      >
+      </app-bible-display>
+    } @else {
+      <div class="no-passage">
+        Select a passage to get started.
+      </div>
+    }
+  </div>
+} @else {
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+}

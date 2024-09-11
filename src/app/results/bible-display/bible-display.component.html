@@ -1,0 +1,46 @@
+@for (book of this.bible!.v; track book.m.i) {
+  @if (intersection(book.m.i, book.m.i + book.m.l, passage.i, passage.j)) {
+    <div class="book">
+      <div class="book-title">
+        {{ book.m.b }}
+      </div>
+      @for (chapter of book.v; track chapter.m.i) {
+        @if (intersection(chapter.m.i, chapter.m.i + chapter.m.l, passage.i, passage.j)) {
+          <div class="chapter">
+            <div class="chapter-title">
+              {{ chapter.m.c }}
+            </div>
+            <div class="chapter-text" >
+              @for (verse of chapter.v; track verse.m.i) {
+                @if (intersection(verse.m.i, verse.m.i + verse.m.l, passage.i, passage.j)) {
+                  <span class="verse-number">{{ 
+                    verse.m.v 
+                  }}</span>
+                  @if (this.heatmap) {
+                    <span class="verse-text-hightlight">
+                      @for (word of verse.v; track $index; let i = $index) {
+                        @if (!this.heatmap.get(verse.m.i + i)) {
+                          <span>
+                            {{ word }}
+                          </span>
+                        } @else {
+                          <span class="highlight" [ngClass]="{'start': i===0, 'end': i===verse.m.l-1}" [style.background]="this.getColor(verse.m.i + i)">
+                            {{word}}
+                          </span>
+                        }
+                      }
+                    </span>
+                  } @else {
+                    <span class="verse-text" >{{ 
+                      verse.v.join(" ") 
+                    }} </span>
+                  }
+                }
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+}

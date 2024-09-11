@@ -1,0 +1,23 @@
+@if(type === 'button') {
+  <button
+    color="primary"
+    [ngClass]="{ off: this.off }"
+    mat-flat-button
+    [disabled]="this.disabled"
+    (click)="this.openSelectionMenu()"
+  >
+    {{ this.getDisplayValue() }}
+  </button>
+} @else {
+  <button
+    color="primary"
+    [ngClass]="{ off: this.off }"
+    mat-fab
+    extended
+    [disabled]="this.disabled"
+    (click)="this.openSelectionMenu()"
+  >
+    <mat-icon>{{ this.icon }}</mat-icon>
+    {{ this.getDisplayValue() }}
+  </button>
+}

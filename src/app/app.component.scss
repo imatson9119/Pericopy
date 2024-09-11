@@ -1,0 +1,80 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bible-version-selector {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: none;
+  background: #536a75;
+  height: 40px;
+  padding: 0 1rem;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  gap: 0.5rem;
+
+  .button-text  {
+    transform: translateY(1px);
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+}
+
+.sidenav-container {
+  flex-grow: 1;
+}
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  font-size: large;
+}
+.content-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.width-limit {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.header-text {
+  font-size: 1.5rem;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.mat-icon.mat-primary {
+  --mat-icon-color: #4a555b;
+}

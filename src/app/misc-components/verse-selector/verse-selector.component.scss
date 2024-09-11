@@ -1,0 +1,21 @@
+.off.mat-mdc-unelevated-button:not(:disabled) {
+  background-color: #c5c7cb;
+  color: #8b8685;
+}
+
+.mat-mdc-unelevated-button{
+  transition: background-color 0.3s;
+}
+
+.mat-mdc-fab.mat-primary {
+  --mdc-fab-container-color: #4a555b;
+  --mat-fab-foreground-color: white;
+  --mat-fab-state-layer-color: white;
+}
+
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: #4a555b;
+  --mdc-filled-button-label-text-color: white;
+  --mat-filled-button-state-layer-color: white;
+  --mat-filled-button-ripple-color: rgba(255, 255, 255, 0.1);
+}

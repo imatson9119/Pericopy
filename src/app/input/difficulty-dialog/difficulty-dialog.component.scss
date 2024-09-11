@@ -1,0 +1,28 @@
+
+.button-container {
+	display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    gap: .5rem;
+	margin-top: 1rem;
+}
+.container {
+	padding: 1rem;
+}
+
+.hard.mat-mdc-raised-button.mat-primary {
+  background-color: #8b6060;
+}
+
+.okay.mat-mdc-raised-button.mat-primary {
+  background-color: #8b8760;
+}
+
+.easy.mat-mdc-raised-button.mat-primary {
+  background-color: #698b60;
+}
+
+.buttons {
+	padding-bottom: 1.2rem;
+}

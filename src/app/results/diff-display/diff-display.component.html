@@ -1,0 +1,32 @@
+@for (bookDiff of diff?.v; track diff?.i) {
+  <div class="book">
+    <div class="book-title">
+      {{ bookDiff.m.b }}
+    </div>
+    @for (chapterDiff of bookDiff.v; track chapterDiff.m.i) {
+      <div class="chapter">
+        <div class="chapter-title">
+          {{ chapterDiff.m.c }}
+        </div>
+        <div class="chapter-text">
+          @for (verseDiff of chapterDiff.v; track verseDiff.m.i) {
+            <span class="verse-number">
+              {{ verseDiff.m.v }}
+            </span>
+            @for (vDiff of verseDiff.v; track vDiff.i; let i = $index){
+              @if (vDiff.t === diffTypes.ADDED && this.type !== displayTypes.scripture) {
+                <span class="added">{{ vDiff.v.join(" ") }}</span><span>&nbsp;</span>
+              }
+              @if (vDiff.t === diffTypes.REMOVED && this.type !== displayTypes.attempt) {
+                <span class="removed">{{ vDiff.v.join(" ") }}</span><span>&nbsp;</span>
+              }
+              @if (vDiff.t === diffTypes.UNCHANGED) {
+                <span>{{ vDiff.v.join(" ") }}</span><span>&nbsp;</span>
+              }
+            }
+          } 
+        </div>
+      </div>
+    }
+  </div>
+}

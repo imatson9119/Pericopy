@@ -1,0 +1,52 @@
+.highlight {
+  //   padding: 0rem 0.2rem;
+  //   border-radius: 5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+span {
+  text-wrap: wrap;
+}
+
+.chapter {
+  .chapter-title {
+    font-size: 1.5rem;
+    font-weight: 200;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  .chapter-text {
+    // display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.highlight.start{
+  border-radius: 5px 0 0 5px;
+}
+
+.highlight.end{
+  border-radius: 0 5px 5px 0;
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+
+  .book-title {
+    font-size: 2rem;
+    font-weight: 200;
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0rem;
+  }
+}
+
+.verse-number {
+  font-size: 0.5rem;
+  font-weight: 700;
+  vertical-align: top;
+  margin-right: 0.1rem;
+}

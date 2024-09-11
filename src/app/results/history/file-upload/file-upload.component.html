@@ -1,0 +1,20 @@
+<input
+  type="file"
+  class="file-input"
+  accept="application/json"
+  (change)="onFileSelected($event)"
+  #fileUpload
+  multiple
+/>
+
+<div 
+  class="file-upload" 
+  (click)="fileUpload.click()"
+  appFileDrop
+  (filesDropped)="onFilesDropped($event)"
+  (filesHovered)="onFilesHovered($event)"
+  [ngClass]="{ 'file-upload-hovered': isHovered }"
+>
+  <mat-icon>system_update_alt</mat-icon>
+  {{ fileName || "Click or drop to upload files" }}
+</div>

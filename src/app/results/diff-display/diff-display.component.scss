@@ -1,0 +1,43 @@
+.added {
+  padding: 0rem .2rem;
+  background: #e3b2b2;
+  border-radius: 5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.removed {
+  padding: 0rem .2rem;
+  background: rgb(189 189 189);
+  border-radius: 5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.chapter {
+  .chapter-title {
+    font-size: 1.5rem;
+    font-weight: 200;
+    margin-bottom: 1rem;
+  }
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+
+  .book-title {
+    font-size: 2rem;
+    font-weight: 200;
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0rem;
+  }
+}
+
+.verse-number {
+  font-size: 0.5rem;
+  font-weight: 700;
+  vertical-align: top;
+  margin-right: .1rem;
+}

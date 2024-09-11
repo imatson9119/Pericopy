@@ -1,0 +1,93 @@
+h2 {
+  font-size: 1.8rem;
+  font-weight: 100;
+  margin-top: 2rem;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  // margin-bottom: 300px;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items:flex-end;
+  margin-top: 1rem;
+}
+
+.mat-mdc-unelevated-button{
+  transition: background-color 0.3s;
+}
+
+.off.mat-mdc-unelevated-button:not(:disabled) {
+  background-color:#555555;
+}
+
+.off.mat-mdc-unelevated-button:not(:disabled) {
+  background-color:#555555;
+}
+
+.on.mat-mdc-unelevated-button:not(:disabled) {
+  background-color: #848b60;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+
+  .record-button.mat-mdc-mini-fab.mat-accent {
+    --mdc-fab-small-container-color: #555555;
+    color: white;
+  }
+  .record-button.mat-mdc-mini-fab.mat-accent.recording {
+    --mdc-fab-small-container-color: #b79a49;
+  }
+}
+
+.input-height-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.measure-element {
+  height:auto;
+  overflow:hidden;
+}
+
+.verse-selector-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.verse-selector {
+	display: flex;
+	flex-direction: column;
+}
+
+.verse-selector-header {
+	font-size: 0.8rem;
+	font-weight: 500;
+	color: #555555;
+}
+
+.subtitle {
+  color: #666;
+  font-weight: 100;
+  font-size: .9rem;
+}

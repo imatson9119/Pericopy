@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{title}}</h2>
+<mat-dialog-content class="mat-typography dialog-content">
+  <span class="message-text">{{subtitle}}</span>
+  <app-passage-selector-body
+    [bible]="this.bible"
+    [providedOptions]="providedOptions"
+    [nWordsToPreview]="nWordsToPreview"
+    (passageChange)="this.selectPassage($event)"
+  ></app-passage-selector-body>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="this.submit()" [disabled]="!this.isValid()">
+    Submit
+  </button>
+</mat-dialog-actions>
+
