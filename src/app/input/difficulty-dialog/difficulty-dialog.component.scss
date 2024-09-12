@@ -11,18 +11,23 @@
 	padding: 1rem;
 }
 
-.hard.mat-mdc-raised-button.mat-primary {
-  background-color: #8b6060;
+.hard.mat-mdc-fab.mat-primary {
+	--mdc-fab-container-color: #1a3644;
 }
 
-.okay.mat-mdc-raised-button.mat-primary {
-  background-color: #8b8760;
+.okay.mat-mdc-fab.mat-primary {
+	--mdc-fab-container-color: #3b5f71;
 }
 
-.easy.mat-mdc-raised-button.mat-primary {
-  background-color: #698b60;
+.easy.mat-mdc-fab.mat-primary {
+	--mdc-fab-container-color: #607d8b;
 }
 
 .buttons {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: center;
+	gap: .5rem 0;
 	padding-bottom: 1.2rem;
 }

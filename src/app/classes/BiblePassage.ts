@@ -8,8 +8,8 @@ enum ReferenceLevel {
 }
 
 export class BiblePassage {
-  i: number;
-  j: number;
+  i: number; // Start index in the Bible
+  j: number; // End index in the Bible
   b1: Book;
   c1: Chapter;
   v1: Verse;

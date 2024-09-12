@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BiblePassage } from '../../../classes/BiblePassage';
 import { abbreviateBookName } from 'src/app/utils/utils';
@@ -14,32 +14,41 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './passage-selector-body.component.html',
   styleUrl: './passage-selector-body.component.scss'
 })
-export class PassageSelectorBodyComponent {
+export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   abbreviateBookName = abbreviateBookName;
   SelectionType = SelectionType;
-
-  @ViewChild('start') start: VerseSelectorComponent | undefined = undefined;
-  @ViewChild('end') end: VerseSelectorComponent | undefined = undefined;
-
+  
   @Input() bible: Bible | undefined = undefined;
   @Input() nWordsToPreview: number = 40;
   @Input() providedOptions: BiblePassage[] = [];
-  @Input() startRef: BiblePointer | undefined = undefined;
-  @Input() endRef: BiblePointer | undefined = undefined;
   @Input() passage: BiblePassage | undefined = undefined;
-
-  @Output() startRefChange = new EventEmitter<BiblePointer>();
-  @Output() endRefChange = new EventEmitter<BiblePointer>();  
+  
   @Output() passageChange = new EventEmitter<BiblePassage>();
+  
+  startRef: BiblePointer | undefined = undefined;
+  endRef: BiblePointer | undefined = undefined;
+  preview: string = '';
 
-  constructor() {
-  }
-
-  ngOnChanges() {
+  constructor() {}
+  
+  ngOnInit(): void {
+    if (this.providedOptions.length > 0) {
+      this.providedOptions = this.dedupeAnchors(this.providedOptions);
+    }
+    // console.log("Passage Selector: initial passage " + this.passage);
     if (this.passage) {
       this.selectPassage(this.passage);
     }
-    this.providedOptions = this.dedupeAnchors(this.providedOptions);
+  }
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['providedOptions']) {
+      this.providedOptions = this.dedupeAnchors(this.providedOptions);
+    }
+    if (changes['passage'] && this.passage) {
+      // console.log("In passage selector, selected " + this.passage.toString() + " index: " + this.passage.i + "-" + this.passage.j);
+      this.selectPassage(this.passage!);
+    }
   }
 
   dedupeAnchors(anchors: BiblePassage[]): BiblePassage[] {
@@ -55,11 +64,9 @@ export class PassageSelectorBodyComponent {
   }
 
   getPreview(): string {
-    if (this.isValid() && this.bible) {
-      // @ts-ignore
-      let startIndex: number = this.start.verse.m.i;
-      // @ts-ignore
-      let endIndex: number = this.end.verse.m.i + this.end.verse.m.l;
+    if (this.isValid() && this.bible && this.passage) {
+      let startIndex: number = this.passage.i
+      let endIndex: number = this.passage.j
       if (endIndex - startIndex > this.nWordsToPreview) {
         let startText = this.bible.getText(
           startIndex,
@@ -85,20 +92,18 @@ export class PassageSelectorBodyComponent {
   }
 
   startRefChangeMethod() {
-    this.startRefChange.emit(this.startRef);
     this.checkValidityAndEmit();
   }
 
   endRefChangeMethod() {
-    this.endRefChange.emit(this.endRef);
     this.checkValidityAndEmit();
   }
 
   checkValidityAndEmit() {
     if (this.isValid()) {
       this.passageChange.emit(new BiblePassage(
-        this.startRef!.index,
-        this.endRef!.index,
+        this.startRef!.index + this.startRef!.verse.m.i,
+        this.endRef!.index + this.endRef!.verse.m.i,
         this.startRef!.book,
         this.startRef!.chapter,
         this.startRef!.verse,
@@ -114,16 +119,16 @@ export class PassageSelectorBodyComponent {
       book: passage.b1,
       chapter: passage.c1,
       verse: passage.v1,
-      index: passage.v1.m.i,
+      index: 0,
     };
     this.endRef = {
       book: passage.b2,
       chapter: passage.c2,
       verse: passage.v2,
-      index: passage.v2.m.i + passage.v2.m.l,
+      index: passage.v2.m.l + 1,
     };
-    this.startRefChange.emit(this.startRef);
-    this.endRefChange.emit(this.endRef);
+    this.passage = passage;
+    this.preview = this.getPreview();
     this.passageChange.emit(passage);
   }
 }

@@ -1,30 +1,33 @@
 <h2 mat-dialog-title>How difficult was this recitation?</h2>
 <div class="buttons" mat-dialog-actions align="center">
   <button
-    class="hard"
-    mat-raised-button
-    color="primary"
-    matTooltip="difficult to remember / many gaps"
-    (click)="onSelect(Rating.Hard)"
-  >
-    Hard
-  </button>
-  <button
-    class="okay"
-    mat-raised-button
-    color="primary"
-    matTooltip="some difficulty / a few gaps"
-    (click)="onSelect(Rating.Good)"
-  >
-    Okay
-  </button>
-  <button
     class="easy"
-    mat-raised-button
+    mat-fab extended
     color="primary"
     matTooltip="easy to remember / no gaps"
     (click)="onSelect(Rating.Easy)"
   >
+    <mat-icon>sentiment_very_satisfied</mat-icon>
     Easy
   </button>
+  <button
+  class="okay"
+  mat-fab extended
+  color="primary"
+  matTooltip="some difficulty / a few gaps"
+  (click)="onSelect(Rating.Good)"
+  >
+  <mat-icon>sentiment_neutral</mat-icon>
+  Okay
+</button>
+<button
+  class="hard"
+  mat-fab extended
+  color="primary"
+  matTooltip="difficult to remember / many gaps"
+  (click)="onSelect(Rating.Hard)"
+>
+  <mat-icon>mood_bad</mat-icon>
+  Hard
+</button>
 </div>

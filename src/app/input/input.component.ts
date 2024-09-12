@@ -100,13 +100,13 @@ export class InputComponent
   }
 
   valid() {
-    return (
+    return ( 
       this.attempt.trim().length > 0 &&
       (this.detectPassage
         ? true
         : this.startRef &&
           this.endRef &&
-          this.startRef.index < this.endRef.index)
+          this.startRef.verse.m.i <= this.endRef.verse.m.i)
     );
   }
 

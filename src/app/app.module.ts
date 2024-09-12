@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
 import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { BibleService } from './services/bible.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -40,58 +40,77 @@ import { VerseSelectorPopupComponent } from './misc-components/verse-selector/ve
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { HomeComponent } from './home/home.component';
 import { DeleteGoalDialogComponent } from './goal/delete-goal-dialog/delete-goal-dialog.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { GoalComponent } from './goal/goal.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import {
+  BaseChartDirective,
+  provideCharts,
+  withDefaultRegisterables,
+} from 'ng2-charts';
 import { DonatePopupComponent } from './info/donate-popup/donate-popup.component';
 import { PracticeComponent } from './practice/practice.component';
-import { PracticeInputDivComponent } from "./practice/practice-input-div/practice-input-div.component";
+import { PracticeInputDivComponent } from './practice/practice-input-div/practice-input-div.component';
 
-@NgModule({ declarations: [
-        AppComponent,
-        InputComponent,
-        SingleAttemptComponent,
-        HeatmapComponent,
-        HistoryComponent,
-        DeleteAttemptDialogComponent,
-        DiffDisplayComponent,
-        BibleDisplayComponent,
-        InfoComponent,
-        ImportDialogComponent,
-        FileUploadComponent,
-        FileDropDirective,
-        HomeComponent,
-        DeleteGoalDialogComponent,
-        GoalComponent,
-        DonatePopupComponent,
-        PracticeComponent
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        FormsModule,
-        BrowserAnimationsModule,
-        MatInputModule,
-        MatButtonModule,
-        MatDialogModule,
-        MatSelectModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCardModule,
-        MatTabsModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatTooltipModule,
-        MatSortModule,
-        MatSnackBarModule,
-        MatRippleModule,
-        MatProgressBarModule,
-        MatSlideToggleModule,
-        MatProgressSpinnerModule,
-        BaseChartDirective,
-        VerseSelectorComponent,
-        VerseSelectorPopupComponent,
-        PassageSelectDialogComponent,
-        PracticeInputDivComponent], providers: [StorageService, BibleService, provideCharts(withDefaultRegisterables()), provideHttpClient(withInterceptorsFromDi())] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    InputComponent,
+    SingleAttemptComponent,
+    HeatmapComponent,
+    HistoryComponent,
+    DeleteAttemptDialogComponent,
+    DiffDisplayComponent,
+    BibleDisplayComponent,
+    InfoComponent,
+    ImportDialogComponent,
+    FileUploadComponent,
+    FileDropDirective,
+    HomeComponent,
+    DeleteGoalDialogComponent,
+    GoalComponent,
+    DonatePopupComponent,
+    PracticeComponent,
+  ],
+  bootstrap: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatMenuModule,
+    MatCardModule,
+    MatTabsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatSortModule,
+    MatSnackBarModule,
+    MatRippleModule,
+    MatProgressBarModule,
+    MatSlideToggleModule,
+    MatProgressSpinnerModule,
+    BaseChartDirective,
+    VerseSelectorComponent,
+    VerseSelectorPopupComponent,
+    PassageSelectDialogComponent,
+    PracticeInputDivComponent,
+  ],
+  providers: [
+    StorageService,
+    BibleService,
+    provideCharts(withDefaultRegisterables()),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideAnimations(),
+  ],
+})
 export class AppModule {}

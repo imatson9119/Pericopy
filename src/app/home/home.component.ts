@@ -15,6 +15,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -135,12 +136,10 @@ export class HomeComponent implements OnDestroy {
       }
     }
 
-    this.dialog.open(PassageSelectDialogComponent, {
+    this.dialog.open(NewGoalDialogComponent, {
       data: {
-        title: 'Create a New Goal',
-        subtitle:
-          "Select a passage to track your progress and gain insights on your proficiency!",
         options: passages,
+        width: '600px'
       },
     }).afterClosed().subscribe((passage: BiblePassage | undefined) => {
       if (passage && this.bible) {

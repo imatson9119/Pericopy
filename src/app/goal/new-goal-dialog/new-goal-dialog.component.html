@@ -1,0 +1,62 @@
+<h2 mat-dialog-title>{{ getTitle() }}</h2>
+<div mat-dialog-content class="mat-typography dialog-content" [@stepAnimation]="currentStep">
+  <ng-container *ngIf="currentStep === 1">
+    <span class="message-text">What passage would you like to memorize?</span>
+    <app-passage-selector-body
+      [bible]="bible"
+      [providedOptions]="providedOptions"
+      [nWordsToPreview]="40"
+      [(passage)]="this.passage"
+    ></app-passage-selector-body>
+  </ng-container>
+  <ng-container *ngIf="currentStep === 2">
+    <span class="message-text">Have you already memorized this passage?</span>
+    <div class="memorized-radio-group">
+      <button class="memorized-button" [ngClass]="{ on: this.memorized, off: !this.memorized }" mat-fab extended color="primary" (click)="this.memorized = true">
+        <mat-icon>check</mat-icon>
+        Yes
+      </button>
+      <button class="memorized-button" [ngClass]="{ on: !this.memorized, off: this.memorized }" mat-fab extended color="primary" (click)="this.memorized = false">
+        <mat-icon>close</mat-icon>
+        No
+      </button>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="currentStep === 3">
+    <span class="message-text">Would you like to apply any attempts towards this goal?</span>
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef class="checkbox-column">
+          <mat-checkbox color='p-dark' (change)="$event ? masterToggle() : null" [checked]="isAllSelected()" [indeterminate]="isOneSelected() && !isAllSelected()"></mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let attempt">
+          <mat-checkbox color='primary' (click)="$event.stopPropagation()" [(ngModel)]="attempt.selected"></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="passage">
+        <mat-header-cell *matHeaderCellDef>Passage</mat-header-cell>
+        <mat-cell *matCellDef="let attempt">{{ getPassageName(attempt.result) }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="date">
+        <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+        <mat-cell *matCellDef="let attempt">{{ getRelativeDate(attempt.result.timestamp) }}</mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row class="row" *matRowDef="let row; columns: displayedColumns;" (click)="row.selected = !row.selected"></mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Paginate attempts"></mat-paginator>
+  </ng-container>
+
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="previousStep()" *ngIf="currentStep > 1">Back</button>
+  @if (currentStep === 3 || currentStep === 2 && attempts.length === 0) {
+    <button mat-raised-button color="primary" (click)="createGoal()" [disabled]="!canProceed()">
+      Create
+    </button>
+  } @else {
+    <button mat-raised-button color="primary" (click)="nextStep()" [disabled]="!canProceed()">
+      Next
+    </button>
+  }
+</div>

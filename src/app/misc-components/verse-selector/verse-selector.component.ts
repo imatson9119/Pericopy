@@ -89,8 +89,8 @@ export class VerseSelectorComponent implements OnChanges {
               verse: verse,
               index:
                 this.selectionType === SelectionType.START
-                  ? verse.m.i
-                  : (verse.m.i += verse.m.l),
+                  ? 0
+                  : verse.m.l
             });
           } else if (book && chapter) {
             this.setValue({
@@ -102,9 +102,8 @@ export class VerseSelectorComponent implements OnChanges {
                   : chapter.v[chapter.v.length - 1],
               index:
                 this.selectionType === SelectionType.START
-                  ? chapter.v[0].m.i
-                  : chapter.v[chapter.v.length - 1].m.i +
-                    chapter.v[chapter.v.length - 1].m.l,
+                  ? 0
+                  : chapter.v[chapter.v.length - 1].m.l,
             });
           } else if (book) {
             this.setValue({
@@ -119,9 +118,8 @@ export class VerseSelectorComponent implements OnChanges {
                   : book.c[book.c.length - 1].v[book.c[book.c.length - 1].v.length - 1],
               index: 
                 this.selectionType === SelectionType.START
-                  ? book.c[0].v[0].m.i
-                  : book.c[book.c.length - 1].v[book.c[book.c.length - 1].v.length - 1].m.i +
-                    book.c[book.c.length - 1].v[book.c[book.c.length - 1].v.length - 1].m.l,
+                  ? 0
+                  : book.c[book.c.length - 1].v[book.c[book.c.length - 1].v.length - 1].m.l,
             });
           }
         }
@@ -135,6 +133,7 @@ export class VerseSelectorComponent implements OnChanges {
   }
 
   updateObjectRerencesWithNewBible() {
+    // console.log("Updating object references with new Bible");
     if (!this.bible || !this.value) {
       return;
     }
@@ -146,7 +145,7 @@ export class VerseSelectorComponent implements OnChanges {
       book: newLoc.book,
       chapter: newLoc.chapter,
       verse: newLoc.verse,
-      index: 0,
+      index: this.selectionType === SelectionType.START ? 0 : newLoc.verse.m.l,
     });
   }
 
@@ -207,6 +206,6 @@ export class VerseSelectorComponent implements OnChanges {
     this.valueChange.emit(this.value);
     this.valid.emit(this.isValid());
     this.select.emit(this.value);
-    console.log("Set index to " + this.value?.index);
+    // console.log("Set index to " + this.value?.index);
   }
 }

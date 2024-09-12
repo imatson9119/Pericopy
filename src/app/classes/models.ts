@@ -95,7 +95,7 @@ export interface BiblePointer {
   book: Book;
   chapter: Chapter;
   verse: Verse;
-  index: number;
+  index: number; // Index in the original verse
 }
 
 export interface VerseMetadata {
