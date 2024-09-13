@@ -255,6 +255,10 @@ export function intersection(start1: number, end1: number, start2: number, end2:
   return start1 <= (end2-1) && start2 <= (end1-1);
 }
 
+export function covers(startOuter: number, endOuter: number, startInner: number, endInner: number): boolean {
+  return startOuter <= startInner && endOuter >= endInner;
+}
+
 export function getAttemptText(result: IResult): string {
   let build = '';
   for (let bookDiff of result.diff.v) {

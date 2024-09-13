@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Bible } from '../classes/Bible';
-import { Goal, IResult } from '../classes/models';
+import { IResult } from '../classes/models';
 import { BibleService } from '../services/bible.service';
 import { StorageService } from '../services/storage.service';
 import { getRelativeDate, intersection } from '../utils/utils';
@@ -16,6 +16,7 @@ import { accuracyChartConfig } from './chart-configs/accuracy-chart-config';
 import { timelineConfig } from './chart-configs/timeline-chart-config';
 import 'chartjs-adapter-luxon';
 import { BiblePassage } from '../classes/BiblePassage';
+import { Goal } from '../classes/Goal';
 
 @Component({
   selector: 'app-goal',

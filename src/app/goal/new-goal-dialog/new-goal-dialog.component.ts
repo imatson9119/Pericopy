@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { Goal, GoalStatus } from 'src/app/classes/Goal';
 
 interface AttemptSelector {
   result: IResult;
@@ -156,6 +157,14 @@ export class NewGoalDialogComponent implements OnDestroy {
   }
 
   createGoal(): void {
+    const selectedAttempts: IResult[] = this.attempts.filter((a) => a.selected).map((a) => a.result);
+    let goal = new Goal(
+      this.passage!,
+      this.bible!,
+      selectedAttempts,
+      this.memorized ? GoalStatus.MAINTAINING : GoalStatus.MEMORIZING
+    );
 
+    this._dialogRef.close(goal);
   }
 }

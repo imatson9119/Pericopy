@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Goal, GoalBank, IResult, ResultBank } from '../classes/models';
+import { GoalBank, IResult, ResultBank } from '../classes/models';
 import { intersection, replacer, reviver } from '../utils/utils';
+import { Goal } from '../classes/Goal';
 
 @Injectable({
   providedIn: 'root'
@@ -145,7 +146,7 @@ export class StorageService {
     localStorage.setItem(this.resultBankStorageKey, JSON.stringify(this.resultBank, replacer));
   }
 
-  getAttempts(version: string = ''){
+  getAttempts(version: string = ''): Map<string, IResult> {
     let attempts = new Map<string, IResult>();
     for(let attempt of this.resultBank.results.values()){
       if (version == '' || attempt.diff.m.t == version){
@@ -155,7 +156,7 @@ export class StorageService {
     return attempts;
   }
 
-  getLastAttempt(version: string = ''){
+  getLastAttempt(version: string = ''): IResult | undefined {
     let attempts = this.getAttempts();
     let lastAttempt = undefined;
     for(let attempt of attempts.values()){

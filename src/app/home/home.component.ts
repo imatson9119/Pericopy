@@ -1,14 +1,12 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { Goal, IResult } from '../classes/models';
+import { IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BibleService } from '../services/bible.service';
 import { getRelativeDate, intersection } from '../utils/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { DeleteGoalDialogComponent } from '../goal/delete-goal-dialog/delete-goal-dialog.component';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
-import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
 import { Router } from '@angular/router';
 import { BiblePassage } from '../classes/BiblePassage';
 import { MatTableDataSource } from '@angular/material/table';
@@ -16,6 +14,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
+import { Goal } from '../classes/Goal';
 
 @Component({
   selector: 'app-home',
@@ -141,30 +140,12 @@ export class HomeComponent implements OnDestroy {
         options: passages,
         width: '600px'
       },
-    }).afterClosed().subscribe((passage: BiblePassage | undefined) => {
-      if (passage && this.bible) {
-        for (let goal of this.goals) {
-          if (goal.i === passage.i && goal.j === passage.j && goal.translation === this.bible.m.t) {
-            this._snackBar.open('Goal already exists for this passage', 'Close', {
-              duration: 5000,
-            });
-            return;
-          }
-        }
-        let id = uuidv4();
-        let goal: Goal = {
-          id: id,
-          i: passage.i,
-          j: passage.j,
-          t: Date.now(),
-          title: this.bible.getPassage(passage.i, passage.j).toString(),
-          translation: this.bible.m.t,
-          attempts: new Set(this.getIntersectingAttempts(passage.i, passage.j))
-        }
+    }).afterClosed().subscribe((goal: Goal | undefined) => {
+      if (goal) {
         this._storageService.storeGoal(goal);
         this.goals.unshift(goal);
         this.dataSource = new MatTableDataSource<Goal>(this.goals);
-      }
+      } 
     });
   }
 

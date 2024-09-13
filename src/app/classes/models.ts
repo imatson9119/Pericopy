@@ -1,4 +1,5 @@
-import { Card, Rating } from "ts-fsrs";
+import { Rating } from "ts-fsrs";
+import { Goal } from "./Goal";
 
 
 export interface IResult {
@@ -138,28 +139,6 @@ export interface Reference {
 export interface GoalBank {
   version: number;
   goals: Map<string, Goal>;
-}
-
-export enum GoalStatus {
-  MEMORIZING,
-  MAINTAINING,
-  MASTERED,
-  INACTIVE
-}
-
-
-export interface Goal {
-  id: string; // Unique identifier
-  t: number; // Timestamp
-  title: string; // Title
-  translation: string; // Translation
-  i: number; // Start index
-  j: number; // End index
-  attempts: Set<string>; // Attempt IDs
-  // status: GoalStatus | undefined; // Status
-  // lastAttemptTimestamp: number | undefined; // Last attempt timestamp
-  // interval: number | undefined; // Number of days between attempts
-  // fsrsCard: Card | undefined; // FSRS card
 }
 
 export enum AnchorType {
