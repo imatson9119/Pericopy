@@ -12,6 +12,18 @@ export interface IResult {
   difficulty: Rating | undefined
 }
 
+export function getRatingFromAttempt(IResult: IResult): Rating {
+  // Used to calculate the actual rating of an attempt given the user responded difficulty
+  // and the score of the attempt. 
+  if(IResult.score < 0.85){
+    return Rating.Again;
+  }
+  if(IResult.difficulty === undefined){
+    return Rating.Hard;
+  }
+  return IResult.difficulty;
+}
+
 export interface ResultBank {
   version: number;
   results: Map<string, IResult>;

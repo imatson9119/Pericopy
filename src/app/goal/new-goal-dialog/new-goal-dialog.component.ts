@@ -158,13 +158,13 @@ export class NewGoalDialogComponent implements OnDestroy {
 
   createGoal(): void {
     const selectedAttempts: IResult[] = this.attempts.filter((a) => a.selected).map((a) => a.result);
-    let goal = new Goal(
+    let goal = Goal.createGoal(
       this.passage!,
       this.bible!,
       selectedAttempts,
       this.memorized ? GoalStatus.MAINTAINING : GoalStatus.MEMORIZING
     );
-
+    this._storageService.storeGoal(goal);
     this._dialogRef.close(goal);
   }
 }

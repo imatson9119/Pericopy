@@ -1,5 +1,7 @@
 import { Change } from "diff";
 import { DiffType, IResult, WordChange } from "../classes/models";
+import { Goal } from "../classes/Goal";
+import { Card } from 'ts-fsrs';
 
 
 const bookAbbreviations: { [key: string]: string } = {
@@ -183,6 +185,19 @@ export function getRelativeDate(dateParam: string | Date | number | null): strin
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 }
 
+/**
+ * Gets the days until a given date, or negative if the date is in the past.
+ * Note that midnight of the current day is considered the start of the day.
+ * 
+ * @param d The date to count down to
+ */
+export function daysUntil(d: Date) {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
+  return Math.floor((d.getTime() - now.getTime()) / 86400000);
+}
+
 export function abbreviateBookName(bookName: string): string {
   return bookAbbreviations[bookName.toLowerCase()] || bookName;
 }
@@ -223,16 +238,30 @@ export function numberToColorHsl(i: number, saturation = .4, lightness = .8) {
   return 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'; 
 }
 
-export function replacer(key: any, value: any) {
+export function replacer(key: any, value: any): any {
   if(value instanceof Map) {
     return {
       dataType: 'Map',
-      value: Array.from(value.entries()), // or with spread: value: [...value]
+      value: Array.from(value.entries()).map((x) => {
+        return [x[0], replacer(null, x[1])];
+      }),
     };
   } else if (value instanceof Set){
     return {
       dataType: 'Set',
-      value: Array.from(value.values())
+      value: Array.from(value.values()).map((x) => {
+        return replacer(null, x);
+      })
+    }
+  } else if (value instanceof Goal){
+    return {
+      dataType: 'Goal',
+      value: value
+    }
+  } else if (value instanceof Date){
+    return {
+      dataType: 'Date',
+      value: value.toISOString()
     }
   } else {
     return value;
@@ -246,6 +275,12 @@ export function reviver(key: any, value: any) {
     }
     if (value.dataType === 'Set') {
       return new Set(value.value);
+    }
+    if (value.dataType === 'Goal') {
+      return Goal.fromJSON(value.value);
+    }
+    if (value.dataType === 'Date') {
+      return new Date(value.value);
     }
   }
   return value;

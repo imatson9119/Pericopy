@@ -3,13 +3,12 @@ import {
   createEmptyCard,
   fsrs,
   generatorParameters,
-  Rating,
 } from 'ts-fsrs';
 import { Bible } from './Bible';
-import { IResult } from './models';
+import { getRatingFromAttempt, IResult } from './models';
 import { v4 as uuidv4 } from 'uuid';
 import { BiblePassage } from './BiblePassage';
-import { covers, intersection } from '../utils/utils';
+import { covers, intersection, replacer, reviver } from '../utils/utils';
 
 export enum GoalStatus {
   MEMORIZING,
@@ -29,63 +28,123 @@ export class Goal {
   j: number; // End index
   attempts: Set<string>; // Attempt IDs
   status: GoalStatus | undefined; // Status
-  lastAttemptTimestamp: number | undefined; // Last attempt timestamp
   fsrsCard: Card | undefined; // FSRS card
 
   constructor(
+    id: string,
+    t: number,
+    title: string,
+    translation: string,
+    i: number,
+    j: number,
+    attempts: Set<string>,
+    status: GoalStatus | undefined,
+    fsrsCard: Card | undefined
+  ) {
+    this.id = id;
+    this.t = t;
+    this.title = title;
+    this.translation = translation;
+    this.i = i;
+    this.j = j;
+    this.attempts = attempts;
+    this.status = status;
+    this.fsrsCard = fsrsCard;
+  }
+
+  static createGoal(
     passage: BiblePassage,
     bible: Bible,
     prevAttempts: IResult[],
     status: GoalStatus | undefined
   ) {
-    this.id = uuidv4();
-    this.t = Date.now();
-    this.translation = bible.m.t;
-    this.i = passage.i;
-    this.j = passage.j;
-    this.title = bible.getPassage(passage.i, passage.j).toString();
-    this.status = status;
-    this.attempts = new Set(
+    let id = uuidv4();
+    let t = Date.now();
+    let translation = bible.m.t;
+    let i = passage.i;
+    let j = passage.j;
+    let title = bible.getPassage(passage.i, passage.j).toString();
+    let goalStatus = status;
+    let attempts = new Set(
       prevAttempts
         .filter((a) => {
-          return intersection(a.diff.i, a.diff.j, this.i, this.j);
+          return intersection(a.diff.i, a.diff.j, i, j);
         })
         .map((a) => a.id)
     );
-    if (this.status === GoalStatus.MAINTAINING) {
-      this.createFSRSCard(new Map(prevAttempts.map((a) => [a.id, a])));
+    let fsrsCard = undefined;
+    if (status === GoalStatus.MAINTAINING) {
+      fsrsCard = Goal.createFSRSCardWithAttempts(i, j, prevAttempts);
     }
+    return new Goal(id, t, title, translation, i, j, attempts, goalStatus, fsrsCard);
   }
 
-  promoteToMaintaining(attemptBank: Map<string, IResult>): void {
+  promoteToMaintaining(): void {
     this.status = GoalStatus.MAINTAINING;
-    this.createFSRSCard(attemptBank);
   }
-  createFSRSCard(attemptBank: Map<string, IResult>): void {
-    let fsrsCard = createEmptyCard(Date.now());
-    const fullAttempts: IResult[] = Array.from(this.attempts)
-      .map((id) => attemptBank.get(id)!)
-      .filter((a) => a !== undefined && covers(a.diff.i, a.diff.j, this.i, this.j));
-    if (fullAttempts.length !== 0) {
-      const lastAttempt = fullAttempts.reduce((prev, current) => {
-        return prev.timestamp > current.timestamp ? prev : current;
-      }); 
-      fsrsCard.difficulty = lastAttempt.difficulty || Rating.Good;
-      fsrsCard.elapsed_days = Math.floor(
-        (Date.now() - lastAttempt.timestamp) / (1000 * 60 * 60 * 24)
-      );
-      fsrsCard.reps = fullAttempts.length;
-    }
-    this.fsrsCard = fsrsCard;
 
+  /**
+   * 
+   * @param i - The start index of the goal.
+   * @param j - The end index of the goal.
+   * @param attemptList - The list of attempts to use to create the FSRS card.
+   * @returns The FSRS card.
+   * 
+   */
+  static createFSRSCardWithAttempts(i: number, j: number, attemptList: IResult[]): Card | undefined {
+    const fullAttempts: IResult[] = attemptList.filter((a) => {
+      return covers(a.diff.i, a.diff.j, i, j)
+    }).sort((a, b) => a.timestamp - b.timestamp);
     const params = generatorParameters({
-      enable_fuzz: true,
+      enable_fuzz: false,
       enable_short_term: false,
     });
     const f = fsrs(params);
-    console.log(f.repeat(fsrsCard, Date.now()));
-    console.log(f.repeat(fsrsCard, Date.now()));
+    
+    if (fullAttempts.length === 0) {
+      return undefined
+    }
+
+    let card = createEmptyCard(fullAttempts[0].timestamp);
+    for (let attempt of fullAttempts) {
+      const aDiff = getRatingFromAttempt(attempt);
+      // @ts-ignore
+      card = f.repeat(card, attempt.timestamp)[aDiff].card;
+    }
+    console.log("Refreshed FSRS card: ", card);
+    return card;
   }
+
+  /**
+   * Adds an attempt to the goal, updating the goal's attempts, last attempt timestamp, and FSRS card.
+   * @param attempt - The attempt to add
+   * @param attemptBank - The entire attempt bank containing all the user's attempts.
+   */
+  addAttempt(attemptId: string, attemptBank: Map<string, IResult>): void {
+    this.attempts.add(attemptId);
+    if (this.status === GoalStatus.MAINTAINING) {
+      this.fsrsCard = Goal.createFSRSCardWithAttempts(this.i, this.j, Goal.getGoalAttempts(this, attemptBank));
+    }
+  }
+
+  /**
+   * Deletes an attempt from the goal, updating the goal's attempts and FSRS card.
+   * @param attemptId - The ID of the attempt to delete
+   * @param attemptBank - The entire attempt bank containing all the user's attempts.
+   */
+  deleteAttempt(attemptId: string, attemptBank: Map<string, IResult>): void {
+    this.attempts.delete(attemptId);
+    if (this.status === GoalStatus.MAINTAINING) {
+      this.fsrsCard = Goal.createFSRSCardWithAttempts(this.i, this.j, Goal.getGoalAttempts(this, attemptBank));
+    }
+  }
+
+  static getGoalAttempts(goal: Goal, attemptBank: Map<string, IResult>): IResult[] {
+    return Array.from(goal.attempts.values()).map((id) => {
+      return attemptBank.get(id);
+    }).filter((a) => a !== undefined);
+  }
+  
 
   toJSON(): object {
     return {
@@ -97,8 +156,24 @@ export class Goal {
       j: this.j,
       attempts: this.attempts,
       status: this.status,
-      lastAttemptTimestamp: this.lastAttemptTimestamp,
-      fsrsCard: this.fsrsCard,
+      fsrsCard: this.fsrsCard 
     };
+  }
+
+  static fromJSON(json: any): Goal {
+    if (json.fsrsCard) {
+      json.fsrsCard.due = new Date(json.fsrsCard.due);
+    }
+    return new Goal(
+      json.id,
+      json.t,
+      json.title,
+      json.translation,
+      json.i,
+      json.j,
+      new Set(json.attempts),
+      json.status,
+      json.fsrsCard
+    );
   }
 }

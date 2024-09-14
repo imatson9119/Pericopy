@@ -7,7 +7,7 @@ import { Bible } from '../classes/Bible';
 import { IResult } from '../classes/models';
 import { BibleService } from '../services/bible.service';
 import { StorageService } from '../services/storage.service';
-import { getRelativeDate, intersection } from '../utils/utils';
+import { daysUntil, getRelativeDate, intersection } from '../utils/utils';
 import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
@@ -16,7 +16,7 @@ import { accuracyChartConfig } from './chart-configs/accuracy-chart-config';
 import { timelineConfig } from './chart-configs/timeline-chart-config';
 import 'chartjs-adapter-luxon';
 import { BiblePassage } from '../classes/BiblePassage';
-import { Goal } from '../classes/Goal';
+import { Goal, GoalStatus } from '../classes/Goal';
 
 @Component({
   selector: 'app-goal',
@@ -26,6 +26,8 @@ import { Goal } from '../classes/Goal';
 export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   goalId = '';
   attempts: Map<string, IResult> = new Map();
+  GoalStatus = GoalStatus;
+  daysUntil = daysUntil;
 
   goal: Goal | undefined = undefined;
   bible: Bible | undefined = undefined;
@@ -171,14 +173,14 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
     this.attempts = new Map();
-    this._storageService.getAttempts(this.bible!.m.t).forEach((result) => {
-      if (intersection(this.goal!.i, this.goal!.j, result.diff.i, result.diff.j)) {
-        this.attempts.set(result.id, result);
-        if (!result.goals) result.goals = new Set();
-        result.goals.add(this.goalId);
+    for (let attemptId of this.goal.attempts) {
+      let attempt = this._storageService.getAttempt(attemptId);
+      if (attempt && intersection(this.goal.i, this.goal.j, attempt.diff.i, attempt.diff.j)) {
+        this.attempts.set(attemptId, attempt);
       }
-    });
-    this.goal.attempts = new Set([...this.attempts.keys()]);
+    }
+
+    this.goal.attempts = new Set(this.attempts.keys());
     this._storageService.storeGoals();
     this._storageService.storeAttempts();
   }
@@ -221,11 +223,22 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   makeAttempt() {
-    this._router.navigateByUrl('/input');
+    if (!this.goal) {
+      return;
+    }
+    this._router.navigateByUrl('/recite?i=' + this.goal.i + '&j=' + this.goal.j);
   }
 
   viewInHeatmap() {
     this._router.navigate(['/heatmap'], { queryParams: { loc: this.goal?.i || 0 } });
+  }
+
+  promoteGoal() {
+    if (!this.goal) {
+      return;
+    }
+    this.goal.promoteToMaintaining();
+    this._storageService.storeGoals();
   }
 
   getPercentageMemorized(): number {

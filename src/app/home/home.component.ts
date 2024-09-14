@@ -142,7 +142,6 @@ export class HomeComponent implements OnDestroy {
       },
     }).afterClosed().subscribe((goal: Goal | undefined) => {
       if (goal) {
-        this._storageService.storeGoal(goal);
         this.goals.unshift(goal);
         this.dataSource = new MatTableDataSource<Goal>(this.goals);
       } 

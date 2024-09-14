@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GoalBank, IResult, ResultBank } from '../classes/models';
 import { intersection, replacer, reviver } from '../utils/utils';
-import { Goal } from '../classes/Goal';
+import { Goal, GoalStatus } from '../classes/Goal';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +27,16 @@ export class StorageService {
       this.storeGoals();
       return;
     }
-    let goalBank = JSON.parse(storedGoalBank, reviver);
+    let goalBank: any = JSON.parse(storedGoalBank, reviver);
+    if (goalBank.version === 1){
+      for (let goal of goalBank.goals.values()){
+        goal = this.goalV1toV2(goal);
+        goalBank.goals.set(goal.id, goal);
+      }
+    }
+    goalBank.version = 2;
     this.goalBank = goalBank;
+    this.storeGoals();
   }
 
   storeGoals() {
@@ -110,7 +118,7 @@ export class StorageService {
       for (let goalId of result.goals){
         let goal = this.goalBank.goals.get(goalId);
         if (goal){
-          goal.attempts?.add(result.id);
+          goal.addAttempt(result.id, this.resultBank.results);
         } else {
           result.goals.delete(goalId);
         }
@@ -129,7 +137,7 @@ export class StorageService {
       for (let goalId of result.goals){
         let goal = this.goalBank.goals.get(goalId);
         if (goal){
-          goal.attempts?.delete(id);
+          goal.deleteAttempt(id, this.resultBank.results);
         }
       }
       this.storeGoals();
@@ -182,5 +190,12 @@ export class StorageService {
     }
     this.storeAttempts();
     this.storeGoals();
+  }
+
+  goalV1toV2(goal: Goal): Goal {
+    goal = Goal.fromJSON(goal);
+    goal.status = GoalStatus.MEMORIZING;
+    goal.fsrsCard = undefined;
+    return goal;
   }
 }

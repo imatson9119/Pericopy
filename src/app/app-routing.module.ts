@@ -7,18 +7,18 @@ import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { InfoComponent } from './info/info.component';
 import { HomeComponent } from './home/home.component';
 import { GoalComponent } from './goal/goal.component';
-import { PracticeComponent } from './practice/practice.component';
+import { MemorizeComponent } from './memorize/memorize.component';
 
 const routes: Routes = [
-  { path: 'test', component: InputComponent },
+  { path: 'recite', component: InputComponent },
   { path: 'results', component: SingleAttemptComponent },
   { path: 'history', component: HistoryComponent },
   { path: 'heatmap', component: HeatmapComponent },
   { path: 'info', component: InfoComponent },
   { path: 'goal', component: GoalComponent },
-  { path: 'practice', component: PracticeComponent   },
+  { path: 'memorize', component: MemorizeComponent },
   { path: '', component: HomeComponent },
-  { path: '**', redirectTo: '/test',}
+  { path: '**', redirectTo: '',}
 ];
 
 @NgModule({

@@ -1,3 +1,4 @@
+
 h2 {
   font-size: 1.8rem;
   font-weight: 100;
@@ -5,8 +6,6 @@ h2 {
 
 .result-container {
   padding-top: 4rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
   margin-bottom: 4rem;
 }
 
@@ -21,6 +20,9 @@ h2 {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
 }
 .stat-grid {
   display: flex;
@@ -127,6 +129,11 @@ h2 {
   }
 }
 
+.goal-body {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .row {
   cursor: pointer;
   transition: background 0.3s;
@@ -162,6 +169,8 @@ h2 {
 }
 
 .toolbar {
+  padding-left: 1rem;
+  padding-right: 1rem;
   display: flex;
   gap: 1rem;
   flex-wrap: wrap-reverse;
@@ -178,12 +187,86 @@ h2 {
   }
 }
 
+.status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem; 
+  min-height: 50px;
+  box-sizing: border-box;
+  padding: .3rem;
+  background-color: #607d8b33;
+  color: #223a46;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  box-shadow: 0px 2px 5px rgb(0 0 0 / 30%);
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #4a555b;
+  }
+}
+
+.status-banner.promote {
+  background-color: rgb(104 139 96 / 20%);
+  color: #19462f;
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #608b73;
+  }
+}
+
+.status-banner.recitation-reminder {
+  background-color: #607d8b33;
+  color: #223a46;
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #4a555b;
+  }
+}
+
+.status-banner.recitation-overdue {
+  background-color: rgb(139 96 96 / 20%);
+  color: #462222;
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #8b6060;
+  }
+}
+
+
+
+.status-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: .8rem;
+}
+
+@media (min-width: 1000px) {
+  .status-banner {
+    border-radius: 10px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
+
 // media rule
 @media (max-width: 768px) {
+  
   .result-container {
     padding-top: 2rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+  }
+
+  .result-header {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  .toolbar {
+    padding-left: .5rem;
+    padding-right: .5rem;
   }
 
   .result-title {
@@ -192,6 +275,16 @@ h2 {
 
   .result-subtitle {
     font-size: 0.8rem;
+  }
+
+  .goal-body {
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  .status-banner {
+    padding-left: .5rem;
+    padding-right: .5rem;
   }
 }
 

@@ -10,13 +10,13 @@
       </div>
     </div>
     <div class="toolbar">
-      <button class="test" mat-fab extended color="primary" routerLink="/test">
+      <button class="test" mat-fab extended color="primary" routerLink="/recite">
         <mat-icon>edit_note</mat-icon>
-        Test
+        Recite
       </button>
-      <button class="practice" mat-fab extended color="primary" routerLink="/practice">
+      <button class="memorize" mat-fab extended color="primary" routerLink="/memorize">
         <mat-icon>location_searching</mat-icon>
-        Practice
+        Memorize
       </button>
       <button class='heatmap' mat-fab extended color="primary" routerLink="/heatmap">
         <mat-icon>local_fire_department</mat-icon>
@@ -34,11 +34,12 @@
     @if (this.attempts.size !== 0) {
       <div class="stats">
         <span
-          >You've memorized <span class="emphasis">{{ totalVerses }}</span> verses
+          >You've memorized <span class="emphasis">{{ totalVerses }}</span> {{ totalVerses === 1 ? "verse" : "verses" }}
           so far - keep it up!</span
         >
       </div>
     }
+    <br>
     <div class="goals">
       <div class="goals-header">
         <div>Your Goals</div>

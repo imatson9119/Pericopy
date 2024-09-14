@@ -90,7 +90,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     if(this.currentResult === undefined || this.resultId === ""){
       return;
     }
-    this._router.navigate(['/test'], { queryParams: { id: this.resultId } });
+    this._router.navigate(['/recite'], { queryParams: { id: this.resultId } });
   }
 
   generateResultStats(): void {

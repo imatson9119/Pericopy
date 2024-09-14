@@ -24,11 +24,11 @@ enum InputState {
 }
 
 @Component({
-  selector: 'app-practice',
-  templateUrl: './practice.component.html',
-  styleUrls: ['./practice.component.scss'],
+  selector: 'app-memorize',
+  templateUrl: './memorize.component.html',
+  styleUrls: ['./Memorize.component.scss'],
 })
-export class PracticeComponent
+export class MemorizeComponent
   implements OnDestroy
 {
   attempt = '';

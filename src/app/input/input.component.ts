@@ -14,12 +14,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
-import { BibleDiff, BiblePointer, DiffType, IResult } from '../classes/models';
+import { BibleDiff, BiblePointer, DiffType, getRatingFromAttempt, IResult } from '../classes/models';
 import { v4 as uuidv4 } from 'uuid';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { DifficultyDialogComponent } from './difficulty-dialog/difficulty-dialog.component';
-import { Rating } from 'ts-fsrs';
 import { SelectionType } from '../misc-components/verse-selector/verse-selector.component';
 
 declare const annyang: any;
@@ -55,13 +54,38 @@ export class InputComponent
   ) {
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
+        if (bible) {
+          this.bible = bible;
+  
+          const queryParams = this.router.parseUrl(this.router.url).queryParams;
+          let id = queryParams['id'];
+          let i = queryParams['i'];
+          let j = queryParams['j'];
+  
+          if (i < j) {
+            let start = this.bible.get(i); 
+            let end = this.bible.get(j-1); 
 
-        let id = this.router.parseUrl(this.router.url).queryParams['id'];
-        if (id != undefined) {
-          this.editResult(id);
-        } else {
-          this.router.navigateByUrl('/test');
+            this.startRef = {
+              book: start.book,
+              chapter: start.chapter,
+              verse: start.verse,
+              index: i - start.verse.m.i,
+            };
+            this.endRef = {
+              book: end.book,
+              chapter: end.chapter,
+              verse: end.verse,
+              index: j - end.verse.m.i - 1,
+            }
+            this.detectPassage = false;
+          }
+        
+          if (id != undefined) {
+            this.editResult(id);
+          } else {
+            this.router.navigateByUrl('/recite');
+          }
         }
       })
     );
@@ -116,25 +140,25 @@ export class InputComponent
     }
     let result = this._storageService.getAttempt(id);
     if (result === undefined) {
-      this.router.navigateByUrl('/test');
+      this.router.navigateByUrl('/recite');
       return;
     }
     this.attempt = result.raw ? result.raw : getAttemptText(result);
-    this.detectPassage = false;
-    let start = this.bible.get(result.diff.i);
-    let end = this.bible.get(result.diff.j - 1);
-    this.startRef = {
-      book: start.book,
-      chapter: start.chapter,
-      verse: start.verse,
-      index: 0,
-    };
-    this.endRef = {
-      book: end.book,
-      chapter: end.chapter,
-      verse: end.verse,
-      index: 0,
-    };
+    // this.detectPassage = false;
+    // let start = this.bible.get(result.diff.i);
+    // let end = this.bible.get(result.diff.j - 1);
+    // this.startRef = {
+    //   book: start.book,
+    //   chapter: start.chapter,
+    //   verse: start.verse,
+    //   index: result.diff.i - start.verse.m.i,
+    // };
+    // this.endRef = { // End is inclusive
+    //   book: end.book,
+    //   chapter: end.chapter,
+    //   verse: end.verse,
+    //   index: result.diff.j - end.verse.m.i - 1,
+    // };
     this.editingId = id;
   }
 
@@ -168,8 +192,8 @@ export class InputComponent
       if (!this.startRef || !this.endRef) {
         return;
       }
-      let start = this.startRef.verse.m.i;
-      let end = this.endRef.verse.m.i + this.endRef.verse.m.l;
+      let start = this.startRef.verse.m.i + this.startRef.index;
+      let end = this.endRef.verse.m.i + this.endRef.index;
       this.getAndStoreDiff(this.bible.getPassage(start, end));
     }
   }
@@ -183,17 +207,24 @@ export class InputComponent
       throw new Error('Error getting diff');
     }
     let attempt: IResult = this.processDiff(diff);
-    const dialogRef = this._dialog.open(DifficultyDialogComponent);
+    if (!this.editingId) {
+      const dialogRef = this._dialog.open(DifficultyDialogComponent);
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === undefined) {
+          return;
+        }
+        attempt.difficulty = result;
+        attempt.difficulty = getRatingFromAttempt(attempt);
+        this.storeAttempt(attempt);
+      });
+    } else {
+      this.storeAttempt(attempt);
+    }
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === undefined) {
-        return;
-      }
-      const difficulty = result; 
-      attempt.difficulty = difficulty;
-      this._storageService.storeAttempt(attempt);
-      this.router.navigate(['/results'], { queryParams: { id: attempt.id } });
-    });
+  storeAttempt(attempt: IResult) {
+    this._storageService.storeAttempt(attempt);
+    this.router.navigate(['/results'], { queryParams: { id: attempt.id } });
   }
 
   canAutoLock(anchorList: [BiblePassage, number][], attempt: string) {
@@ -243,7 +274,6 @@ export class InputComponent
     const prevResult = this._storageService.getAttempt(this.editingId);
     let totalCorrect = 0;
     let totalWords = 0;
-    let timestamp = prevResult ? prevResult.timestamp : Date.now();
     for (let book of diff.v) {
       for (let chapter of book.v) {
         for (let verse of chapter.v) {
@@ -266,17 +296,19 @@ export class InputComponent
       for (let goal of this._storageService.getGoals().values()) {
         if (intersection(goal.i, goal.j, diff.i, diff.j)) {
           goal.attempts.add(id);
+          goalsApplied.add(goal.id);
         }
       }
     }
+
     return {
       id: id,
       diff: diff,
-      timestamp: timestamp,
+      timestamp: prevResult ? prevResult.timestamp : Date.now(),
       score: score,
       raw: this.attempt,
       goals: goalsApplied,
-      difficulty: Rating.Good
+      difficulty: prevResult ? prevResult.difficulty : undefined,
     }
   }
 

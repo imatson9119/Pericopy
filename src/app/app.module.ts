@@ -52,8 +52,8 @@ import {
   withDefaultRegisterables,
 } from 'ng2-charts';
 import { DonatePopupComponent } from './info/donate-popup/donate-popup.component';
-import { PracticeComponent } from './practice/practice.component';
-import { PracticeInputDivComponent } from './practice/practice-input-div/practice-input-div.component';
+import { MemorizeComponent } from './memorize/memorize.component';
+import { PracticeInputDivComponent } from './memorize/practice-input-div/practice-input-div.component';
 
 @NgModule({
   declarations: [
@@ -73,7 +73,7 @@ import { PracticeInputDivComponent } from './practice/practice-input-div/practic
     DeleteGoalDialogComponent,
     GoalComponent,
     DonatePopupComponent,
-    PracticeComponent,
+    MemorizeComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
