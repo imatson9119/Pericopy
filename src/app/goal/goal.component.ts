@@ -351,6 +351,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     this._router.navigate(['/results'], { queryParams: { id: id } }); 
   }
 
+  memorize() {
+    this._router.navigate(['/memorize']);
+  }
+
 }
 
 function getGradient(ctx :any, chartArea: any) {

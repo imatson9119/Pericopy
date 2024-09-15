@@ -200,6 +200,10 @@ h2 {
   padding-left: 2rem;
   padding-right: 2rem;
   box-shadow: 0px 2px 5px rgb(0 0 0 / 30%);
+  
+  mat-icon {
+    min-width: 24px;
+  }
 
   .mat-mdc-raised-button.mat-primary {
     --mdc-protected-button-container-color: #4a555b;

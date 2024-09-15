@@ -8,7 +8,7 @@ import { Bible } from './Bible';
 import { getRatingFromAttempt, IResult } from './models';
 import { v4 as uuidv4 } from 'uuid';
 import { BiblePassage } from './BiblePassage';
-import { covers, intersection, replacer, reviver } from '../utils/utils';
+import { covers, intersection } from '../utils/utils';
 
 export enum GoalStatus {
   MEMORIZING,
@@ -92,9 +92,14 @@ export class Goal {
    * 
    */
   static createFSRSCardWithAttempts(i: number, j: number, attemptList: IResult[]): Card | undefined {
+    console.log("Called with attempt list of size: ", attemptList.length, " and latest attempt time of ", new Date(attemptList[0].timestamp));
     const fullAttempts: IResult[] = attemptList.filter((a) => {
-      return covers(a.diff.i, a.diff.j, i, j)
+      if (covers(a.diff.i, a.diff.j + 1, i, j)) {
+      }
+      return covers(a.diff.i, a.diff.j + 1, i, j)
     }).sort((a, b) => a.timestamp - b.timestamp);
+
+    console.log("Full attempts: ", fullAttempts.length);
     const params = generatorParameters({
       enable_fuzz: false,
       enable_short_term: false,
@@ -120,10 +125,11 @@ export class Goal {
    * @param attempt - The attempt to add
    * @param attemptBank - The entire attempt bank containing all the user's attempts.
    */
-  addAttempt(attemptId: string, attemptBank: Map<string, IResult>): void {
-    this.attempts.add(attemptId);
+  addAttempt(attempt: IResult, attemptBank: Map<string, IResult>): void {
+    this.attempts.add(attempt.id);
+    attemptBank.set(attempt.id, attempt);
     if (this.status === GoalStatus.MAINTAINING) {
-      this.fsrsCard = Goal.createFSRSCardWithAttempts(this.i, this.j, Goal.getGoalAttempts(this, attemptBank));
+      this.fsrsCard = Goal.createFSRSCardWithAttempts(this.i, this.j, Goal.getGoalAttempts(this, attemptBank));;
     }
   }
 

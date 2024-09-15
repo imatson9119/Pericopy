@@ -118,7 +118,7 @@ export class StorageService {
       for (let goalId of result.goals){
         let goal = this.goalBank.goals.get(goalId);
         if (goal){
-          goal.addAttempt(result.id, this.resultBank.results);
+          goal.addAttempt(result, this.resultBank.results);
         } else {
           result.goals.delete(goalId);
         }
