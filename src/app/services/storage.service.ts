@@ -207,7 +207,7 @@ export class StorageService {
 
   isNewUser(): boolean {
     let newUser = localStorage.getItem(this.newUserStorageKey);
-    if (newUser === null){
+    if (newUser === null && this.resultBank.results.size == 0){
       return true;
     }
     return false;
