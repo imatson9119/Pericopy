@@ -41,6 +41,7 @@ export class AppComponent {
         width: '500px',
       });
       this._storageService.setNotNewUser();
+      this._storageService.setClientToUpdatedVersion();
     } else if (this._storageService.isNewVersion()) {
       this.dialog.open(UpdateDialogComponent, {
         width: '500px',
