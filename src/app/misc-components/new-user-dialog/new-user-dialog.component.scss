@@ -1,0 +1,48 @@
+
+p {
+  font-size: .9rem;
+  text-align: justify;
+}
+
+h2.mat-mdc-dialog-title {
+  color: #607d8b;
+  font-weight: 100;
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+.scripture_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+a {
+  color: #3f6171;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.verse_text {
+  font-size: 1.5rem;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.verse_reference {
+  font-size: .8rem;
+  font-weight: 100;
+  color: #5e5e5e;
+}
+
+.emphasis {
+  font-weight: 500;
+  // primary theme color
+  color: #555555;
+  font-weight: 400;
+    color: #3f6171;
+}

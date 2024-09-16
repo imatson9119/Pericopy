@@ -36,7 +36,7 @@
           <span>Keep it up! Once memorized you can begin a recitation schedule.</span>
         </div>
         <button mat-raised-button color="primary" (click)="this.memorize()">
-          Memorize
+          Practice
         </button>
       </div>
     } @else if (this.goal?.status === GoalStatus.MEMORIZING){
@@ -83,7 +83,7 @@
       <div class="status-banner recitation-overdue">
         <div class="status-banner-text">
           <mat-icon>priority_high</mat-icon>
-          <span>Your recitation is overdue by {{-this.daysUntil(this.goal!.fsrsCard!.due)}} {{this.daysUntil(this.goal!.fsrsCard!.due) === 1 ? 'day' : 'days'}}!</span>
+          <span>Your recitation is {{-this.daysUntil(this.goal!.fsrsCard!.due)}} {{this.daysUntil(this.goal!.fsrsCard!.due) === 1 ? 'day' : 'days'}} overdue</span>
         </div>
         <button mat-raised-button color="primary" (click)="this.makeAttempt()">
           Recite

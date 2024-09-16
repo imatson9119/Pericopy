@@ -1,0 +1,38 @@
+
+.dialog-content {
+  font-size: .9rem;
+}
+
+h2.mat-mdc-dialog-title {
+  color: #607d8b;
+  font-weight: 100;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+a {
+  color: #3f6171;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.version-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+  color: #666;
+  font-weight: 100;
+}
+
+.mat-icon {
+  scale: .7;
+}
+
+.emphasis {
+  font-weight: 500;
+  // primary theme color
+  color: #555555;
+  font-weight: 400;
+    color: #3f6171;
+}

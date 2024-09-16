@@ -14,6 +14,12 @@ export class StorageService {
   goalBankStorageKey = "goal_bank"
   goalBank: GoalBank;
 
+  newUserStorageKey = "pericopy_new_user"
+
+  version_storage_key = "version"
+
+  app_version = "1.1.0"
+
   constructor() { 
     this.resultBank = {"version": 1, "results": new Map()};
     this.goalBank = {"version": 1, "goals": new Map()};
@@ -197,5 +203,34 @@ export class StorageService {
     goal.status = GoalStatus.MEMORIZING;
     goal.fsrsCard = undefined;
     return goal;
+  }
+
+  isNewUser(): boolean {
+    let newUser = localStorage.getItem(this.newUserStorageKey);
+    if (newUser === null){
+      return true;
+    }
+    return false;
+  }
+
+  setNotNewUser(){
+    localStorage.setItem(this.newUserStorageKey, "false");
+  }
+
+  isNewVersion(): boolean {
+    return this.app_version != this.getClientVersion();
+  }
+
+
+  getClientVersion(): string {
+    let version = localStorage.getItem(this.version_storage_key);
+    if (version === null){
+      return "";
+    }
+    return version;
+  }
+
+  setClientToUpdatedVersion(){
+    localStorage.setItem(this.version_storage_key, this.app_version);
   }
 }
