@@ -92,7 +92,9 @@ export class Goal {
    * 
    */
   static createFSRSCardWithAttempts(i: number, j: number, attemptList: IResult[]): Card | undefined {
-    console.log("Called with attempt list of size: ", attemptList.length, " and latest attempt time of ", new Date(attemptList[0].timestamp));
+    if (attemptList.length === 0) {
+      return undefined;
+    }
     const fullAttempts: IResult[] = attemptList.filter((a) => {
       if (covers(a.diff.i, a.diff.j + 1, i, j)) {
       }

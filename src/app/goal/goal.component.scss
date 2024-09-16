@@ -228,6 +228,15 @@ h2 {
   }
 }
 
+.status-banner.recitation-due {
+  background-color: #8a7d5142;
+  color: #454622;
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #454622;
+  }
+}
+
 .status-banner.recitation-overdue {
   background-color: rgb(139 96 96 / 20%);
   color: #462222;

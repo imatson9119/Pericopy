@@ -72,8 +72,8 @@
     } @else if (this.goal?.status === GoalStatus.MAINTAINING && this.goal?.fsrsCard && this.daysUntil(this.goal!.fsrsCard!.due) === 0) {
       <div class="status-banner recitation-due">
         <div class="status-banner-text">
-          <mat-icon>schedule</mat-icon>
-          <span>Your recitation is due today!</span>
+          <mat-icon>notifications</mat-icon>
+          <span>Your recitation is due!</span>
         </div>
         <button mat-raised-button color="primary" (click)="this.makeAttempt()">
           Recite
