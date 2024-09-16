@@ -6,7 +6,6 @@
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
-  "id": "https://www.pericopy.net/",
   "icons": [
     {
       "src": "assets/icons/logo-72x72.png",
