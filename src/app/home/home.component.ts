@@ -1,6 +1,6 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { IResult } from '../classes/models';
-import { StorageService } from '../services/storage.service';
+import { StorageService, TableSettings } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BibleService } from '../services/bible.service';
 import { getRelativeDate, intersection, daysUntil } from '../utils/utils';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { BiblePassage } from '../classes/BiblePassage';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatSort, MatSortable, Sort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
 import { Goal, GoalStatus } from '../classes/Goal';
@@ -33,9 +33,17 @@ export class HomeComponent implements OnDestroy {
   showArchived = false;
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
+  private readonly componentName = 'home';
 
   constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router, private _snackBar: MatSnackBar) {
-    
+  
+  }
+  
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  ngAfterViewInit() {
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
         this.bible = bible;
@@ -44,20 +52,69 @@ export class HomeComponent implements OnDestroy {
           this.goals = [...this._storageService.getGoals(this.bible.m.t).values()].sort((a,b) => b.t - a.t);
           this.dataSource = new MatTableDataSource<Goal>(this.goals);
           this.getStats();
+          this.loadTableSettings();
+          
           setTimeout(()=>{
             this.initSorting();
+            if (this.paginator) {
+              this.subscriptions.push(
+                this.paginator.page.subscribe(() => {
+                  this.saveTableSettings();
+                })
+              );
+            }
+            
+            // Subscribe to sort events to save settings
+            if (this.sort) {
+              this.subscriptions.push(
+                this.sort.sortChange.subscribe(() => {
+                  this.saveTableSettings();
+                })
+              );
+            }
           }, 10);
+          
         }
       }
     ));
-  }
-  
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    
   }
 
-  ngAfterViewInit() {
-    this.initSorting();
+  loadTableSettings() {
+    const settings = this._storageService.getTableSettings(this.componentName);
+    if (settings) {
+      this.filterValue = settings.filterValue;
+      this.showArchived = settings.showArchived;
+      
+      // Will be applied in initSorting
+      setTimeout(() => {
+        if (this.paginator) {
+          console.log(`Setting page size to ${settings.pageSize} and page index to ${settings.pageIndex}`);
+          this.paginator.pageSize = settings.pageSize;
+          this.paginator.pageIndex = settings.pageIndex;
+        }
+        
+        if (this.sort && settings.sortActive) {
+          this.sort.active = settings.sortActive;
+          this.sort.direction = settings.sortDirection as 'asc' | 'desc';
+        }
+      });
+    }
+  }
+
+  saveTableSettings() {
+    if (!this.paginator || !this.sort) return;
+    
+    const settings: TableSettings = {
+      pageSize: this.paginator.pageSize,
+      pageIndex: this.paginator.pageIndex,
+      sortActive: this.sort.active,
+      sortDirection: this.sort.direction,
+      filterValue: this.filterValue,
+      showArchived: this.showArchived
+    };
+    
+    this._storageService.saveTableSettings(this.componentName, settings);
   }
 
   initSorting() {
@@ -80,9 +137,6 @@ export class HomeComponent implements OnDestroy {
   }
 
   applyFilter(event: Event) {
-    if(this.dataSource.paginator != null){
-      this.dataSource.paginator.firstPage();
-    }
     this.dataSource.filterPredicate = (data: Goal, _filter: string): boolean => {
       if (!this.showArchived && data.archived) {
         return false;
@@ -94,6 +148,9 @@ export class HomeComponent implements OnDestroy {
       return true;
     };
     this.dataSource.filter = `text:${this.filterValue.trim().toLowerCase()};archived:${this.showArchived}`;
+    
+    // Save settings when filter changes
+    this.saveTableSettings();
   }
 
   getStats() {

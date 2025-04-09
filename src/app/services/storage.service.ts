@@ -3,6 +3,15 @@ import { GoalBank, IResult, ResultBank } from '../classes/models';
 import { intersection, replacer, reviver } from '../utils/utils';
 import { Goal, GoalStatus } from '../classes/Goal';
 
+export interface TableSettings {
+  pageSize: number;
+  pageIndex: number;
+  sortActive: string;
+  sortDirection: string;
+  filterValue: string;
+  showArchived: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +27,9 @@ export class StorageService {
 
   version_storage_key = "version"
 
-  app_version = "1.2.0"
+  table_settings_key = "table_settings"
+
+  app_version = "1.2.1"
 
   constructor() { 
     this.resultBank = {"version": 1, "results": new Map()};
@@ -225,5 +236,20 @@ export class StorageService {
 
   setClientToUpdatedVersion(){
     localStorage.setItem(this.version_storage_key, this.app_version);
+  }
+
+  // Table settings methods
+  saveTableSettings(componentName: string, settings: TableSettings): void {
+    const key = `${this.table_settings_key}_${componentName}`;
+    localStorage.setItem(key, JSON.stringify(settings));
+  }
+
+  getTableSettings(componentName: string): TableSettings | null {
+    const key = `${this.table_settings_key}_${componentName}`;
+    const settings = localStorage.getItem(key);
+    if (settings === null) {
+      return null;
+    }
+    return JSON.parse(settings);
   }
 }
