@@ -5,6 +5,7 @@ Smaller release with some quality of life improvements
 
 - Updated the goal view to include both goal statuses and time to next recitation
 - Improved passage selection dialog to auto-select the end verse when the start verse is changed
+- Added goal archive functionality to hide completed goals from the main view
 - Saved goal table settings (sort, filter, page size, etc) between page reloads
 - Bug fixes and performance enhancements
 
