@@ -187,15 +187,8 @@ export class StorageService {
 
   importBank(bank: ResultBank){
     for(let result of bank.results.values()){
-      for (let goal of this.goalBank.goals.values()){
-        if (intersection(result.diff.i, result.diff.j, goal.i, goal.j)){
-          goal.attempts.add(result.id);
-        }
-      }
       this.storeAttempt(result);
     }
-    this.storeAttempts();
-    this.storeGoals();
   }
 
   goalV1toV2(goal: Goal): Goal {

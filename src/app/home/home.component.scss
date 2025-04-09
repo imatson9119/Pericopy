@@ -88,6 +88,57 @@ h2 {
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: stretch;
+
+    // Base style for the chip
+    .due-chip {
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: normal;
+      color: inherit;
+    }
+
+    // Base style for the status chip (can share with due-chip if identical)
+    .status-chip {
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: normal;
+      color: inherit;
+    }
+
+    // Styles for the Due In column status chips
+    .overdue {
+      background-color: #f8d7da; // Muted red
+      color: #721c24; // Darker red text for contrast
+    }
+    .due-soon {
+      background-color: #fff3cd; // Muted orange/yellow
+      color: #856404; // Darker yellow/brown text for contrast
+    }
+    .not-due {
+      background-color: #d4edda; // Muted green
+      color: #155724; // Darker green text for contrast
+    }
+
+    // Styles for the Status column chips
+    .status-memorizing {
+      background-color: #ffe8cc; // Muted blue
+      color: #543d21; // Darker blue text
+    }
+    .status-maintaining {
+      background-color: #cce5ff; // Muted blue
+      color: #004085; // Darker blue text
+      
+    }
+    .status-mastered {
+      background-color: #d1ecf1; // Muted cyan/teal
+      color: #0c5460; // Darker cyan/teal text
+    }
+    .status-inactive {
+      background-color: #efdcf5; // Muted beige/tan
+      color: #4a414e; // Darker beige/brown text
+    }
   }
 
   .row {

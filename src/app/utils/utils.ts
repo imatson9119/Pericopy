@@ -160,7 +160,7 @@ export function getWordChange(diff: Change[]): WordChange[] {
   return wordChanges;
 }
 
-export function getRelativeDate(dateParam: string | Date | number | null): string | null {
+export function getRelativeDate(dateParam: string | Date | number | null, short = false): string | null {
   if (!dateParam) {
     return null;
   }
@@ -174,13 +174,17 @@ export function getRelativeDate(dateParam: string | Date | number | null): strin
   const months = Math.round(days / 30);
 
   if (seconds < 60) {
-    return seconds === 1 ? '1 second ago' : `${seconds} seconds ago`;
+    let symbol = short ? 's' : seconds === 1 ? ' second' : ' seconds';
+    return `${seconds}${symbol} ago`;
   } else if (minutes < 60) {
-    return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+    let symbol = short ? 'm' : minutes === 1 ? ' minute' : ' minutes';
+    return `${minutes}${symbol} ago`;
   } else if (hours < 24) {
-    return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    let symbol = short ? 'h' : hours === 1 ? ' hour' : ' hours';
+    return `${hours}${symbol} ago`;
   } else if (days < 7) {
-    return days === 1 ? '1 day ago' : `${days} days ago`;
+    let symbol = short ? 'd' : days === 1 ? ' day' : ' days';
+    return `${days}${symbol} ago`;
   }
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 }

@@ -343,8 +343,8 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     return Math.round(score * 100).toString() + '%';
   } 
 
-  getRelativeTime(timestamp: number): string | null{
-    return getRelativeDate(timestamp);
+  getRelativeTime(timestamp: number, short = false): string | null{
+    return getRelativeDate(timestamp, short);
   }
 
   loadResult(id: string) {

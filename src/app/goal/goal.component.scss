@@ -200,6 +200,8 @@ h2 {
   padding-left: 2rem;
   padding-right: 2rem;
   box-shadow: 0px 2px 5px rgb(0 0 0 / 30%);
+  transition: background-color 0.3s;
+  cursor: pointer;
   
   mat-icon {
     min-width: 24px;
@@ -229,13 +231,14 @@ h2 {
 }
 
 .status-banner.recitation-due {
-  background-color: #8a7d5142;
+  background-color: #c9c7bf;
   color: #454622;
 
   .mat-mdc-raised-button.mat-primary {
     --mdc-protected-button-container-color: #454622;
   }
 }
+
 
 .status-banner.recitation-overdue {
   background-color: rgb(139 96 96 / 20%);

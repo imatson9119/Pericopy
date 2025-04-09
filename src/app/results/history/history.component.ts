@@ -80,8 +80,8 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
     this._router.navigate(['/results'], { queryParams: { id: id } }); 
   }
 
-  getRelativeTime(timestamp: number): string | null{
-    return getRelativeDate(timestamp);
+  getRelativeTime(timestamp: number, short = false): string | null{
+    return getRelativeDate(timestamp, short);
   }
 
   getDataSource(){

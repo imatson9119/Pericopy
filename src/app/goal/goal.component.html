@@ -30,62 +30,52 @@
       </button>
     </div>
     @if (this.goal?.status === GoalStatus.MEMORIZING && this.percentMemorized !== 100){
-      <div class="status-banner memorize">
+      <div (click)="this.makeAttempt()" class="status-banner memorize">
         <div class="status-banner-text">
           <mat-icon class="material-icons-outlined">thumb_up_outline</mat-icon>
           <span>Keep it up! Once memorized you can begin a recitation schedule.</span>
         </div>
-        <button mat-raised-button color="primary" (click)="this.memorize()">
+        <button mat-raised-button color="primary">
           Practice
         </button>
       </div>
     } @else if (this.goal?.status === GoalStatus.MEMORIZING){
-      <div class="status-banner promote">
+      <div (click)="this.promoteGoal()" class="status-banner promote">
         <div class="status-banner-text">
           <mat-icon>check</mat-icon>
           <span>It looks like you've finished memorizing this passage! Ready to promote?</span>
         </div>
-        <button mat-raised-button color="primary" (click)="this.promoteGoal()">
+        <button mat-raised-button color="primary">
           Promote
         </button>
       </div>
     } @else if (this.goal?.status === GoalStatus.MAINTAINING && !this.goal?.fsrsCard) {
-      <div class="status-banner recitation-pending">
+      <div (click)="this.makeAttempt()" class="status-banner recitation-pending">
         <div class="status-banner-text">
           <mat-icon>event_repeat</mat-icon>
           <span>Recite this passage to begin the recitation schedule!</span>
         </div>
-        <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+        <button mat-raised-button color="primary">
           Recite
         </button>
       </div>
     } @else if (this.goal?.status === GoalStatus.MAINTAINING && this.goal?.fsrsCard && this.daysUntil(this.goal!.fsrsCard!.due) > 0) {
-      <div class="status-banner recitation-countdown">
+      <div (click)="this.makeAttempt()" class="status-banner recitation-countdown">
         <div class="status-banner-text">
           <mat-icon>event</mat-icon>
           <span>Next recitation due in {{this.daysUntil(this.goal!.fsrsCard!.due)}} {{this.daysUntil(this.goal!.fsrsCard!.due) === 1 ? 'day' : 'days'}}</span>
         </div>
-        <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+        <button mat-raised-button color="primary">
           Recite
         </button>
       </div>
-    } @else if (this.goal?.status === GoalStatus.MAINTAINING && this.goal?.fsrsCard && this.daysUntil(this.goal!.fsrsCard!.due) === 0) {
-      <div class="status-banner recitation-due">
+    } @else if (this.goal?.status === GoalStatus.MAINTAINING && this.goal?.fsrsCard && this.daysUntil(this.goal!.fsrsCard!.due) <= 0) {
+      <div (click)="this.makeAttempt()" class="status-banner recitation-due">
         <div class="status-banner-text">
           <mat-icon>notifications</mat-icon>
           <span>Your recitation is due!</span>
         </div>
-        <button mat-raised-button color="primary" (click)="this.makeAttempt()">
-          Recite
-        </button>
-      </div>
-    } @else if (this.goal?.status === GoalStatus.MAINTAINING && this.goal?.fsrsCard && this.daysUntil(this.goal!.fsrsCard!.due) < 0) {
-      <div class="status-banner recitation-overdue">
-        <div class="status-banner-text">
-          <mat-icon>priority_high</mat-icon>
-          <span>Your recitation is {{-this.daysUntil(this.goal!.fsrsCard!.due)}} {{this.daysUntil(this.goal!.fsrsCard!.due) === 1 ? 'day' : 'days'}} overdue</span>
-        </div>
-        <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+        <button mat-raised-button color="primary">
           Recite
         </button>
       </div>
@@ -159,7 +149,7 @@
                     Time
                   </th>
                   <td mat-cell *matCellDef="let attempt">
-                    {{ this.getRelativeTime(attempt.timestamp) }}
+                    {{ this.getRelativeTime(attempt.timestamp, true) }}
                   </td>
                 </ng-container>
         

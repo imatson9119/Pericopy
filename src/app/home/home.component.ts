@@ -3,8 +3,7 @@ import { IResult } from '../classes/models';
 import { StorageService } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BibleService } from '../services/bible.service';
-import { getRelativeDate, intersection } from '../utils/utils';
-import { v4 as uuidv4 } from 'uuid';
+import { getRelativeDate, intersection, daysUntil } from '../utils/utils';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -14,7 +13,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
-import { Goal } from '../classes/Goal';
+import { Goal, GoalStatus } from '../classes/Goal';
 
 @Component({
   selector: 'app-home',
@@ -29,10 +28,10 @@ export class HomeComponent implements OnDestroy {
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   filterValue = '';
-  displayedColumns: string[] = ['title', 'time', 'nAttempts'];
+  displayedColumns: string[] = ['title', 'time', 'status', 'dueIn'];
   dataSource = new MatTableDataSource<Goal>([]);
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
+  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
 
   constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router, private _snackBar: MatSnackBar) {
     
@@ -65,7 +64,8 @@ export class HomeComponent implements OnDestroy {
       switch(property) {
         case 'time': return Math.max(...Array.from(item.attempts.values()).map(a => this.attempts.get(a)?.timestamp || 0));
         case 'title': return item.title;
-        case 'nAttempts': return item.attempts.size;
+        case 'status': return this.getGoalStatusText(item);
+        case 'dueIn': return this.getDueInDays(item, true);
         default: return '';
       }
     };
@@ -162,7 +162,7 @@ export class HomeComponent implements OnDestroy {
     this.router.navigate(['/goal'], { queryParams: { id: goalId } });
   }
 
-  getLastAttemptText(goal: Goal) {
+  getLastAttemptText(goal: Goal, short = false) {
     let lastAttempt = undefined;
     for (let attemptId of goal.attempts) {
       let attempt = this.attempts.get(attemptId);
@@ -170,7 +170,7 @@ export class HomeComponent implements OnDestroy {
         lastAttempt = attempt;
       }
     }
-    return lastAttempt ? `Attempted ${getRelativeDate(lastAttempt.timestamp)}` : 'No attempts yet';
+    return lastAttempt ? `${getRelativeDate(lastAttempt.timestamp, short)}` : '-';
   }
 
   trackByGoalId(index: number, goal: Goal) {
@@ -179,6 +179,54 @@ export class HomeComponent implements OnDestroy {
 
   makeAttempt() {
     this.router.navigateByUrl('/input');
+  }
+
+  getDueInDays(goal: Goal, sorting = false): number | string {
+    if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
+      return daysUntil(goal.fsrsCard.due);
+    }
+    return sorting ? Infinity : '-';
+  }
+
+  getDueInClass(goal: Goal): string {
+    if (goal.status !== GoalStatus.MAINTAINING || !goal.fsrsCard?.due) {
+      return '';
+    }
+    const days = daysUntil(goal.fsrsCard.due);
+    if (days < 0) return 'overdue';
+    if (days <= 3) return 'due-soon';
+    return 'not-due';
+  }
+
+  // Add function to format the text for the Due In column
+  getDueInDaysText(goal: Goal): string {
+    const days = this.getDueInDays(goal);
+    if (typeof days === 'number') {
+      return `${days} day${days !== 1 ? 's' : ''}`; // Add 'days' suffix, handle plural
+    } 
+    return '-'; // Return '-' if not applicable
+  }
+
+  // Helper function to get status text
+  getGoalStatusText(goal: Goal): string {
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING: return 'Memorizing';
+      case GoalStatus.MAINTAINING: return 'Maintaining';
+      case GoalStatus.MASTERED: return 'Mastered'; // Assuming this status exists
+      case GoalStatus.INACTIVE: return 'Inactive'; // Assuming this status exists
+      default: return 'Unknown';
+    }
+  }
+
+  // Helper function to get CSS class for status
+  getStatusClass(goal: Goal): string {
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING: return 'status-memorizing';
+      case GoalStatus.MAINTAINING: return 'status-maintaining';
+      case GoalStatus.MASTERED: return 'status-mastered';
+      case GoalStatus.INACTIVE: return 'status-inactive';
+      default: return '';
+    }
   }
 
 }
