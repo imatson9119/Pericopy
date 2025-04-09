@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>We got an update!</h2>
 <div class="version-label">
   <mat-icon color="primary">info</mat-icon>
-  <span>Version 1.1.0</span>
+  <span>Version {{this.getVersion()}}</span>
 </div>
 <mat-dialog-content class="mat-typography dialog-content">
   
@@ -12,8 +12,8 @@
   <div>
     Here are some of the highlights contained in this release:
     <ul>
-      <li>Smart <a href="https://github.com/open-spaced-repetition">FSRS-based</a> scheduling for goal recitations</li>
-      <li>Added statuses to goals to seperate goals you're memorizing from those you're reciting for recall</li>
+      <li>Updated goal view to include both goal statuses and time to next recitation</li>
+      <li>Improved passage selection dialog to auto-select the end verse when the start verse is changed</li>
       <li>Bug fixes and performance enhancements</li>
     </ul>
   </div>

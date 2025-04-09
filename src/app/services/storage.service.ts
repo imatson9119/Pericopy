@@ -18,7 +18,7 @@ export class StorageService {
 
   version_storage_key = "version"
 
-  app_version = "1.1.0"
+  app_version = "1.2.0"
 
   constructor() { 
     this.resultBank = {"version": 1, "results": new Map()};

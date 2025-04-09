@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] - April 9, 2025
+Smaller release with some quality of life improvements
+
+- Updated the goal view to include both goal statuses and time to next recitation
+- Improved passage selection dialog to auto-select the end verse when the start verse is changed
+- Bug fixes and performance enhancements
 
 ## [1.1.0] - Sept 15, 2024
 
