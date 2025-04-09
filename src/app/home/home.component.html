@@ -46,6 +46,10 @@
         <button mat-icon-button (click)="this.addGoal()">
           <mat-icon>add</mat-icon>
         </button>
+        <div style="flex-grow: 1"></div>
+        <div class="archived-toggle">
+          <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter($event)" labelPosition="before" color="primary">Show Archived</mat-checkbox>  
+        </div>
       </div>
       <div class="hr"></div>
       @if (this.goals.length !== 0 && this.bible) {

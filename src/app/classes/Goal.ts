@@ -14,7 +14,6 @@ export enum GoalStatus {
   MEMORIZING,
   MAINTAINING,
   MASTERED,
-  INACTIVE,
 }
 
 export interface GoalStats {}
@@ -29,6 +28,7 @@ export class Goal {
   attempts: Set<string>; // Attempt IDs
   status: GoalStatus | undefined; // Status
   fsrsCard: Card | undefined; // FSRS card
+  archived: boolean; // Whether the goal is archived
 
   constructor(
     id: string,
@@ -39,7 +39,8 @@ export class Goal {
     j: number,
     attempts: Set<string>,
     status: GoalStatus | undefined,
-    fsrsCard: Card | undefined
+    fsrsCard: Card | undefined,
+    archived: boolean
   ) {
     this.id = id;
     this.t = t;
@@ -50,6 +51,7 @@ export class Goal {
     this.attempts = attempts;
     this.status = status;
     this.fsrsCard = fsrsCard;
+    this.archived = archived;
   }
 
   static createGoal(
@@ -76,7 +78,7 @@ export class Goal {
     if (status === GoalStatus.MAINTAINING) {
       fsrsCard = Goal.createFSRSCardWithAttempts(i, j, prevAttempts);
     }
-    return new Goal(id, t, title, translation, i, j, attempts, goalStatus, fsrsCard);
+    return new Goal(id, t, title, translation, i, j, attempts, goalStatus, fsrsCard, false);
   }
 
   promoteToMaintaining(): void {
@@ -164,7 +166,8 @@ export class Goal {
       j: this.j,
       attempts: this.attempts,
       status: this.status,
-      fsrsCard: this.fsrsCard 
+      fsrsCard: this.fsrsCard,
+      archived: this.archived
     };
   }
 
@@ -181,7 +184,8 @@ export class Goal {
       json.j,
       new Set(json.attempts),
       json.status,
-      json.fsrsCard
+      json.fsrsCard,
+      json.archived || false
     );
   }
 }

@@ -30,6 +30,7 @@ export class HomeComponent implements OnDestroy {
   filterValue = '';
   displayedColumns: string[] = ['title', 'time', 'status', 'dueIn'];
   dataSource = new MatTableDataSource<Goal>([]);
+  showArchived = false;
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
 
@@ -70,9 +71,7 @@ export class HomeComponent implements OnDestroy {
       }
     };
     this.dataSource.paginator = this.paginator;
-    this.dataSource.filterPredicate = (data, filter) => {
-      return data.title.toLowerCase().includes(filter);
-    }
+    this.applyFilter(new Event(''));
     this.dataSource.sort = this.sort;
   }
 
@@ -84,7 +83,17 @@ export class HomeComponent implements OnDestroy {
     if(this.dataSource.paginator != null){
       this.dataSource.paginator.firstPage();
     }
-    this.dataSource.filter = this.filterValue.toLowerCase();
+    this.dataSource.filterPredicate = (data: Goal, _filter: string): boolean => {
+      if (!this.showArchived && data.archived) {
+        return false;
+      }
+      const textFilter = this.filterValue.trim().toLowerCase();
+      if (textFilter && !data.title.toLowerCase().includes(textFilter)) {
+        return false;
+      }
+      return true;
+    };
+    this.dataSource.filter = `text:${this.filterValue.trim().toLowerCase()};archived:${this.showArchived}`;
   }
 
   getStats() {
@@ -198,33 +207,34 @@ export class HomeComponent implements OnDestroy {
     return 'not-due';
   }
 
-  // Add function to format the text for the Due In column
   getDueInDaysText(goal: Goal): string {
     const days = this.getDueInDays(goal);
     if (typeof days === 'number') {
-      return `${days} day${days !== 1 ? 's' : ''}`; // Add 'days' suffix, handle plural
+      return `${days} day${days !== 1 ? 's' : ''}`;
     } 
-    return '-'; // Return '-' if not applicable
+    return '-';
   }
 
-  // Helper function to get status text
   getGoalStatusText(goal: Goal): string {
+    if (goal.archived) {
+      return 'Archived';
+    }
     switch (goal.status) {
       case GoalStatus.MEMORIZING: return 'Memorizing';
       case GoalStatus.MAINTAINING: return 'Maintaining';
-      case GoalStatus.MASTERED: return 'Mastered'; // Assuming this status exists
-      case GoalStatus.INACTIVE: return 'Inactive'; // Assuming this status exists
+      case GoalStatus.MASTERED: return 'Mastered';
       default: return 'Unknown';
     }
   }
 
-  // Helper function to get CSS class for status
   getStatusClass(goal: Goal): string {
+    if (goal.archived) {
+      return 'status-archived';
+    }
     switch (goal.status) {
       case GoalStatus.MEMORIZING: return 'status-memorizing';
       case GoalStatus.MAINTAINING: return 'status-maintaining';
       case GoalStatus.MASTERED: return 'status-mastered';
-      case GoalStatus.INACTIVE: return 'status-inactive';
       default: return '';
     }
   }

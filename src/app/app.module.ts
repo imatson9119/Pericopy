@@ -30,6 +30,7 @@ import { DiffDisplayComponent } from './results/diff-display/diff-display.compon
 import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRippleModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { InfoComponent } from './info/info.component';
 import { ImportDialogComponent } from './results/history/import-dialog/import-dialog.component';
 import { FileUploadComponent } from './results/history/file-upload/file-upload.component';
@@ -82,6 +83,7 @@ import { PracticeInputDivComponent } from './memorize/practice-input-div/practic
     FormsModule,
     BrowserAnimationsModule,
     MatInputModule,
+    MatCheckboxModule,
     MatButtonModule,
     MatDialogModule,
     MatSelectModule,

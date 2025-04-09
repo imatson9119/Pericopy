@@ -135,9 +135,9 @@ h2 {
       background-color: #d1ecf1; // Muted cyan/teal
       color: #0c5460; // Darker cyan/teal text
     }
-    .status-inactive {
-      background-color: #efdcf5; // Muted beige/tan
-      color: #4a414e; // Darker beige/brown text
+    .status-archived {
+      background-color: #ebebeb; // Muted beige/tan
+      color: #3f3f3f; // Darker beige/brown text
     }
   }
 
@@ -261,6 +261,14 @@ td {
   font-size: .9rem;
   text-align: center;
   line-height: 1.3rem;
+}
+
+mat-checkbox {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  font-weight: 100;
 }
 
 @media screen and (max-width: 600px) {

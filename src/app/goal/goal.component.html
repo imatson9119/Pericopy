@@ -21,13 +21,32 @@
         View in Heatmap
       </button>
       <div style="flex-grow:1"></div>
-      <button
-        mat-icon-button
-        (click)="this.deleteGoal()"
-        matTooltip="Delete this goal"
-      >
-        <mat-icon color="primary">delete</mat-icon>
-      </button>
+      <div>
+        @if (!this.goal?.archived) {
+          <button
+            mat-icon-button
+            (click)="this.archiveGoal()"
+            matTooltip="Archive this goal"
+          >
+            <mat-icon color="primary">archive</mat-icon>
+          </button>
+        } @else {
+          <button
+            mat-icon-button
+            (click)="this.unarchiveGoal()"
+            matTooltip="Unarchive this goal"
+          >
+            <mat-icon color="primary">unarchive</mat-icon>
+          </button>
+        }
+        <button
+          mat-icon-button
+          (click)="this.deleteGoal()"
+          matTooltip="Delete this goal"
+        >
+          <mat-icon color="primary">delete</mat-icon>
+        </button>
+      </div>
     </div>
     @if (this.goal?.status === GoalStatus.MEMORIZING && this.percentMemorized !== 100){
       <div (click)="this.makeAttempt()" class="status-banner memorize">
