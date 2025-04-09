@@ -48,6 +48,7 @@ export class NewGoalDialogComponent implements OnDestroy {
   totalSteps = 3;
   providedOptions: BiblePassage[] = [];
   passage: BiblePassage | undefined = undefined;
+  passageValid = false;
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   memorized: boolean = false;
@@ -96,7 +97,7 @@ export class NewGoalDialogComponent implements OnDestroy {
 
   canProceed(): boolean {
     if (this.currentStep === 1) {
-      return !!this.passage;
+      return !!this.passage && this.passageValid;
     }
     return true;
   }
@@ -117,6 +118,10 @@ export class NewGoalDialogComponent implements OnDestroy {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
+  }
+
+  passageValidityChange(valid: boolean): void {
+    this.passageValid = valid;
   }
 
   submit(): void {

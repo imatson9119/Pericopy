@@ -7,6 +7,7 @@
       [providedOptions]="providedOptions"
       [nWordsToPreview]="40"
       [(passage)]="this.passage"
+      (validityChange)="this.passageValidityChange($event)"
     ></app-passage-selector-body>
   </ng-container>
   <ng-container *ngIf="currentStep === 2">

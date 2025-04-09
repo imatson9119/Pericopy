@@ -23,6 +23,7 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   @Input() providedOptions: BiblePassage[] = [];
   @Input() passage: BiblePassage | undefined = undefined;
   
+  @Output() validityChange = new EventEmitter<boolean>();
   @Output() passageChange = new EventEmitter<BiblePassage>();
   
   startRef: BiblePointer | undefined = undefined;
@@ -92,6 +93,14 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   }
 
   startRefChangeMethod() {
+    if (this.startRef && !this.endRef) {
+      this.endRef = {
+        book: this.startRef.book,
+        chapter: this.startRef.chapter,
+        verse: this.startRef.verse,
+        index: this.startRef.index + this.startRef.verse.m.l,
+      };
+    }
     this.checkValidityAndEmit();
   }
 
@@ -112,6 +121,7 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
         this.endRef!.verse
       ));
     }
+    this.validityChange.emit(this.isValid());
   }
 
   selectPassage(passage: BiblePassage) {
@@ -130,5 +140,6 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
     this.passage = passage;
     this.preview = this.getPreview();
     this.passageChange.emit(passage);
+    this.validityChange.emit(this.isValid());
   }
 }

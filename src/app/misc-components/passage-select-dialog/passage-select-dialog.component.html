@@ -6,10 +6,11 @@
     [providedOptions]="providedOptions"
     [nWordsToPreview]="nWordsToPreview"
     (passageChange)="this.selectPassage($event)"
+    (validityChange)="this.validityChange($event)"
   ></app-passage-selector-body>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-raised-button color="primary" (click)="this.submit()" [disabled]="!this.isValid()">
+  <button mat-raised-button color="primary" (click)="this.submit()" [disabled]="this.isValid">
     Submit
   </button>
 </mat-dialog-actions>

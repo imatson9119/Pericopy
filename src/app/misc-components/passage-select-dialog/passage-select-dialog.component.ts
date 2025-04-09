@@ -24,11 +24,12 @@ export class PassageSelectDialogComponent implements OnDestroy {
   subscriptions: Subscription[] = [];
   title = 'Select a passage';
   subtitle = 'Please select a passage from the Bible.';
+  isValid = false;
 
   constructor(
     private _bibleService: BibleService,
     private _dialogRef: MatDialogRef<PassageSelectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     if (data) {
       if (data.title) this.title = data.title;
@@ -53,12 +54,11 @@ export class PassageSelectDialogComponent implements OnDestroy {
     }
   }
 
-
-  isValid(): boolean {
-    return this.passage !== undefined;
-  }
-
   selectPassage(passage: BiblePassage) {
     this.passage = passage;
+  }
+
+  validityChange(valid: boolean) {
+    this.isValid = valid;
   }
 }
