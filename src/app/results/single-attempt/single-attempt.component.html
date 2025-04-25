@@ -1,20 +1,20 @@
 @if(this.bible) {
-  <div class="result-container">
-    <div class="result-header">
+  <main class="result-container">
+    <header class="result-header">
       <div>
-        <div class="result-title">
+        <h1 class="result-title">
           {{ this.currentResult?.diff?.p }}
-        </div>
-        <div class="result-subtitle">
-          {{  
-            this.currentResult?.timestamp | date: 'longDate'}}
-        </div>
+        </h1>
+        <p class="result-subtitle">
+          {{ this.currentResult?.timestamp | date: 'longDate'}}
+        </p>
       </div>
       <div class="result-actions">
         <button
           mat-icon-button
           (click)="this.deleteResult()"
           matTooltip="Delete this attempt"
+          aria-label="Delete this attempt"
         >
           <mat-icon color="primary">delete</mat-icon>
         </button>
@@ -22,12 +22,14 @@
           mat-icon-button
           (click)="this.editResult()"
           matTooltip="Edit this attempt"
+          aria-label="Edit this attempt"
           >
           <mat-icon color="primary">edit</mat-icon>
         </button>
       </div>
-    </div> 
-    <div class="stats-container">
+    </header> 
+    
+    <section class="stats-container" aria-label="Recitation statistics">
       <div class="stat-container accuracy" [style.background]="this.getColor()">
         <div class="stat-value">
           {{this.getAccuracy()}}%
@@ -60,35 +62,38 @@
           word streak
         </div>
       </div>
-    </div>
-    <mat-tab-group>
-      <mat-tab label="Difference">
-        <div class="tab-inner-container">
-          <app-diff-display [diff]="this.currentResult?.diff" [bible]="this.bible"></app-diff-display>
-        </div>
-      </mat-tab>
-      <mat-tab label="Attempt">
-        <div class="tab-inner-container">
-          <app-diff-display
-            [type]="displayTypes.attempt"
-            [bible]="this.bible"
-            [diff]="this.currentResult?.diff"
-          ></app-diff-display>
-        </div>
-      </mat-tab>
-      <mat-tab label="Scripture">
-        <div class="tab-inner-container">
-          <app-diff-display
-            [type]="displayTypes.scripture"
-            [bible]="this.bible"
-            [diff]="this.currentResult?.diff"
-          ></app-diff-display>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
+    </section>
+    
+    <section aria-label="Recitation details">
+      <mat-tab-group>
+        <mat-tab label="Difference">
+          <div class="tab-inner-container">
+            <app-diff-display [diff]="this.currentResult?.diff" [bible]="this.bible"></app-diff-display>
+          </div>
+        </mat-tab>
+        <mat-tab label="Attempt">
+          <div class="tab-inner-container">
+            <app-diff-display
+              [type]="displayTypes.attempt"
+              [bible]="this.bible"
+              [diff]="this.currentResult?.diff"
+            ></app-diff-display>
+          </div>
+        </mat-tab>
+        <mat-tab label="Scripture">
+          <div class="tab-inner-container">
+            <app-diff-display
+              [type]="displayTypes.scripture"
+              [bible]="this.bible"
+              [diff]="this.currentResult?.diff"
+            ></app-diff-display>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </section>
+  </main>
 } @else {
-  <div class="page-loader">
+  <div class="page-loader" aria-label="Loading results">
     <mat-spinner></mat-spinner>
   </div>
 }

@@ -28,6 +28,7 @@
   .title {
     font-size: 4rem;
     font-weight: 100;
+    margin: 0;
   }
 
   .subtitle {
@@ -71,6 +72,10 @@ h2 {
   }
 }
 .goals {
+  .goals-title {
+    margin: 0;
+  }
+  
   .goals-header {
     font-size: 1.5rem;
     font-weight: 100;

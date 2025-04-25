@@ -29,6 +29,7 @@
   .title {
     font-size: 4rem;
     font-weight: 100;
+    margin: 0;
   }
 
   .subtitle {
@@ -75,18 +76,16 @@ h3 {
   font-size: 0.9rem;
 }
 
-.question {
-  margin-top: 1rem;
 
   .question-text {
+    margin-top: 1rem;
     font-weight: 500;
     font-size: 1.2rem;
   }
   .answer {
-    margin-top: 1rem;
+    margin-top: .5rem;
     font-size: 1rem;
   }
-}
 
 .section {
   margin-top: 4rem;

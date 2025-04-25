@@ -1,15 +1,31 @@
-
-
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background: #e0e2e7;}
+
+/* Reset default margins and paddings for semantic elements */
+main, header, section, nav, article, aside, footer {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+h1, h2, p, dd{
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
 h2 {
 	margin-top: 2rem;
 }
-button {border: none;
-    background: none;
-    padding: 0;}
+
+button {
+  border: none;
+  background: none;
+  padding: 0;
+}
 
 .page-loader {
 	display:flex;

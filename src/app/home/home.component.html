@@ -1,15 +1,16 @@
 @if (this.bible) {
-  <div class="main-container">
-    <div class="logo-container">
+  <main class="main-container">
+    <header class="logo-container">
       <div class="left">
         <img src="assets/logo.png" alt="Pericopy Logo" class="logo" />
       </div>
       <div class="right">
-        <span class="title">Pericopy</span>
-        <span class="subtitle">"Let the word of Christ dwell in you richly"</span>
+        <h1 class="title">Pericopy</h1>
+        <p class="subtitle">"Let the word of Christ dwell in you richly"</p>
       </div>
-    </div>
-    <div class="toolbar">
+    </header>
+    
+    <nav class="toolbar" aria-label="Main navigation">
       <button class="test" mat-fab extended color="primary" routerLink="/recite">
         <mat-icon>edit_note</mat-icon>
         Recite
@@ -30,27 +31,28 @@
         <mat-icon>history</mat-icon>
         History
       </button>
-    </div>
+    </nav>
+    
     @if (this.attempts.size !== 0) {
-      <div class="stats">
-        <span
-          >You've memorized <span class="emphasis">{{ totalVerses }}</span> {{ totalVerses === 1 ? "verse" : "verses" }}
-          so far - keep it up!</span
-        >
-      </div>
+      <section class="stats" aria-label="Memorization statistics">
+        <p>
+          You've memorized <span class="emphasis">{{ totalVerses }}</span> {{ totalVerses === 1 ? "verse" : "verses" }}
+          so far - keep it up!
+        </p>
+      </section>
     }
-    <br>
-    <div class="goals">
-      <div class="goals-header">
-        <div>Your Goals</div>
-        <button mat-icon-button (click)="this.addGoal()">
+    
+    <section class="goals" aria-label="Memorization goals">
+      <header class="goals-header">
+        <h2 class="goals-title">Your Goals</h2>
+        <button mat-icon-button (click)="this.addGoal()" aria-label="Add a new goal">
           <mat-icon>add</mat-icon>
         </button>
         <div style="flex-grow: 1"></div>
         <div class="archived-toggle">
           <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter($event)" labelPosition="before" color="primary">Show Archived</mat-checkbox>  
         </div>
-      </div>
+      </header>
       <div class="hr"></div>
       @if (this.goals.length !== 0 && this.bible) {
         <div class="goals-container">
@@ -61,6 +63,7 @@
               value=""
               [(ngModel)]="filterValue"
               (keyup)="this.applyFilter($event)"
+              aria-label="Filter goals"
             />
             <mat-icon matSuffix>filter_list</mat-icon>
           </mat-form-field>
@@ -70,6 +73,7 @@
             matSort
             matSortDisableClear
             [dataSource]="dataSource"
+            aria-label="Memorization goals"
           >
             <ng-container matColumnDef="title">
               <th
@@ -77,6 +81,7 @@
                 *matHeaderCellDef
                 mat-sort-header
                 sortActionDescription="Sort by passage"
+                scope="col"
               >
                 Passage
               </th>
@@ -89,6 +94,7 @@
                 *matHeaderCellDef
                 mat-sort-header
                 sortActionDescription="Sort by time"
+                scope="col"
               >
                 Last Attempt
               </th>
@@ -104,6 +110,7 @@
                 *matHeaderCellDef
                 mat-sort-header
                 sortActionDescription="Sort by status"
+                scope="col"
               >
                 Status
               </th>
@@ -121,6 +128,7 @@
                 *matHeaderCellDef
                 mat-sort-header
                 sortActionDescription="Sort by days until due"
+                scope="col"
               >
                 Due In
               </th>
@@ -152,12 +160,12 @@
           </mat-paginator>
         </div>
       } @else {
-        <div class="no-goals">Create a goal to track your progress over a passage.<br>Click the "+" button to add a goal.</div>
+        <p class="no-goals">Create a goal to track your progress over a passage.<br>Click the "+" button to add a goal.</p>
       }
-    </div>
-  </div>
+    </section>
+  </main>
 } @else {
-  <div class="page-loader">
+  <div class="page-loader" aria-label="Loading application">
     <mat-spinner></mat-spinner>
   </div>
 }
