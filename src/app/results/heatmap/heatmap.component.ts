@@ -1,7 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BiblePointer, Book, DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
+import { Title, Meta } from '@angular/platform-browser';
 import { IResult } from 'src/app/classes/models';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { Bible } from 'src/app/classes/Bible';
@@ -22,7 +23,7 @@ enum FilterValues {
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.scss'],
 })
-export class HeatmapComponent implements OnDestroy {
+export class HeatmapComponent implements OnDestroy, OnInit {
   filterValues = FilterValues;
   filterValue = FilterValues.ALL_TIME;
   heatmap: Heatmap = new Map();
@@ -35,6 +36,8 @@ export class HeatmapComponent implements OnDestroy {
     private _bibleService: BibleService,
     private _storageService: StorageService,
     private _router: Router,
+    private titleService: Title,
+    private metaService: Meta
   ) {
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
@@ -43,6 +46,17 @@ export class HeatmapComponent implements OnDestroy {
         this.setInitialSelectorState(loc);
       })
     );
+  }
+
+  ngOnInit(): void {
+    const pageTitle = 'Scripture Memorization Heatmap | Pericopy';
+    const pageDescription = 'Visualize your scripture memorization performance with our detailed heatmap. See which verses and passages you know well and which need more practice.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/heatmap' });
   }
 
   ngOnDestroy(): void {

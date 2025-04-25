@@ -1,6 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 import { IResult } from 'src/app/classes/models';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -17,7 +18,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.scss']
 })
-export class HistoryComponent implements AfterViewInit, OnDestroy {
+export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
 
   filterValue = ''
   bible: Bible | undefined = undefined;
@@ -29,7 +30,14 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
-  constructor(private _storageService: StorageService, private _router: Router, private _bibleService: BibleService, private dialog: MatDialog) {
+  constructor(
+    private _storageService: StorageService, 
+    private _router: Router, 
+    private _bibleService: BibleService, 
+    private dialog: MatDialog,
+    private titleService: Title,
+    private metaService: Meta
+  ) {
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
         this.bible = bible;
@@ -39,6 +47,17 @@ export class HistoryComponent implements AfterViewInit, OnDestroy {
         }, 10);
       }
     ));
+  }
+
+  ngOnInit(): void {
+    const pageTitle = 'Recitation History | Pericopy';
+    const pageDescription = 'View your complete history of scripture memorization attempts. Track your progress over time and see how your accuracy has improved.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/history' });
   }
 
   ngOnDestroy() {

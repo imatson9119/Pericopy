@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
 import { DisplayType } from '../diff-display/diff-display.component';
@@ -33,9 +34,27 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
   
 
 
-  constructor(private _router: Router, private _storageService: StorageService, private _bibleService: BibleService, private dialog: MatDialog, private snackbar: MatSnackBar, private _location: Location) {}
+  constructor(
+    private _router: Router,
+    private _storageService: StorageService,
+    private _bibleService: BibleService, 
+    private dialog: MatDialog, 
+    private snackbar: MatSnackBar, 
+    private _location: Location,
+    private titleService: Title,
+    private metaService: Meta
+  ) {}
 
   ngOnInit(): void {
+    const pageTitle = 'Scripture Recitation Results | Pericopy';
+    const pageDescription = 'See detailed analysis of your scripture recitation attempt, including accuracy percentage, mistakes, and visualized performance data.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/results' });
+    
     this.result_bank = this._storageService.getBank();
     let id = this._router.parseUrl(this._router.url).queryParams['id'];
     if(id != undefined){

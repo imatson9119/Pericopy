@@ -3,10 +3,12 @@ import {
   Component,
   NgZone,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
 import { BibleService } from '../services/bible.service';
+import { Title, Meta } from '@angular/platform-browser';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
@@ -29,7 +31,7 @@ enum InputState {
   styleUrls: ['./Memorize.component.scss'],
 })
 export class MemorizeComponent
-  implements OnDestroy
+  implements OnDestroy, OnInit
 {
   attempt = '';
   annyang = annyang;
@@ -44,7 +46,9 @@ export class MemorizeComponent
 
   constructor(
     private _bibleService: BibleService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private titleService: Title,
+    private metaService: Meta
   ) {
     annyang.addCallback('result', (userSaid: string[] | undefined) => {
       if (userSaid && userSaid.length > 0) {
@@ -76,6 +80,17 @@ export class MemorizeComponent
         this.bible = bible;
       })
     ); 
+  }
+
+  ngOnInit(): void {
+    const pageTitle = 'Memorize Scripture | Pericopy';
+    const pageDescription = 'Effectively memorize scripture with Pericopy\'s guided practice tools. Our interactive system helps you master passages through proven memorization techniques.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/memorize' });
   }
 
   ngOnDestroy(): void {

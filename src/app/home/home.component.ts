@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IResult } from '../classes/models';
 import { StorageService, TableSettings } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,13 +14,14 @@ import { MatSort, MatSortable, Sort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
 import { Goal, GoalStatus } from '../classes/Goal';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements OnDestroy, OnInit {
   attempts: Map<string,IResult> = new Map();
   totalWords: number = 0;
   totalVerses: number = 0;
@@ -35,10 +36,28 @@ export class HomeComponent implements OnDestroy {
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
   private readonly componentName = 'home';
 
-  constructor(private _storageService: StorageService, private dialog: MatDialog, private _bibleService: BibleService, private router: Router, private _snackBar: MatSnackBar) {
+  constructor(
+    private _storageService: StorageService,
+    private dialog: MatDialog,
+    private _bibleService: BibleService,
+    private router: Router,
+    private titleService: Title,
+    private metaService: Meta
+  ) {
   
   }
   
+  ngOnInit() {
+    const pageTitle = 'Pericopy | Scripture Memorization Made Simple';
+    const pageDescription = 'Master scripture memorization with Pericopy\'s intelligent tracking, spaced repetition, and adaptive feedback system. Memorize passages with confidence.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net' });
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }

@@ -4,6 +4,7 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 // https://github.com/kpdecker/jsdiff
@@ -11,6 +12,7 @@ import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Title, Meta } from '@angular/platform-browser';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
@@ -29,7 +31,7 @@ declare const annyang: any;
   styleUrls: ['./input.component.scss'],
 })
 export class InputComponent
-  implements AfterViewChecked, OnDestroy
+  implements AfterViewChecked, OnDestroy, OnInit
 {
   attempt = '';
   annyang = annyang;
@@ -50,7 +52,9 @@ export class InputComponent
     private _bibleService: BibleService,
     private router: Router,
     private _dialog: MatDialog,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private titleService: Title,
+    private metaService: Meta
   ) {
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
@@ -121,6 +125,17 @@ export class InputComponent
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  ngOnInit(): void {
+    const pageTitle = 'Recite Scripture | Pericopy';
+    const pageDescription = 'Practice reciting your memorized scripture passages. Our intelligent system identifies your passage and provides detailed feedback on your recitation accuracy.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/recite' });
   }
 
   valid() {

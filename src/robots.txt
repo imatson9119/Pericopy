@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pericopy.net/sitemap.xml 

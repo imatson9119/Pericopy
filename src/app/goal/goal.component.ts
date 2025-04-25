@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { Bible } from '../classes/Bible';
 import { IResult } from '../classes/models';
@@ -113,10 +114,20 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     private _storageService: StorageService,
     private _bibleService: BibleService,
     private dialog: MatDialog,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private titleService: Title,
+    private metaService: Meta
   ) {}
 
   ngOnInit(): void {
+    const pageTitle = 'Scripture Memorization Goal | Pericopy';
+    const pageDescription = 'Track and monitor your scripture memorization goals. Set targets, view progress analytics, and measure your improvement over time.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/goal' });
     
     let id = this._router.parseUrl(this._router.url).queryParams['id'];
     if (id != undefined) {
