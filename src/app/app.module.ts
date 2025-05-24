@@ -55,6 +55,7 @@ import {
 import { DonatePopupComponent } from './info/donate-popup/donate-popup.component';
 import { MemorizeComponent } from './memorize/memorize.component';
 import { PracticeInputDivComponent } from './memorize/practice-input-div/practice-input-div.component';
+import { BlanksComponent } from './blanks/blanks.component';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { PracticeInputDivComponent } from './memorize/practice-input-div/practic
     GoalComponent,
     DonatePopupComponent,
     MemorizeComponent,
+    BlanksComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

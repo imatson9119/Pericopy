@@ -1,0 +1,87 @@
+.memorization-fill-blanks-container {
+  padding: 2rem;
+}
+
+.passage-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.passage-label {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.blanking-info {
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.passage-fill-blanks {
+  margin: 1.5rem 0;
+  font-size: 1.2rem;
+  line-height: 2.2rem;
+  word-break: break-word;
+}
+
+.blank-input {
+  min-width: 3ch;
+  padding: 0.2rem 0.5rem;
+  font-size: 1.1rem;
+  border: 1.5px solid #bbb;
+  border-radius: 6px;
+  margin: 0 0.15rem;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+
+.blank-input:focus {
+  border: 1.5px solid #536a75;
+  background: #f0f4f8;
+}
+
+.blank-input.correct {
+  border-color: #4caf50;
+  background: #e8f5e9;
+  color: #256029;
+}
+
+.blank-input.incorrect {
+  border-color: #f44336;
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+.static-word {
+  margin: 0 0.1rem;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.feedback {
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 100;
+  margin-top: 2rem;
+}
+
+.subtitle {
+  color: #666;
+  font-weight: 100;
+  font-size: .9rem;
+  margin-bottom: 1.2rem;
+} 

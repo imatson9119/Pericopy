@@ -1,0 +1,54 @@
+<div class="memorization-fill-blanks-container">
+  <h2>Fill in the Blanks</h2>
+  <div class="subtitle">
+    <p>
+      Practice your memorization by filling in the missing words from the passage. The difficulty will adjust as you improve. Select a passage to begin.
+    </p>
+  </div>
+  <ng-container *ngIf="!passage">
+    <button mat-raised-button color="primary" (click)="openPassageSelect()">
+      Select Passage
+    </button>
+  </ng-container>
+  <ng-container *ngIf="passage">
+    <div class="passage-header">
+      <span class="passage-label">{{ passage.toString() }}</span>
+      <span class="blanking-info">Blanking: {{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
+      <button mat-stroked-button (click)="openPassageSelect()">Change Passage</button>
+    </div>
+    <div class="passage-fill-blanks">
+      <span *ngFor="let word of passageText; let i = index">
+        <ng-container *ngIf="blankIndices.has(i); else staticWord">
+          <input
+            #blankInput
+            type="text"
+            class="blank-input"
+            [ngClass]="{ correct: feedback.show && isBlankCorrect(i), incorrect: feedback.show && !isBlankCorrect(i) }"
+            [value]="userAnswers[i] || ''"
+            (input)="onInput(i, $event)"
+            (keydown)="onKeyDown($event, i)"
+            [readonly]="feedback.show"
+            [attr.maxlength]="word.length + 2"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            size="{{ Math.max(word.length, 3) }}"
+          />
+        </ng-container>
+        <ng-template #staticWord>
+          <span class="static-word">{{ word }}</span>
+        </ng-template>
+        <span> </span>
+      </span>
+    </div>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="submit()" [disabled]="feedback.show || !allBlanksFilled()">Submit</button>
+      <button mat-stroked-button (click)="retry()" [disabled]="!feedback.show">Retry</button>
+    </div>
+    <div class="feedback" *ngIf="feedback.show">
+      <span>You got {{ feedback.correct }} out of {{ feedback.total }} correct ({{ (feedback.correct / feedback.total * 100) | number:'1.0-0' }}%).</span>
+      <span *ngIf="feedback.correct === feedback.total">Great job! We'll increase the challenge next time.</span>
+      <span *ngIf="feedback.correct < feedback.total">Keep practicing! We'll adjust the difficulty for you.</span>
+    </div>
+  </ng-container>
+</div> 

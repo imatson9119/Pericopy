@@ -54,11 +54,7 @@ export class PassageSelectDialogComponent implements OnDestroy {
     }
   }
 
-  selectPassage(passage: BiblePassage) {
-    this.passage = passage;
-  }
-
-  validityChange(valid: boolean) {
+  validityChange(valid: boolean) { 
     this.isValid = valid;
   }
 }

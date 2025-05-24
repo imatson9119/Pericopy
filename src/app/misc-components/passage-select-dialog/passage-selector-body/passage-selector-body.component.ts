@@ -141,5 +141,7 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
     this.preview = this.getPreview();
     this.passageChange.emit(passage);
     this.validityChange.emit(this.isValid());
+    console.log("Selected passage: " + this.passage.toString());
+    console.log("Validity: " + this.isValid());
   }
 }

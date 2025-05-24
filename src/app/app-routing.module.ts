@@ -8,6 +8,7 @@ import { InfoComponent } from './info/info.component';
 import { HomeComponent } from './home/home.component';
 import { GoalComponent } from './goal/goal.component';
 import { MemorizeComponent } from './memorize/memorize.component';
+import { BlanksComponent } from './blanks/blanks.component';
 
 const routes: Routes = [
   { path: 'recite', component: InputComponent },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'info', component: InfoComponent },
   { path: 'goal', component: GoalComponent },
   { path: 'memorize', component: MemorizeComponent },
+  { path: 'blanks', component: BlanksComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '',}
 ];
