@@ -19,6 +19,8 @@ export class BlanksComponent implements OnInit {
   passage: BiblePassage | null = null;
   passageText: string[] = [];
   blankIndices: Set<number> = new Set();
+  blankIndicesSorted: number[] = []; // Pre-sorted array for efficient navigation
+  blankIndexMap: Map<number, number> = new Map(); // Maps blank index to position in sorted array
   userAnswers: { [index: number]: string } = {};
   blankingPercent: number = 0.2;
   feedback: { correct: number; total: number; show: boolean } = { correct: 0, total: 0, show: false };
@@ -27,6 +29,7 @@ export class BlanksComponent implements OnInit {
   subscriptions: Subscription[] = [];
   @ViewChildren('blankInput') blankInputs!: QueryList<ElementRef<HTMLInputElement>>;
   public Math = Math; // Expose Math for template
+  public Object = Object; // Expose Object for template
 
   // Inputs to allow for passing in a passage
 
@@ -96,29 +99,51 @@ export class BlanksComponent implements OnInit {
       this.blankIndices.add(indices[idx]);
       indices.splice(idx, 1);
     }
+    this.blankIndicesSorted = Array.from(this.blankIndices).sort((a, b) => a - b);
+    this.blankIndexMap = new Map();
+    this.blankIndicesSorted.forEach((blankIndex, position) => {
+      this.blankIndexMap.set(blankIndex, position);
+    });
     this.feedback = { correct: 0, total: 0, show: false };
   }
 
   onInput(index: number, event: Event) {
     const input = event.target as HTMLInputElement;
     this.userAnswers[index] = input.value;
+    
+    // Scroll the input into view when focused/clicked
+    setTimeout(() => {
+      input.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest'
+      });
+    }, 100);
   }
 
   onKeyDown(event: KeyboardEvent, index: number) {
     if ((event.key === 'Tab' || event.key === ' ' || event.key === 'Spacebar') && !event.shiftKey) {
       event.preventDefault();
       // Find the next blank index
-      const blankIndicesSorted = Array.from(this.blankIndices).sort((a, b) => a - b);
-      const currentIdx = blankIndicesSorted.indexOf(index);
-      if (currentIdx !== -1 && currentIdx < blankIndicesSorted.length - 1) {
-        const nextIndex = blankIndicesSorted[currentIdx + 1];
+      const currentIdx = this.blankIndexMap.get(index);
+      if (currentIdx !== undefined && currentIdx < this.blankIndicesSorted.length - 1) {
+        const nextIndex = this.blankIndicesSorted[currentIdx + 1];
         // Focus the next input
         setTimeout(() => {
           const inputArray = this.blankInputs.toArray();
-          const nextInput = inputArray[blankIndicesSorted.indexOf(nextIndex)];
-          if (nextInput) {
-            nextInput.nativeElement.focus();
-            nextInput.nativeElement.select();
+          const nextInputIdx = this.blankIndexMap.get(nextIndex);
+          if (nextInputIdx !== undefined) {
+            const nextInput = inputArray[nextInputIdx];
+            if (nextInput) {
+              nextInput.nativeElement.focus();
+              nextInput.nativeElement.select();
+              // Scroll the input into view and center it
+              nextInput.nativeElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              });
+            }
           }
         });
       } else {
@@ -126,6 +151,38 @@ export class BlanksComponent implements OnInit {
         (event.target as HTMLInputElement).blur();
       }
     }
+    
+    // Handle backspace on empty input to move to previous blank
+    if (event.key === 'Backspace') {
+      const input = event.target as HTMLInputElement;
+      if (input.value === '' || input.value.trim() === '') {
+        event.preventDefault();
+        // Find the previous blank index
+        const currentIdx = this.blankIndexMap.get(index);
+        if (currentIdx !== undefined && currentIdx > 0) {
+          const prevIndex = this.blankIndicesSorted[currentIdx - 1];
+          // Focus the previous input
+          setTimeout(() => {
+            const inputArray = this.blankInputs.toArray();
+            const prevInputIdx = this.blankIndexMap.get(prevIndex);
+            if (prevInputIdx !== undefined) {
+              const prevInput = inputArray[prevInputIdx];
+              if (prevInput) {
+                prevInput.nativeElement.focus();
+                prevInput.nativeElement.select();
+                // Scroll the input into view and center it
+                prevInput.nativeElement.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'nearest'
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+    
     if (event.key === 'Enter' && this.allBlanksFilled()) {
       this.submit();
     }
