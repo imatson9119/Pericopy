@@ -35,6 +35,10 @@
             <span class="stat-value">{{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
             <span class="stat-label">difficulty</span>
           </span>
+          <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
+          <span class="stat-item velocity-status" *ngIf="velocityInfo.lastResult">
+            <span class="stat-value">{{ getVelocityStatusText() }}</span>
+          </span>
         </div>
       </div>
       <div class="passage-actions">
@@ -70,11 +74,10 @@
               (input)="onInput(i, $event)"
               (keydown)="onKeyDown($event, i)"
               [readonly]="feedback.show"
-              [attr.maxlength]="word.length + 2"
               autocomplete="off"
               autocapitalize="off"
               spellcheck="false"
-              size="{{ Math.max(word.length, 3) }}"
+              [style.width]="getInputWidth(word, userAnswers[i])"
               [matTooltip]="feedback.show && !isBlankCorrect(i) ? passageText[i] : null"
               matTooltipPosition="above"
             />
@@ -101,7 +104,8 @@
           color="primary"
           (click)="retry()" 
           [disabled]="!feedback.show"
-          class="retry-btn">
+          class="retry-btn"
+          #retryButton>
           Retry
         </button>
       </div>
@@ -127,15 +131,31 @@
           </div>
         </div>
         <div class="results-message">
-          <span *ngIf="feedback.correct === feedback.total" class="success-message">
-            🎉 Perfect! We'll increase the challenge next time.
-          </span>
-          <span *ngIf="feedback.correct < feedback.total && feedback.correct / feedback.total >= 0.7" class="good-message">
-            👏 Great work! Keep practicing to improve further.
-          </span>
-          <span *ngIf="feedback.correct / feedback.total < 0.7" class="practice-message">
-            📚 Keep practicing! We'll adjust the difficulty for you.
-          </span>
+          <div class="primary-message">
+            <span *ngIf="feedback.correct === feedback.total" class="success-message">
+              🎉 Perfect! {{ getDifficultyChangeText() }}
+            </span>
+            <span *ngIf="feedback.correct < feedback.total && feedback.correct / feedback.total >= 0.7" class="good-message">
+              👏 Great work! {{ getDifficultyChangeText() }}
+            </span>
+            <span *ngIf="feedback.correct / feedback.total < 0.7" class="practice-message">
+              📚 Keep practicing! {{ getDifficultyChangeText() }}
+            </span>
+          </div>
+          <div class="velocity-info" *ngIf="difficultyAdjustment && difficultyAdjustment.adjustmentType !== 'maintain'">
+            <div class="velocity-details">
+              <span class="velocity-label">Velocity:</span>
+              <span class="velocity-value">{{ difficultyAdjustment.velocity.toFixed(1) }}x</span>
+              <span class="velocity-explanation">
+                {{ difficultyAdjustment.adjustmentType === 'increase' ? 'Success streak' : 'Learning mode' }}
+              </span>
+            </div>
+            <div class="difficulty-change">
+              <span class="difficulty-from">{{ (difficultyAdjustment.currentDifficulty * 100) | number:'1.0-0' }}%</span>
+              <span class="difficulty-arrow">→</span>
+              <span class="difficulty-to">{{ (difficultyAdjustment.newDifficulty * 100) | number:'1.0-0' }}%</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
