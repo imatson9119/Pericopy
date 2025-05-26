@@ -354,7 +354,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   getPracticeButtonIcon(goal: Goal): string {
     switch (goal.status) {
       case GoalStatus.MEMORIZING:
-        return 'quiz'; // For blanks practice
+        return 'code'; // For blanks practice
       case GoalStatus.MAINTAINING:
         return 'edit_note'; // For recitation
       case GoalStatus.MASTERED:

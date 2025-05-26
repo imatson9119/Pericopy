@@ -29,7 +29,7 @@ export class StorageService {
 
   table_settings_key = "table_settings"
 
-  app_version = "1.2.1"
+  app_version = "1.3.0"
 
   constructor() { 
     this.resultBank = {"version": 1, "results": new Map()};

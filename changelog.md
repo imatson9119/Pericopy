@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0] - TBD
+Major UI overhaul with goal-centric experience and new Fill Blanks practice mode
+
+- Completely redesigned home page with goal-centric experience and prominent goal creation
+- Added "Continue Working" section showing active goals with quick practice access
+- Added completely new "Fill Blanks" practice mode with adaptive difficulty
+- Implemented goal-specific progression tracking for blanks component with complete data isolation
+- Dynamic practice buttons that adapt based on goal status (Practice/Recite/Review)
+- Enhanced mobile experience with compact layouts and improved navigation
+- Added Fill Blanks option to main navigation menu for easy access
+- Removed freestyle practice section from home page to focus on goal-oriented workflow
+- Improved responsive design and mobile optimization throughout the application
+
 ## [1.2.0] - April 9, 2025
 Smaller release with some quality of life improvements
 

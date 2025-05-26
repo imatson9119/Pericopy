@@ -83,14 +83,14 @@ export class MemorizeComponent
   }
 
   ngOnInit(): void {
-    const pageTitle = 'Memorize Scripture | Pericopy';
-    const pageDescription = 'Effectively memorize scripture with Pericopy\'s guided practice tools. Our interactive system helps you master passages through proven memorization techniques.';
+    const pageTitle = 'Practice Scripture Recitation | Pericopy';
+    const pageDescription = 'Practice reciting scripture with real-time error detection and intelligent feedback. Start typing any passage and our system will automatically identify what you\'re working on and guide your memorization.';
 
     this.titleService.setTitle(pageTitle);
     this.metaService.updateTag({ name: 'description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
     this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/memorize' });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/practice' });
   }
 
   ngOnDestroy(): void {

@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'heatmap', component: HeatmapComponent },
   { path: 'info', component: InfoComponent },
   { path: 'goal', component: GoalComponent },
-  { path: 'memorize', component: MemorizeComponent },
+  { path: 'practice', component: MemorizeComponent },
   { path: 'blanks', component: BlanksComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '',}
