@@ -1,5 +1,6 @@
 import { Component, OnInit, QueryList, ViewChildren, ElementRef, Input, ViewChild, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Title, Meta } from '@angular/platform-browser';
 import { BibleService } from '../services/bible.service';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
@@ -49,7 +50,9 @@ export class BlanksComponent implements OnInit {
     private dialog: MatDialog,
     private bibleService: BibleService,
     private practiceService: MemorizationPracticeService,
-    private _storageService: StorageService
+    private _storageService: StorageService,
+    private titleService: Title,
+    private metaService: Meta
   ) {
     this.subscriptions.push(
       this.bibleService.curBible.subscribe(bible => {
@@ -62,6 +65,15 @@ export class BlanksComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const pageTitle = 'Fill in the Blanks | Pericopy';
+    const pageDescription = 'Practice scripture memorization with our adaptive fill-in-the-blanks exercise. Our intelligent system adjusts difficulty based on your performance to optimize learning.';
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/blanks' });
+
     // Initialize text measurement canvas
     this.initializeTextMeasurement();
     // Optionally auto-open passage selection

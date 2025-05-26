@@ -28,7 +28,7 @@ enum InputState {
 @Component({
   selector: 'app-memorize',
   templateUrl: './memorize.component.html',
-  styleUrls: ['./Memorize.component.scss'],
+  styleUrls: ['./memorize.component.scss'],
 })
 export class MemorizeComponent
   implements OnDestroy, OnInit
