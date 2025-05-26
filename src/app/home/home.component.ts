@@ -23,8 +23,6 @@ import { Title, Meta } from '@angular/platform-browser';
 })
 export class HomeComponent implements OnDestroy, OnInit {
   attempts: Map<string,IResult> = new Map();
-  totalWords: number = 0;
-  totalVerses: number = 0;
   goals: Goal[] = [];
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
@@ -35,6 +33,9 @@ export class HomeComponent implements OnDestroy, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
   private readonly componentName = 'home';
+  
+  // Expose enum to template
+  public GoalStatus = GoalStatus;
 
   constructor(
     private _storageService: StorageService,
@@ -70,7 +71,6 @@ export class HomeComponent implements OnDestroy, OnInit {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
           this.goals = [...this._storageService.getGoals(this.bible.m.t).values()].sort((a,b) => b.t - a.t);
           this.dataSource = new MatTableDataSource<Goal>(this.goals);
-          this.getStats();
           this.loadTableSettings();
           
           setTimeout(()=>{
@@ -172,29 +172,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.saveTableSettings();
   }
 
-  getStats() {
-    if (!this.bible) {
-      return;
-    }
-    let memorizedVerses: Set<number> = new Set();
 
-    for (let result of this.attempts.values()) {
-      if (result.score < .85) {
-        continue;
-      }
-      for (let bookDiff of result.diff.v) {
-        for (let chapterDiff of bookDiff.v) {
-          for (let verseDiff of chapterDiff.v) {
-            memorizedVerses.add(verseDiff.m.i);
-            for (let wordDiff of verseDiff.v) {
-              this.totalWords+=wordDiff.v.length;
-            }
-          }
-        }
-      }
-    }
-    this.totalVerses = memorizedVerses.size;
-  }
 
 
   getIntersectingAttempts(i: number, j: number) {
@@ -312,6 +290,107 @@ export class HomeComponent implements OnDestroy, OnInit {
       case GoalStatus.MAINTAINING: return 'status-maintaining';
       case GoalStatus.MASTERED: return 'status-mastered';
       default: return '';
+    }
+  }
+
+  /**
+   * Get active goals that should be shown in the quick actions section
+   * (non-archived goals that are either due for review or actively being memorized)
+   */
+  getActiveGoals(): Goal[] {
+    return this.goals.filter(goal => {
+      if (goal.archived) return false;
+      
+      // Include goals that are currently being memorized
+      if (goal.status === GoalStatus.MEMORIZING) return true;
+      
+      // Include maintaining goals that are due soon (within 7 days) or overdue
+      if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
+        const daysUntil = this.getDueInDays(goal, false) as number;
+        return typeof daysUntil === 'number' && daysUntil <= 7;
+      }
+      
+      return false;
+    }).slice(0, 3); // Limit to 3 most important goals
+  }
+
+  /**
+   * Get progress text for a goal
+   */
+  getGoalProgressText(goal: Goal): string {
+    // This would need to be implemented based on how progress is tracked
+    // For now, return a placeholder based on status
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING:
+        return 'In progress';
+      case GoalStatus.MAINTAINING:
+        return 'Maintaining';
+      case GoalStatus.MASTERED:
+        return 'Mastered';
+      default:
+        return 'Not started';
+    }
+  }
+
+  /**
+   * Get the practice button text based on goal status
+   */
+  getPracticeButtonText(goal: Goal): string {
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING:
+        return 'Practice';
+      case GoalStatus.MAINTAINING:
+        return 'Recite';
+      case GoalStatus.MASTERED:
+        return 'Review';
+      default:
+        return 'Practice';
+    }
+  }
+
+  /**
+   * Get the practice button icon based on goal status
+   */
+  getPracticeButtonIcon(goal: Goal): string {
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING:
+        return 'quiz'; // For blanks practice
+      case GoalStatus.MAINTAINING:
+        return 'edit_note'; // For recitation
+      case GoalStatus.MASTERED:
+        return 'visibility'; // For review
+      default:
+        return 'play_arrow';
+    }
+  }
+
+  /**
+   * Start practice for a specific goal
+   */
+  startGoalPractice(goal: Goal, event: Event): void {
+    event.stopPropagation(); // Prevent card click navigation
+    
+    // Navigate based on goal status
+    switch (goal.status) {
+      case GoalStatus.MEMORIZING:
+        // Navigate to blanks for memorizing goals
+        this.router.navigate(['/blanks'], { 
+          queryParams: { goalId: goal.id } 
+        });
+        break;
+      case GoalStatus.MAINTAINING:
+      case GoalStatus.MASTERED:
+        // Navigate to input/recitation for maintaining/mastered goals
+        this.router.navigate(['/input'], { 
+          queryParams: { goalId: goal.id } 
+        });
+        break;
+      default:
+        // Default to blanks
+        this.router.navigate(['/blanks'], { 
+          queryParams: { goalId: goal.id } 
+        });
+        break;
     }
   }
 

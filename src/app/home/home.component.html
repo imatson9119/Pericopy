@@ -10,52 +10,114 @@
       </div>
     </header>
     
-    <nav class="toolbar" aria-label="Main navigation">
-      <button class="test" mat-fab extended color="primary" routerLink="/recite">
-        <mat-icon>edit_note</mat-icon>
-        Recite
-      </button>
-      <button class="memorize" mat-fab extended color="primary" routerLink="/memorize">
-        <mat-icon>location_searching</mat-icon>
-        Memorize
-      </button>
-      <button class='heatmap' mat-fab extended color="primary" routerLink="/heatmap">
-        <mat-icon>local_fire_department</mat-icon>
-        Heatmap
-      </button>
-      <button class="info" mat-fab extended color="primary" routerLink="/info">
-        <mat-icon>info</mat-icon>
-        Info
-      </button>
-      <button class="history" mat-fab extended color="primary" routerLink="/history">
-        <mat-icon>history</mat-icon>
-        History
-      </button>
-    </nav>
-    
-    @if (this.attempts.size !== 0) {
-      <section class="stats" aria-label="Memorization statistics">
-        <p>
-          You've memorized <span class="emphasis">{{ totalVerses }}</span> {{ totalVerses === 1 ? "verse" : "verses" }}
-          so far - keep it up!
-        </p>
-      </section>
-    }
-    
-    <section class="goals" aria-label="Memorization goals">
-      <header class="goals-header">
-        <h2 class="goals-title">Your Goals</h2>
-        <button mat-icon-button (click)="this.addGoal()" aria-label="Add a new goal">
-          <mat-icon>add</mat-icon>
-        </button>
-        <div style="flex-grow: 1"></div>
-        <div class="archived-toggle">
-          <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter($event)" labelPosition="before" color="primary">Show Archived</mat-checkbox>  
+    <!-- Primary Goal-Centric Section -->
+    <section class="goal-centric-section" aria-label="Goal-oriented memorization">
+      @if (this.goals.length === 0) {
+        <!-- First-time user experience -->
+        <div class="welcome-section">
+          <div class="welcome-content">
+            <h2 class="welcome-title">Start Your Scripture Memorization Journey</h2>
+            <p class="welcome-description">
+              Set a goal to memorize a specific passage and track your progress with our intelligent system. 
+              Goals help you stay focused and motivated on your memorization journey.
+            </p>
+            <button 
+              class="primary-cta" 
+              mat-fab 
+              extended 
+              color="primary" 
+              (click)="this.addGoal()"
+              aria-label="Create your first memorization goal"
+            >
+              <mat-icon>flag</mat-icon>
+              Create Your First Goal
+            </button>
+          </div>
+          <div class="welcome-illustration">
+            <mat-icon class="welcome-icon">track_changes</mat-icon>
+          </div>
         </div>
-      </header>
-      <div class="hr"></div>
-      @if (this.goals.length !== 0 && this.bible) {
-        <div class="goals-container">
+      } @else {
+        <!-- Existing goals with prominent CTA -->
+        <div class="goals-overview">
+          <div class="goals-header-section">
+            <div class="goals-header-content">
+              <h2 class="goals-main-title">Your Memorization Goals</h2>
+              <p class="goals-subtitle">Continue your progress or start a new goal</p>
+            </div>
+            <button 
+              class="primary-cta" 
+              mat-fab 
+              extended 
+              color="primary" 
+              (click)="this.addGoal()"
+              aria-label="Create a new memorization goal"
+            >
+              <mat-icon>add</mat-icon>
+              New Goal
+            </button>
+          </div>
+          
+          <!-- Quick Action Goals (Active/Due Goals) -->
+          @if (this.getActiveGoals().length > 0) {
+            <div class="quick-actions">
+              <h3 class="quick-actions-title">Continue Working</h3>
+              <div class="quick-goals-grid">
+                @for (goal of this.getActiveGoals(); track goal.id) {
+                  <div class="quick-goal-card" (click)="this.navigateToGoal(goal)">
+                    <div class="quick-goal-header">
+                      <h4 class="quick-goal-title">{{ goal.title }}</h4>
+                      <span class="status-chip" [ngClass]="getStatusClass(goal)">
+                        {{ this.getGoalStatusText(goal) }}
+                      </span>
+                    </div>
+                    <div class="quick-goal-progress">
+                      <div class="progress-info">
+                        <span class="progress-text">{{ this.getLastAttemptText(goal, true) }}</span>
+                        @if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
+                          <span class="due-chip" [ngClass]="getDueInClass(goal)">
+                            Due {{ this.getDueInDaysText(goal) }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                    <div class="quick-goal-actions">
+                      <button 
+                        mat-button 
+                        color="primary"
+                        (click)="this.startGoalPractice(goal, $event)"
+                        class="practice-button"
+                      >
+                        <mat-icon>{{ this.getPracticeButtonIcon(goal) }}</mat-icon>
+                        {{ this.getPracticeButtonText(goal) }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+
+    
+    <!-- All Goals Section (Detailed View) -->
+    @if (this.goals.length > 0) {
+      <section class="all-goals" aria-label="All memorization goals">
+        <header class="all-goals-header">
+          <h3 class="all-goals-title">All Goals</h3>
+          <div class="all-goals-controls">
+            <div class="archived-toggle">
+              <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter($event)" labelPosition="before" color="primary">
+                Show Archived
+              </mat-checkbox>  
+            </div>
+          </div>
+        </header>
+        <div class="hr"></div>
+        <div class="all-goals-container">
           <mat-form-field class="full-width">
             <mat-label>Filter</mat-label>
             <input
@@ -68,7 +130,7 @@
             <mat-icon matSuffix>filter_list</mat-icon>
           </mat-form-field>
           <table
-            class="attempt-table"
+            class="goals-table"
             mat-table
             matSort
             matSortDisableClear
@@ -103,7 +165,6 @@
               </td>
             </ng-container>
     
-            <!-- Status Column -->
             <ng-container matColumnDef="status">
               <th
                 mat-header-cell
@@ -121,7 +182,6 @@
               </td>
             </ng-container>
 
-            <!-- Due In Column -->
             <ng-container matColumnDef="dueIn">
               <th
                 mat-header-cell
@@ -140,7 +200,7 @@
             </ng-container>
     
             <tr
-              class="history-table-header-row"
+              class="goals-table-header-row"
               mat-header-row
               *matHeaderRowDef="displayedColumns"
             ></tr>
@@ -152,17 +212,17 @@
             ></tr>
           </table>
           <mat-paginator
-            class="history-paginator"
+            class="goals-paginator"
             [pageSize]="5"
             [pageSizeOptions]="[5, 10, 25, 100]"
             aria-label="Select page"
           >
           </mat-paginator>
         </div>
-      } @else {
-        <p class="no-goals">Create a goal to track your progress over a passage.<br>Click the "+" button to add a goal.</p>
-      }
-    </section>
+      </section>
+    }
+
+
   </main>
 } @else {
   <div class="page-loader" aria-label="Loading application">

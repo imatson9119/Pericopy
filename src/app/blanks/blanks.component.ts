@@ -1,6 +1,7 @@
 import { Component, OnInit, QueryList, ViewChildren, ElementRef, Input, ViewChild, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title, Meta } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
@@ -9,6 +10,7 @@ import { MemorizationPracticeService } from './memorization-practice.service';
 import { IResult } from '../classes/models';
 import { Subscription } from 'rxjs';
 import { StorageService } from '../services/storage.service';
+import { Goal } from '../classes/Goal';
 
 @Component({
   selector: 'app-blanks',
@@ -43,6 +45,11 @@ export class BlanksComponent implements OnInit {
   private textMeasureCanvas: HTMLCanvasElement | null = null;
   private textMeasureContext: CanvasRenderingContext2D | null = null;
 
+  // Goal-specific properties
+  goalId: string | null = null;
+  goal: Goal | null = null;
+  isGoalMode: boolean = false;
+
   // Inputs to allow for passing in a passage
 
 
@@ -52,7 +59,9 @@ export class BlanksComponent implements OnInit {
     private practiceService: MemorizationPracticeService,
     private _storageService: StorageService,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.subscriptions.push(
       this.bibleService.curBible.subscribe(bible => {
@@ -65,18 +74,60 @@ export class BlanksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const pageTitle = 'Fill in the Blanks | Pericopy';
-    const pageDescription = 'Practice scripture memorization with our adaptive fill-in-the-blanks exercise. Our intelligent system adjusts difficulty based on your performance to optimize learning.';
+    // Check for goal context from URL parameters
+    this.subscriptions.push(
+      this.route.queryParams.subscribe(params => {
+        this.goalId = params['goalId'] || null;
+        this.isGoalMode = !!this.goalId;
+        
+        if (this.isGoalMode && this.goalId) {
+          this.loadGoalContext();
+        }
+        
+        this.updatePageMetadata();
+      })
+    );
+
+    // Initialize text measurement canvas
+    this.initializeTextMeasurement();
+    // Optionally auto-open passage selection if not in goal mode
+    if (!this.isGoalMode) {
+      // Could auto-open passage selection here if desired
+    }
+  }
+
+  private loadGoalContext(): void {
+    if (!this.goalId) return;
+    
+    const goal = this._storageService.getGoal(this.goalId);
+    if (goal && this.bible) {
+      this.goal = goal;
+      // Auto-load the goal's passage
+      const goalPassage = this.bible.getPassage(goal.i, goal.j);
+      if (goalPassage) {
+        this.passage = goalPassage;
+        this.generateBlanks();
+      }
+    } else if (!goal) {
+      // Goal not found, redirect to home
+      this.router.navigate(['/']);
+    }
+  }
+
+  private updatePageMetadata(): void {
+    let pageTitle = 'Fill in the Blanks | Pericopy';
+    let pageDescription = 'Practice scripture memorization with our adaptive fill-in-the-blanks exercise. Our intelligent system adjusts difficulty based on your performance to optimize learning.';
+    
+    if (this.isGoalMode && this.goal) {
+      pageTitle = `${this.goal.title} - Fill in the Blanks | Pericopy`;
+      pageDescription = `Practice fill-in-the-blanks for your goal: ${this.goal.title}. Track your progress and improve your scripture memorization.`;
+    }
 
     this.titleService.setTitle(pageTitle);
     this.metaService.updateTag({ name: 'description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
     this.metaService.updateTag({ property: 'og:description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/blanks' });
-
-    // Initialize text measurement canvas
-    this.initializeTextMeasurement();
-    // Optionally auto-open passage selection
   } 
 
   ngOnDestroy(): void {
@@ -85,6 +136,18 @@ export class BlanksComponent implements OnInit {
 
   openPassageSelect() {
     if(!this.bible) return;
+    
+    // In goal mode, only allow the goal's passage
+    if (this.isGoalMode && this.goal && this.goalId) {
+      const goalPassage = this.bible.getPassage(this.goal.i, this.goal.j);
+      if (goalPassage) {
+        this.passage = goalPassage;
+        // Track this passage as recently used for the goal
+        this.practiceService.trackRecentPassageForGoal(this.goalId, goalPassage.id, goalPassage.i, goalPassage.j);
+        this.generateBlanks();
+      }
+      return;
+    }
     
     // Get recent passages from the practice service instead of general attempts
     const recentPassages = this.practiceService.getRecentPassages();
@@ -131,9 +194,16 @@ export class BlanksComponent implements OnInit {
     const text = this.bible.getText(this.passage.i, this.passage.j);
     this.passageText = text.split(/\s+/);
     this.userAnswers = {};
-    // Get adaptive blanking percent and velocity info
-    this.blankingPercent = this.practiceService.getBlankingPercentage(this.passage.id);
-    this.velocityInfo = this.practiceService.getVelocityInfo(this.passage.id);
+    
+    // Get adaptive blanking percent and velocity info - use goal-specific methods when in goal mode
+    if (this.isGoalMode && this.goalId) {
+      this.blankingPercent = this.practiceService.getBlankingPercentageForGoal(this.goalId, this.passage.id);
+      this.velocityInfo = this.practiceService.getVelocityInfoForGoal(this.goalId, this.passage.id);
+    } else {
+      this.blankingPercent = this.practiceService.getBlankingPercentage(this.passage.id);
+      this.velocityInfo = this.practiceService.getVelocityInfo(this.passage.id);
+    }
+    
     // Randomly select blank indices
     const numBlanks = Math.max(1, Math.floor(this.passageText.length * this.blankingPercent));
     const indices = Array.from({ length: this.passageText.length }, (_, i) => i);
@@ -284,16 +354,27 @@ export class BlanksComponent implements OnInit {
     }
     this.feedback = { correct, total, show: true };
     
-    // Get difficulty adjustment preview before making changes
+    // Get difficulty adjustment preview before making changes - use goal-specific methods when in goal mode
     const score = total > 0 ? correct / total : 0;
-    this.difficultyAdjustment = this.practiceService.getDifficultyAdjustmentPreview(this.passage.id, score);
-    
-    // Save result and adjust blanking
-    this.practiceService.saveAttempt(this.passage.id, { correct, total });
-    this.blankingPercent = this.practiceService.adjustBlankingPercentage(this.passage.id, score);
-    
-    // Update velocity info after adjustment
-    this.velocityInfo = this.practiceService.getVelocityInfo(this.passage.id);
+    if (this.isGoalMode && this.goalId) {
+      this.difficultyAdjustment = this.practiceService.getDifficultyAdjustmentPreviewForGoal(this.goalId, this.passage.id, score);
+      
+      // Save result and adjust blanking for goal
+      this.practiceService.saveAttemptForGoal(this.goalId, this.passage.id, { correct, total });
+      this.blankingPercent = this.practiceService.adjustBlankingPercentageForGoal(this.goalId, this.passage.id, score);
+      
+      // Update velocity info after adjustment
+      this.velocityInfo = this.practiceService.getVelocityInfoForGoal(this.goalId, this.passage.id);
+    } else {
+      this.difficultyAdjustment = this.practiceService.getDifficultyAdjustmentPreview(this.passage.id, score);
+      
+      // Save result and adjust blanking for freestyle
+      this.practiceService.saveAttempt(this.passage.id, { correct, total });
+      this.blankingPercent = this.practiceService.adjustBlankingPercentage(this.passage.id, score);
+      
+      // Update velocity info after adjustment
+      this.velocityInfo = this.practiceService.getVelocityInfo(this.passage.id);
+    }
   }
 
   retry() {

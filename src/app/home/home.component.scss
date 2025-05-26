@@ -1,5 +1,49 @@
 .main-container {
   padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Global chip styles for both quick goals and table
+  .due-chip, .status-chip {
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    font-weight: normal;
+    color: inherit;
+    font-size: 0.85rem;
+  }
+
+  // Due status styles
+  .overdue {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  .due-soon {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  .not-due {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  // Goal status styles
+  .status-memorizing {
+    background-color: #ffe8cc;
+    color: #543d21;
+  }
+  .status-maintaining {
+    background-color: #cce5ff;
+    color: #004085;
+  }
+  .status-mastered {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+  .status-archived {
+    background-color: #ebebeb;
+    color: #3f3f3f;
+  }
 }
 .logo-container {
   display: flex;
@@ -8,8 +52,8 @@
   flex-wrap: nowrap;
   font-size: 1.8rem;
   font-weight: 100;
-  margin-top: 4rem;
-  margin-bottom: 4rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
 
   .logo {
     height: 6rem;
@@ -37,235 +81,246 @@
     color: #5e5e5e;
   }
 }
-h2 {
-  font-size: 1.8rem;
-  font-weight: 100;
-  margin-top: 2rem;
+// ===== GOAL-CENTRIC SECTION =====
+.goal-centric-section {
+  margin-bottom: 3rem;
 }
 
-.toolbar {
+// Welcome section for first-time users
+.welcome-section {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: center;
+  gap: 3rem;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  margin-bottom: 2rem;
 
-  .mat-mdc-fab.mat-primary {
+  .welcome-content {
+    flex: 2;
+  }
+
+  .welcome-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+  }
+
+  .welcome-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #5e5e5e;
+    margin-bottom: 2rem;
+  }
+
+  .primary-cta {
     --mdc-fab-container-color: #4a555b;
     --mat-fab-foreground-color: white;
     --mat-fab-state-layer-color: white;
+    font-size: 1.1rem;
+    padding: 0 2rem;
+    height: 56px;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
   }
-}
 
-.stats {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  color: #5e5e5e;
-  font-size: 1.2rem;
-  font-weight: 100;
-  margin-top: 4rem;
-  margin-bottom: 2rem;
-
-  .emphasis {
-    font-weight: 500;
-    color: #555555;
-  }
-}
-.goals {
-  .goals-title {
-    margin: 0;
-  }
-  
-  .goals-header {
-    font-size: 1.5rem;
-    font-weight: 100;
+  .welcome-illustration {
+    flex: 1;
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
   }
 
-  .goals-container {
-    padding-top: 1rem;
+  .welcome-icon {
+    font-size: 8rem;
+    width: 8rem;
+    height: 8rem;
+    color: #4a555b;
+    opacity: 0.3;
+  }
+}
+
+// Goals overview for existing users
+.goals-overview {
+  .goals-header-section {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: stretch;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 2rem;
 
-    // Base style for the chip
-    .due-chip {
-      padding: 2px 8px;
-      border-radius: 12px;
-      display: inline-block;
-      font-weight: normal;
-      color: inherit;
+    .goals-header-content {
+      flex: 1;
     }
 
-    // Base style for the status chip (can share with due-chip if identical)
-    .status-chip {
-      padding: 2px 8px;
-      border-radius: 12px;
-      display: inline-block;
-      font-weight: normal;
-      color: inherit;
+    .goals-main-title {
+      font-size: 2.2rem;
+      font-weight: 300;
+      margin: 0 0 0.5rem 0;
+      color: #2c3e50;
     }
 
-    // Styles for the Due In column status chips
-    .overdue {
-      background-color: #f8d7da; // Muted red
-      color: #721c24; // Darker red text for contrast
-    }
-    .due-soon {
-      background-color: #fff3cd; // Muted orange/yellow
-      color: #856404; // Darker yellow/brown text for contrast
-    }
-    .not-due {
-      background-color: #d4edda; // Muted green
-      color: #155724; // Darker green text for contrast
+    .goals-subtitle {
+      font-size: 1rem;
+      color: #5e5e5e;
+      margin: 0;
     }
 
-    // Styles for the Status column chips
-    .status-memorizing {
-      background-color: #ffe8cc; // Muted blue
-      color: #543d21; // Darker blue text
-    }
-    .status-maintaining {
-      background-color: #cce5ff; // Muted blue
-      color: #004085; // Darker blue text
+    .primary-cta {
+      --mdc-fab-container-color: #4a555b;
+      --mat-fab-foreground-color: white;
+      --mat-fab-state-layer-color: white;
+      flex-shrink: 0;
       
-    }
-    .status-mastered {
-      background-color: #d1ecf1; // Muted cyan/teal
-      color: #0c5460; // Darker cyan/teal text
-    }
-    .status-archived {
-      background-color: #ebebeb; // Muted beige/tan
-      color: #3f3f3f; // Darker beige/brown text
+      mat-icon {
+        margin-right: 0.5rem;
+      }
     }
   }
+}
 
-  .row {
-    cursor: pointer;
-    transition: background 0.3s;
+// Quick actions section
+.quick-actions {
+  margin-bottom: 3rem;
 
-    &:hover {
-      background: #eee;
-    }
+  .quick-actions-title {
+    font-size: 1.6rem;
+    font-weight: 300;
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
   }
 
-  .goal {
-    cursor: pointer;
+  .quick-goals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .quick-goal-card {
     background: white;
     border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .quick-goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+
+      .quick-goal-title {
+        font-size: 1.2rem;
+        font-weight: 400;
+        margin: 0;
+        color: #2c3e50;
+        flex: 1;
+        margin-right: 1rem;
+      }
+
+
+    }
+
+    .quick-goal-progress {
+      margin-bottom: 1.5rem;
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .progress-text {
+          color: #5e5e5e;
+          font-size: 0.9rem;
+        }
+
+
+      }
+    }
+
+    .quick-goal-actions {
+      display: flex;
+      justify-content: flex-end;
+
+      .practice-button {
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+
+
+// ===== ALL GOALS SECTION =====
+.all-goals {
+  margin-bottom: 3rem;
+
+  .all-goals-header {
     display: flex;
-    flex-direction: row;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
 
-    div {
-      width: 33%;
+    .all-goals-title {
+      font-size: 1.6rem;
+      font-weight: 300;
+      margin: 0;
+      color: #2c3e50;
     }
 
-    .goal-header {
-      background: #536a75;
-      width: 100%;
-      color: white;
-      padding: 0.5rem;
-      border-radius: inherit;
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-      font-weight: 100;
-      font-size: large;
-      text-align: center;
-      transition: background 0.3s;
-      box-sizing: border-box;
-    }
-
-    .goal-footer {
-      width: 100%;
-      padding: 0.5rem 0.5rem;
-      border-radius: inherit;
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-      background: #536a75;
-      color: #ccdde5;
-      font-weight: 100;
-      font-size: 0.8rem;
+    .all-goals-controls {
       display: flex;
-      justify-content: center;
-      transition: background 0.3s;
-      box-sizing: border-box;
-    }
-    .goal-text {
-      padding: 1rem;
-      font-size: 0.85rem;
-      color: white;
-      background: #607d8b;
-      transition: background 0.3s;
-      height: 77px;
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      box-sizing: border-box;
+      gap: 1rem;
     }
   }
-  .goal:hover {
-    .goal-header {
-      background: #617985;
-    }
-    .goal-footer {
-      background: #617985;
-    }
-    .goal-text {
-      background: #6f8d9c;
+
+  .all-goals-container {
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .goals-table {
+    .row {
+      cursor: pointer;
+      transition: background 0.3s;
+
+      &:hover {
+        background: #f8f9fa;
+      }
     }
   }
 }
 
-.no-attempts {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
-  gap: 1rem;
-  color: #616161;
-  margin-bottom: 1rem;
 
-  mat-icon {
-    font-size: 8rem;
-    color: #c2c2c2;
-    height: auto;
-    width: auto;
-  }
 
-  span {
-    margin-bottom: 1rem;
-  }
-}
-
+// ===== UTILITY STYLES =====
 .hr {
   width: 100%;
   border: 0;
   height: 1px;
-  background-color: #999999;
+  background-color: #dee2e6;
+  margin: 0.5rem 0;
 }
 
 td {
   font-size: 0.9rem;
-}
-
-.no-goals {
-  margin-top: 5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #666;
-  font-weight: 100;
-  font-size: .9rem;
-  text-align: center;
-  line-height: 1.3rem;
 }
 
 mat-checkbox {
@@ -276,16 +331,102 @@ mat-checkbox {
   font-weight: 100;
 }
 
-@media screen and (max-width: 600px) {
-  .mdc-data-table__cell,
-  .mdc-data-table__header-cell {
-    padding: 0rem 0.2rem;
+// ===== RESPONSIVE DESIGN =====
+@media screen and (max-width: 768px) {
+  .welcome-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+    padding: 2rem 1rem;
+
+    .welcome-title {
+      font-size: 2rem;
+    }
+
+    .welcome-illustration {
+      order: -1;
+    }
+
+    .welcome-icon {
+      font-size: 6rem;
+      width: 6rem;
+      height: 6rem;
+    }
   }
-  td {
-    font-size: 0.8rem;
+
+  .goals-header-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    .primary-cta {
+      align-self: center;
+    }
+  }
+
+  .quick-goals-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .quick-actions .quick-goal-card {
+    padding: 1rem;
+
+    .quick-goal-header {
+      margin-bottom: 0.75rem;
+
+      .quick-goal-title {
+        font-size: 1.1rem;
+        margin-right: 0.75rem;
+      }
+    }
+
+    .quick-goal-progress {
+      margin-bottom: 1rem;
+
+      .progress-info {
+        .progress-text {
+          font-size: 0.85rem;
+        }
+      }
+    }
+  }
+
+  .all-goals-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+    text-align: left !important;
+
+    .all-goals-title {
+      align-self: flex-start;
+      text-align: left !important;
+    }
+
+    .all-goals-controls {
+      align-self: flex-start !important;
+      text-align: left !important;
+      
+      .archived-toggle {
+        text-align: left !important;
+      }
+    }
+  }
+
+
+
+
+}
+
+@media screen and (max-width: 600px) {
+  .main-container {
+    padding: 0.5rem;
   }
 
   .logo-container {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+
     .logo {
       height: 4rem;
     }
@@ -298,4 +439,62 @@ mat-checkbox {
       font-size: 0.8rem;
     }
   }
+
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+
+  .goals-main-title {
+    font-size: 1.8rem;
+  }
+
+  .mdc-data-table__cell,
+  .mdc-data-table__header-cell {
+    padding: 0rem 0.2rem;
+  }
+
+  td {
+    font-size: 0.8rem;
+  }
+
+  .quick-goals-grid {
+    gap: 0.75rem;
+  }
+
+  .quick-actions .quick-goal-card {
+    padding: 0.75rem;
+
+    .quick-goal-header {
+      margin-bottom: 0.5rem;
+
+      .quick-goal-title {
+        font-size: 1rem;
+        margin-right: 0.5rem;
+      }
+    }
+
+    .quick-goal-progress {
+      margin-bottom: 0.75rem;
+
+      .progress-info {
+        .progress-text {
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .quick-goal-actions {
+      .practice-button {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+
+        mat-icon {
+          margin-right: 0.25rem;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+
 }
