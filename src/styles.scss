@@ -44,3 +44,16 @@ button {
   // Unchanged text (slight hint of green)
   color: black;
 }
+
+/* Success snackbar styling for celebrations */
+.success-snackbar {
+  background: linear-gradient(45deg, #4caf50, #66bb6a) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+}
+
+.success-snackbar .mat-mdc-button {
+  color: white !important;
+  font-weight: 600 !important;
+}

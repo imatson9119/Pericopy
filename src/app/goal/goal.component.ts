@@ -18,6 +18,7 @@ import { timelineConfig } from './chart-configs/timeline-chart-config';
 import 'chartjs-adapter-luxon';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Goal, GoalStatus } from '../classes/Goal';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-goal',
@@ -252,6 +253,43 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     const attemptBank = this._storageService.getAttempts(this.goal.translation);
     this.goal.promoteToMaintaining(attemptBank);
     this._storageService.storeGoals();
+    
+    // Show celebration confetti
+    this.triggerConfetti();
+    
+    // Show success snackbar with celebration message
+    this.snackbar.open('🎉 Goal promoted! 🎉', 'Dismiss', { 
+      duration: 4000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private triggerConfetti() {
+    // Create a burst of confetti from the center
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    // Add a second burst with different colors and timing
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 }
+      });
+    }, 200);
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 }
+      });
+    }, 400);
   }
 
   getPercentageMemorized(): number {
