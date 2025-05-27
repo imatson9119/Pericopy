@@ -3,48 +3,16 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  // Global chip styles for both quick goals and table
-  .due-chip, .status-chip {
-    padding: 2px 8px;
-    border-radius: 12px;
-    display: inline-block;
-    font-weight: normal;
-    color: inherit;
-    font-size: 0.85rem;
-  }
-
-  // Due status styles
-  .overdue {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-  .due-soon {
-    background-color: #fff3cd;
-    color: #856404;
-  }
-  .not-due {
-    background-color: #d4edda;
-    color: #155724;
-  }
-
-  // Goal status styles
-  .status-memorizing {
-    background-color: #ffe8cc;
-    color: #543d21;
-  }
-  .status-maintaining {
-    background-color: #cce5ff;
-    color: #004085;
-  }
-  .status-mastered {
-    background-color: #d1ecf1;
-    color: #0c5460;
-  }
-  .status-archived {
-    background-color: #ebebeb;
-    color: #3f3f3f;
-  }
+  .due-chip, .status-chip { padding: 2px 8px; border-radius: 12px; display: inline-block; font-weight: normal; color: inherit; font-size: 0.85rem; }
+  .overdue { background: #f8d7da; color: #721c24; }
+  .due-soon { background: #fff3cd; color: #856404; }
+  .not-due { background: #d4edda; color: #155724; }
+  .status-memorizing { background: #ffe8cc; color: #543d21; }
+  .status-maintaining { background: #cce5ff; color: #004085; }
+  .status-mastered { background: #d1ecf1; color: #0c5460; }
+  .status-archived { background: #ebebeb; color: #3f3f3f; }
 }
+
 .logo-container {
   display: flex;
   align-items: center;
@@ -52,41 +20,20 @@
   flex-wrap: nowrap;
   font-size: 1.8rem;
   font-weight: 100;
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+  margin: 2rem 0 3rem;
 
-  .logo {
-    height: 6rem;
-  }
-
-  .right {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .left {
-    display: flex;
-    align-items: center;
-  }
-
-  .title {
-    font-size: 4rem;
-    font-weight: 100;
-    margin: 0;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-    font-weight: 100;
-    color: #5e5e5e;
-  }
+  .logo { height: 6rem; }
+  .right { display: flex; flex-direction: column; }
+  .left { display: flex; align-items: center; }
+  .title { font-size: 4rem; font-weight: 100; margin: 0; }
+  .subtitle { font-size: 1rem; font-weight: 100; color: #5e5e5e; }
 }
-// ===== GOAL-CENTRIC SECTION =====
+
+// Goal-centric section
 .goal-centric-section {
   margin-bottom: 4rem;
   position: relative;
   
-  // Add subtle bottom border to separate from next section
   &::after {
     content: '';
     position: absolute;
@@ -99,7 +46,7 @@
   }
 }
 
-// Welcome section for first-time users
+// Welcome section
 .welcome-section {
   display: flex;
   align-items: center;
@@ -109,24 +56,10 @@
   border-radius: 16px;
   margin-bottom: 2rem;
 
-  .welcome-content {
-    flex: 2;
-  }
-
-  .welcome-title {
-    font-size: 2.5rem;
-    font-weight: 300;
-    margin: 0 0 1rem 0;
-    color: #2c3e50;
-  }
-
-  .welcome-description {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #5e5e5e;
-    margin-bottom: 2rem;
-  }
-
+  .welcome-content { flex: 2; }
+  .welcome-title { font-size: 2.5rem; font-weight: 300; margin: 0 0 1rem 0; color: #2c3e50; }
+  .welcome-description { font-size: 1.1rem; line-height: 1.6; color: #5e5e5e; margin-bottom: 2rem; }
+  
   .primary-cta {
     --mdc-fab-container-color: #4a555b;
     --mat-fab-foreground-color: white;
@@ -135,81 +68,45 @@
     padding: 0 2rem;
     height: 56px;
     
-    mat-icon {
-      margin-right: 0.5rem;
-    }
+    mat-icon { margin-right: 0.5rem; }
   }
 
-  .welcome-illustration {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  .welcome-illustration { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .welcome-icon { font-size: 8rem; width: 8rem; height: 8rem; color: #4a555b; opacity: 0.3; }
+}
 
-  .welcome-icon {
-    font-size: 8rem;
-    width: 8rem;
-    height: 8rem;
-    color: #4a555b;
-    opacity: 0.3;
+// Goals overview
+.goals-overview .goals-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  border: 1px solid #f1f3f4;
+
+  .goals-header-content { flex: 1; }
+  .goals-main-title { font-size: 2.2rem; font-weight: 300; margin: 0 0 0.5rem 0; color: #2c3e50; }
+  .goals-subtitle { font-size: 1rem; color: #5e5e5e; margin: 0; }
+  
+  .primary-cta {
+    --mdc-fab-container-color: #4a555b;
+    --mat-fab-foreground-color: white;
+    --mat-fab-state-layer-color: white;
+    flex-shrink: 0;
+    
+    mat-icon { margin-right: 0.5rem; }
   }
 }
 
-// Goals overview for existing users
-.goals-overview {
-  .goals-header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    gap: 2rem;
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 12px;
-    border: 1px solid #f1f3f4;
-
-    .goals-header-content {
-      flex: 1;
-    }
-
-    .goals-main-title {
-      font-size: 2.2rem;
-      font-weight: 300;
-      margin: 0 0 0.5rem 0;
-      color: #2c3e50;
-    }
-
-    .goals-subtitle {
-      font-size: 1rem;
-      color: #5e5e5e;
-      margin: 0;
-    }
-
-    .primary-cta {
-      --mdc-fab-container-color: #4a555b;
-      --mat-fab-foreground-color: white;
-      --mat-fab-state-layer-color: white;
-      flex-shrink: 0;
-      
-      mat-icon {
-        margin-right: 0.5rem;
-      }
-    }
-  }
-}
-
-// Quick actions section
+// Quick actions
 .quick-actions {
   margin-bottom: 3rem;
 
-  .quick-actions-title {
-    font-size: 1.6rem;
-    font-weight: 300;
-    margin: 0 0 1.5rem 0;
-    color: #2c3e50;
-  }
-
+  .quick-actions-title { font-size: 1.6rem; font-weight: 300; margin: 0 0 1.5rem 0; color: #2c3e50; }
+  
   .quick-goals-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -225,10 +122,7 @@
     transition: all 0.3s ease;
     border: 1px solid #e9ecef;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    }
+    &:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); }
 
     .quick-goal-header {
       display: flex;
@@ -236,16 +130,7 @@
       align-items: flex-start;
       margin-bottom: 1rem;
 
-      .quick-goal-title {
-        font-size: 1.2rem;
-        font-weight: 400;
-        margin: 0;
-        color: #2c3e50;
-        flex: 1;
-        margin-right: 1rem;
-      }
-
-
+      .quick-goal-title { font-size: 1.2rem; font-weight: 400; margin: 0; color: #2c3e50; flex: 1; margin-right: 1rem; }
     }
 
     .quick-goal-progress {
@@ -258,13 +143,7 @@
         flex-wrap: wrap;
         gap: 0.5rem;
 
-        .progress-text {
-          color: #8a8a8a;
-          font-size: 0.85rem;
-          font-weight: 300;
-        }
-
-
+        .progress-text { color: #8a8a8a; font-size: 0.85rem; font-weight: 300; }
       }
     }
 
@@ -282,29 +161,19 @@
         height: 32px;
         line-height: 32px;
         border-radius: 16px;
-        background-color: rgba(74, 85, 91, 0.08);
+        background: rgba(74, 85, 91, 0.08);
         color: #4a555b;
         transition: all 0.2s ease;
 
-        &:hover {
-          background-color: rgba(74, 85, 91, 0.12);
-          transform: translateY(-1px);
-        }
+        &:hover { background: rgba(74, 85, 91, 0.12); transform: translateY(-1px); }
 
-        mat-icon {
-          margin-right: 0.25rem;
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-        }
+        mat-icon { margin-right: 0.25rem; font-size: 16px; width: 16px; height: 16px; }
       }
     }
   }
 }
 
-
-
-// ===== ALL GOALS SECTION =====
+// All goals section
 .all-goals {
   margin-bottom: 3rem;
   background: #fafbfc;
@@ -318,63 +187,25 @@
     align-items: center;
     margin-bottom: 0.5rem;
 
-    .all-goals-title {
-      font-size: 1.6rem;
-      font-weight: 300;
-      margin: 0;
-      color: #2c3e50;
-    }
-
-    .all-goals-controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+    .all-goals-title { font-size: 1.6rem; font-weight: 300; margin: 0; color: #2c3e50; }
+    .all-goals-controls { display: flex; align-items: center; gap: 1rem; }
   }
 
-  .all-goals-container {
-    padding-top: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .goals-table {
-    .row {
-      cursor: pointer;
-      transition: background 0.3s;
-
-      &:hover {
-        background: #f8f9fa;
-      }
-    }
+  .all-goals-container { padding-top: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  
+  .goals-table .row {
+    cursor: pointer;
+    transition: background 0.3s;
+    &:hover { background: #f8f9fa; }
   }
 }
 
+// Utility styles
+.hr { width: 100%; border: 0; height: 1px; background: #dee2e6; margin: 0.5rem 0; }
+td { font-size: 0.9rem; }
+mat-checkbox { user-select: none; font-weight: 100; }
 
-
-// ===== UTILITY STYLES =====
-.hr {
-  width: 100%;
-  border: 0;
-  height: 1px;
-  background-color: #dee2e6;
-  margin: 0.5rem 0;
-}
-
-td {
-  font-size: 0.9rem;
-}
-
-mat-checkbox {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  font-weight: 100;
-}
-
-// ===== RESPONSIVE DESIGN =====
+// Responsive design
 @media screen and (max-width: 768px) {
   .welcome-section {
     flex-direction: column;
@@ -382,19 +213,9 @@ mat-checkbox {
     gap: 2rem;
     padding: 2rem 1rem;
 
-    .welcome-title {
-      font-size: 2rem;
-    }
-
-    .welcome-illustration {
-      order: -1;
-    }
-
-    .welcome-icon {
-      font-size: 6rem;
-      width: 6rem;
-      height: 6rem;
-    }
+    .welcome-title { font-size: 2rem; }
+    .welcome-illustration { order: -1; }
+    .welcome-icon { font-size: 6rem; width: 6rem; height: 6rem; }
   }
 
   .goals-header-section {
@@ -402,10 +223,7 @@ mat-checkbox {
     align-items: stretch;
     gap: 1rem;
     padding: 1.25rem 1.5rem;
-
-    .primary-cta {
-      align-self: center;
-    }
+    .primary-cta { align-self: center; }
   }
 
   .all-goals {
@@ -413,47 +231,20 @@ mat-checkbox {
     margin-left: 0;
     margin-right: 0;
 
-    .all-goals-container {
-      .goals-table,
-      .goals-paginator {
-        margin-left: -1.5rem;
-        margin-right: -1.5rem;
-        width: calc(100% + 3rem);
-      }
+    .all-goals-container .goals-table, .all-goals-container .goals-paginator {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      width: calc(100% + 3rem);
     }
   }
 
-  .goal-centric-section::after {
-    width: 80%;
-  }
-
-  .quick-goals-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+  .goal-centric-section::after { width: 80%; }
+  .quick-goals-grid { grid-template-columns: 1fr; gap: 1rem; }
 
   .quick-actions .quick-goal-card {
     padding: 1rem;
-
-    .quick-goal-header {
-      margin-bottom: 0.75rem;
-
-      .quick-goal-title {
-        font-size: 1.3rem;
-        margin-right: 0.75rem;
-      }
-    }
-
-    .quick-goal-progress {
-      margin-bottom: 1rem;
-
-      .progress-info {
-        .progress-text {
-          font-size: 0.8rem;
-          font-weight: 300;
-        }
-      }
-    }
+    .quick-goal-header { margin-bottom: 0.75rem; .quick-goal-title { font-size: 1.3rem; margin-right: 0.75rem; } }
+    .quick-goal-progress { margin-bottom: 1rem; .progress-info .progress-text { font-size: 0.8rem; font-weight: 300; } }
   }
 
   .all-goals-header {
@@ -462,72 +253,32 @@ mat-checkbox {
     gap: 1rem;
     text-align: left !important;
 
-    .all-goals-title {
-      align-self: flex-start;
-      text-align: left !important;
-    }
-
-    .all-goals-controls {
-      align-self: flex-start !important;
-      text-align: left !important;
-      
-      .archived-toggle {
-        text-align: left !important;
-      }
-    }
+    .all-goals-title { align-self: flex-start; text-align: left !important; }
+    .all-goals-controls { align-self: flex-start !important; text-align: left !important; .archived-toggle { text-align: left !important; } }
   }
-
-
-
-
 }
 
 @media screen and (max-width: 600px) {
-  .main-container {
-    padding: 0.5rem;
-  }
+  .main-container { padding: 0.5rem; }
 
   .logo-container {
     margin-top: 1rem;
     margin-bottom: 2rem;
-
-    .logo {
-      height: 4rem;
-    }
-
-    .title {
-      font-size: 3rem;
-    }
-
-    .subtitle {
-      font-size: 0.8rem;
-    }
+    .logo { height: 4rem; }
+    .title { font-size: 3rem; }
+    .subtitle { font-size: 0.8rem; }
   }
 
-  .welcome-title {
-    font-size: 1.8rem;
-  }
+  .welcome-title { font-size: 1.8rem; }
+  .goals-main-title { font-size: 1.8rem; }
 
-  .goals-main-title {
-    font-size: 1.8rem;
-  }
-
-  .mdc-data-table__cell,
-  .mdc-data-table__header-cell {
+  .mdc-data-table__cell, .mdc-data-table__header-cell {
     padding: 0.5rem 0.2rem;
-    
-    &:first-child {
-      padding-left: 1rem;
-    }
-    
-    &:last-child {
-      padding-right: 1rem;
-    }
+    &:first-child { padding-left: 1rem; }
+    &:last-child { padding-right: 1rem; }
   }
 
-  td {
-    font-size: 0.8rem;
-  }
+  td { font-size: 0.8rem; }
 
   .all-goals {
     padding: 1rem 1rem 0 1rem;
@@ -535,54 +286,23 @@ mat-checkbox {
     margin-right: -0.5rem;
     border-radius: 0;
 
-    .all-goals-container {
-      .goals-table,
-      .goals-paginator {
-        margin-left: -1rem;
-        margin-right: -1rem;
-        width: calc(100% + 2rem);
-      }
+    .all-goals-container .goals-table, .all-goals-container .goals-paginator {
+      margin-left: -1rem;
+      margin-right: -1rem;
+      width: calc(100% + 2rem);
     }
   }
 
-  .goals-header-section {
-    padding: 1rem 1.25rem;
-  }
-
-  .goal-centric-section::after {
-    width: 90%;
-  }
-
-  .quick-goals-grid {
-    gap: 0.75rem;
-  }
+  .goals-header-section { padding: 1rem 1.25rem; }
+  .goal-centric-section::after { width: 90%; }
+  .quick-goals-grid { gap: 0.75rem; }
 
   .quick-actions .quick-goal-card {
     padding: 0.75rem;
-
-    .quick-goal-header {
-      margin-bottom: 0.5rem;
-
-      .quick-goal-title {
-        font-size: 1.2rem;
-        margin-right: 0.5rem;
-      }
-    }
-
-    .quick-goal-progress {
-      margin-bottom: 0.75rem;
-
-      .progress-info {
-        .progress-text {
-          font-size: 0.75rem;
-          font-weight: 300;
-        }
-      }
-    }
-
+    .quick-goal-header { margin-bottom: 0.5rem; .quick-goal-title { font-size: 1.2rem; margin-right: 0.5rem; } }
+    .quick-goal-progress { margin-bottom: 0.75rem; .progress-info .progress-text { font-size: 0.75rem; font-weight: 300; } }
     .quick-goal-actions {
       gap: 0.25rem;
-
       .practice-button {
         --mdc-text-button-container-height: 28px;
         --mdc-text-button-label-text-size: 0.8rem;
@@ -590,16 +310,8 @@ mat-checkbox {
         height: 28px;
         line-height: 28px;
         border-radius: 14px;
-
-        mat-icon {
-          margin-right: 0.2rem;
-          font-size: 14px;
-          width: 14px;
-          height: 14px;
-        }
+        mat-icon { margin-right: 0.2rem; font-size: 14px; width: 14px; height: 14px; }
       }
     }
   }
-
-
 }
