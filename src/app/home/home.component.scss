@@ -83,7 +83,20 @@
 }
 // ===== GOAL-CENTRIC SECTION =====
 .goal-centric-section {
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
+  position: relative;
+  
+  // Add subtle bottom border to separate from next section
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #dee2e6 50%, transparent 100%);
+  }
 }
 
 // Welcome section for first-time users
@@ -151,6 +164,10 @@
     align-items: flex-start;
     margin-bottom: 2rem;
     gap: 2rem;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    border: 1px solid #f1f3f4;
 
     .goals-header-content {
       flex: 1;
@@ -290,6 +307,10 @@
 // ===== ALL GOALS SECTION =====
 .all-goals {
   margin-bottom: 3rem;
+  background: #fafbfc;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #f1f3f4;
 
   .all-goals-header {
     display: flex;
@@ -380,10 +401,30 @@ mat-checkbox {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
+    padding: 1.25rem 1.5rem;
 
     .primary-cta {
       align-self: center;
     }
+  }
+
+  .all-goals {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
+
+    .all-goals-container {
+      .goals-table,
+      .goals-paginator {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        width: calc(100% + 3rem);
+      }
+    }
+  }
+
+  .goal-centric-section::after {
+    width: 80%;
   }
 
   .quick-goals-grid {
@@ -473,11 +514,43 @@ mat-checkbox {
 
   .mdc-data-table__cell,
   .mdc-data-table__header-cell {
-    padding: 0rem 0.2rem;
+    padding: 0.5rem 0.2rem;
+    
+    &:first-child {
+      padding-left: 1rem;
+    }
+    
+    &:last-child {
+      padding-right: 1rem;
+    }
   }
 
   td {
     font-size: 0.8rem;
+  }
+
+  .all-goals {
+    padding: 1rem 1rem 0 1rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    border-radius: 0;
+
+    .all-goals-container {
+      .goals-table,
+      .goals-paginator {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        width: calc(100% + 2rem);
+      }
+    }
+  }
+
+  .goals-header-section {
+    padding: 1rem 1.25rem;
+  }
+
+  .goal-centric-section::after {
+    width: 90%;
   }
 
   .quick-goals-grid {
