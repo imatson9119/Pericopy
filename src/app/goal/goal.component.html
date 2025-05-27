@@ -14,11 +14,15 @@
     <div class="toolbar">
       <button mat-fab extended color="primary" (click)="this.makeAttempt()">
         <mat-icon>edit_note</mat-icon>
-        Make an Attempt
+        Recite
+      </button>
+      <button mat-fab extended color="primary" (click)="this.goToBlanks()">
+        <mat-icon>code</mat-icon>
+        Practice
       </button>
       <button mat-fab extended color="primary" (click)="this.viewInHeatmap()">
         <mat-icon>local_fire_department</mat-icon>
-        View in Heatmap
+        Heatmap
       </button>
       <div style="flex-grow:1"></div>
       <div>
@@ -52,7 +56,7 @@
       <div (click)="this.goToBlanks()" class="status-banner memorize">
         <div class="status-banner-text">
           <mat-icon class="material-icons-outlined">thumb_up_outline</mat-icon>
-          <span>Keep it up! Once memorized you can begin a recitation schedule.</span>
+          <span>Once you've memorized this passage, recite with 80%+ accuracy to unlock the recitation schedule.</span>
         </div>
         <button mat-raised-button color="primary">
           Practice
@@ -62,7 +66,7 @@
       <div (click)="this.promoteGoal()" class="status-banner promote">
         <div class="status-banner-text">
           <mat-icon>check</mat-icon>
-          <span>It looks like you've finished memorizing this passage! Ready to promote?</span>
+          <span>Congratulations! You've memorized this passage. Promote to begin spaced repetition.</span>
         </div>
         <button mat-raised-button color="primary">
           Promote

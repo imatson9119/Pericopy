@@ -258,6 +258,13 @@ h2 {
   font-size: .8rem;
 }
 
+.status-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 @media (min-width: 1000px) {
   .status-banner {
     border-radius: 10px;
@@ -301,6 +308,12 @@ h2 {
   .status-banner {
     padding-left: .5rem;
     padding-right: .5rem;
+  }
+
+  .status-banner-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: stretch;
   }
 }
 
