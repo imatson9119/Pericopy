@@ -73,7 +73,7 @@
                     </div>
                     <div class="quick-goal-progress">
                       <div class="progress-info">
-                        <span class="progress-text">{{ this.getLastAttemptText(goal, true) }}</span>
+                        <span class="progress-text">Recited {{ this.getLastAttemptText(goal, true, 'never') }}</span>
                         @if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
                           <span class="due-chip" [ngClass]="getDueInClass(goal)">
                             Due {{ this.getDueInDaysText(goal) }}

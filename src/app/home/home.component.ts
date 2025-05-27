@@ -226,7 +226,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.router.navigate(['/goal'], { queryParams: { id: goalId } });
   }
 
-  getLastAttemptText(goal: Goal, short = false) {
+  getLastAttemptText(goal: Goal, short = false, defaultText = '-') {
     let lastAttempt = undefined;
     for (let attemptId of goal.attempts) {
       let attempt = this.attempts.get(attemptId);
@@ -234,7 +234,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         lastAttempt = attempt;
       }
     }
-    return lastAttempt ? `${getRelativeDate(lastAttempt.timestamp, short)}` : '-';
+    return lastAttempt ? `${getRelativeDate(lastAttempt.timestamp, short)}` : defaultText;
   }
 
   trackByGoalId(index: number, goal: Goal) {
