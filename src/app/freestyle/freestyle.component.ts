@@ -84,7 +84,7 @@ export class FreestyleComponent
 
   ngOnInit(): void {
     const pageTitle = 'Freestyle Scripture Practice | Pericopy';
-    const pageDescription = 'Practice reciting scripture freestyle with real-time error detection and intelligent feedback. Start typing any passage and our system will automatically identify what you\'re working on and guide your memorization.';
+    const pageDescription = 'Practice reciting scripture with real-time error detection and intelligent feedback. Start typing any passage and our system will automatically identify what you\'re working on and guide your memorization.';
 
     this.titleService.setTitle(pageTitle);
     this.metaService.updateTag({ name: 'description', content: pageDescription });
