@@ -81,8 +81,11 @@ export class Goal {
     return new Goal(id, t, title, translation, i, j, attempts, goalStatus, fsrsCard, false);
   }
 
-  promoteToMaintaining(): void {
+  promoteToMaintaining(attemptBank: Map<string, IResult>): void {
     this.status = GoalStatus.MAINTAINING;
+    // Create FSRS card with existing attempts
+    const goalAttempts = Goal.getGoalAttempts(this, attemptBank);
+    this.fsrsCard = Goal.createFSRSCardWithAttempts(this.i, this.j, goalAttempts);
   }
 
   /**

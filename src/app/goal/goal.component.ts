@@ -248,7 +248,9 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     if (!this.goal) {
       return;
     }
-    this.goal.promoteToMaintaining();
+    // Get the attempt bank to pass to the promotion method
+    const attemptBank = this._storageService.getAttempts(this.goal.translation);
+    this.goal.promoteToMaintaining(attemptBank);
     this._storageService.storeGoals();
   }
 
