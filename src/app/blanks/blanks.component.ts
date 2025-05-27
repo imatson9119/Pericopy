@@ -68,6 +68,10 @@ export class BlanksComponent implements OnInit {
         this.bible = bible;
         if(this.bible) {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
+          
+          // If we're in goal mode and haven't loaded the goal context yet, try now
+          // Note: This will be called again from ngOnInit if needed
+          this.tryLoadGoalContext();
         }
       })
     );
@@ -81,7 +85,8 @@ export class BlanksComponent implements OnInit {
         this.isGoalMode = !!this.goalId;
         
         if (this.isGoalMode && this.goalId) {
-          this.loadGoalContext();
+          // Try to load goal context now that we have the goalId
+          this.tryLoadGoalContext();
         }
         
         this.updatePageMetadata();
@@ -96,22 +101,34 @@ export class BlanksComponent implements OnInit {
     }
   }
 
+  private tryLoadGoalContext(): void {
+    // Only attempt to load if we have a goalId and are in goal mode, and haven't loaded the goal yet
+    if (this.isGoalMode && this.goalId && !this.goal) {
+      this.loadGoalContext();
+    }
+  }
+
   private loadGoalContext(): void {
     if (!this.goalId) return;
     
     const goal = this._storageService.getGoal(this.goalId);
-    if (goal && this.bible) {
-      this.goal = goal;
-      // Auto-load the goal's passage
+    if (!goal) {
+      // Goal not found, redirect to home
+      this.router.navigate(['/']);
+      return;
+    }
+    
+    this.goal = goal;
+    
+    // If bible is available, load the passage immediately
+    if (this.bible) {
       const goalPassage = this.bible.getPassage(goal.i, goal.j);
       if (goalPassage) {
         this.passage = goalPassage;
         this.generateBlanks();
       }
-    } else if (!goal) {
-      // Goal not found, redirect to home
-      this.router.navigate(['/']);
     }
+    // If bible is not available yet, the constructor's bible subscription will handle it
   }
 
   private updatePageMetadata(): void {

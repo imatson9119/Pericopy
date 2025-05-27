@@ -49,7 +49,7 @@
       </div>
     </div>
     @if (this.goal?.status === GoalStatus.MEMORIZING && this.percentMemorized !== 100){
-      <div (click)="this.makeAttempt()" class="status-banner memorize">
+      <div (click)="this.goToBlanks()" class="status-banner memorize">
         <div class="status-banner-text">
           <mat-icon class="material-icons-outlined">thumb_up_outline</mat-icon>
           <span>Keep it up! Once memorized you can begin a recitation schedule.</span>

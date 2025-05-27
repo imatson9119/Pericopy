@@ -241,7 +241,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   makeAttempt() {
-    this.router.navigateByUrl('/input');
+    this.router.navigateByUrl('/recite');
   }
 
   getDueInDays(goal: Goal, sorting = false): number | string {
@@ -333,65 +333,23 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   /**
-   * Get the practice button text based on goal status
+   * Start blanks practice for a specific goal
    */
-  getPracticeButtonText(goal: Goal): string {
-    switch (goal.status) {
-      case GoalStatus.MEMORIZING:
-        return 'Practice';
-      case GoalStatus.MAINTAINING:
-        return 'Recite';
-      case GoalStatus.MASTERED:
-        return 'Review';
-      default:
-        return 'Practice';
-    }
-  }
-
-  /**
-   * Get the practice button icon based on goal status
-   */
-  getPracticeButtonIcon(goal: Goal): string {
-    switch (goal.status) {
-      case GoalStatus.MEMORIZING:
-        return 'code'; // For blanks practice
-      case GoalStatus.MAINTAINING:
-        return 'edit_note'; // For recitation
-      case GoalStatus.MASTERED:
-        return 'visibility'; // For review
-      default:
-        return 'play_arrow';
-    }
-  }
-
-  /**
-   * Start practice for a specific goal
-   */
-  startGoalPractice(goal: Goal, event: Event): void {
+  startBlanks(goal: Goal, event: Event): void {
     event.stopPropagation(); // Prevent card click navigation
-    
-    // Navigate based on goal status
-    switch (goal.status) {
-      case GoalStatus.MEMORIZING:
-        // Navigate to blanks for memorizing goals
-        this.router.navigate(['/blanks'], { 
-          queryParams: { goalId: goal.id } 
-        });
-        break;
-      case GoalStatus.MAINTAINING:
-      case GoalStatus.MASTERED:
-        // Navigate to input/recitation for maintaining/mastered goals
-        this.router.navigate(['/input'], { 
-          queryParams: { goalId: goal.id } 
-        });
-        break;
-      default:
-        // Default to blanks
-        this.router.navigate(['/blanks'], { 
-          queryParams: { goalId: goal.id } 
-        });
-        break;
-    }
+    this.router.navigate(['/blanks'], { 
+      queryParams: { goalId: goal.id } 
+    });
+  }
+
+  /**
+   * Start recite practice for a specific goal
+   */
+  startRecite(goal: Goal, event: Event): void {
+    event.stopPropagation(); // Prevent card click navigation
+    this.router.navigate(['/recite'], { 
+      queryParams: { i: goal.i, j: goal.j } 
+    });
   }
 
 }

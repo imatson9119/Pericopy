@@ -85,11 +85,20 @@
                       <button 
                         mat-button 
                         color="primary"
-                        (click)="this.startGoalPractice(goal, $event)"
+                        (click)="this.startBlanks(goal, $event)"
                         class="practice-button"
                       >
-                        <mat-icon>{{ this.getPracticeButtonIcon(goal) }}</mat-icon>
-                        {{ this.getPracticeButtonText(goal) }}
+                        <mat-icon>code</mat-icon>
+                        Blanks
+                      </button>
+                      <button 
+                        mat-button 
+                        color="primary"
+                        (click)="this.startRecite(goal, $event)"
+                        class="practice-button"
+                      >
+                        <mat-icon>edit_note</mat-icon>
+                        Recite
                       </button>
                     </div>
                   </div>

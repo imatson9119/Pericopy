@@ -242,8 +242,9 @@
         gap: 0.5rem;
 
         .progress-text {
-          color: #5e5e5e;
-          font-size: 0.9rem;
+          color: #8a8a8a;
+          font-size: 0.85rem;
+          font-weight: 300;
         }
 
 
@@ -253,10 +254,31 @@
     .quick-goal-actions {
       display: flex;
       justify-content: flex-end;
+      gap: 0.5rem;
 
       .practice-button {
+        --mdc-text-button-container-height: 32px;
+        --mdc-text-button-label-text-size: 0.875rem;
+        --mdc-text-button-label-text-weight: 400;
+        padding: 0 12px;
+        min-width: auto;
+        height: 32px;
+        line-height: 32px;
+        border-radius: 16px;
+        background-color: rgba(74, 85, 91, 0.08);
+        color: #4a555b;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: rgba(74, 85, 91, 0.12);
+          transform: translateY(-1px);
+        }
+
         mat-icon {
-          margin-right: 0.5rem;
+          margin-right: 0.25rem;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
         }
       }
     }
@@ -386,7 +408,8 @@ mat-checkbox {
 
       .progress-info {
         .progress-text {
-          font-size: 0.85rem;
+          font-size: 0.8rem;
+          font-weight: 300;
         }
       }
     }
@@ -478,19 +501,28 @@ mat-checkbox {
 
       .progress-info {
         .progress-text {
-          font-size: 0.8rem;
+          font-size: 0.75rem;
+          font-weight: 300;
         }
       }
     }
 
     .quick-goal-actions {
+      gap: 0.25rem;
+
       .practice-button {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
+        --mdc-text-button-container-height: 28px;
+        --mdc-text-button-label-text-size: 0.8rem;
+        padding: 0 8px;
+        height: 28px;
+        line-height: 28px;
+        border-radius: 14px;
 
         mat-icon {
-          margin-right: 0.25rem;
-          font-size: 1.1rem;
+          margin-right: 0.2rem;
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
         }
       }
     }

@@ -87,9 +87,8 @@ export class InputComponent
         
           if (id != undefined) {
             this.editResult(id);
-          } else {
-            this.router.navigateByUrl('/recite');
           }
+          // Don't redirect if no id - preserve existing query parameters (i, j, etc.)
         }
       })
     );

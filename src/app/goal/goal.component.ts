@@ -384,6 +384,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     this._storageService.storeGoals();
     this.snackbar.open('Goal unarchived.', 'Dismiss', { duration: 2000 });
   }
+
+  goToBlanks() {
+    this._router.navigate(['/blanks'], { queryParams: { goalId: this.goalId } });
+  }
 }
 
 function getGradient(ctx :any, chartArea: any) {
