@@ -53,8 +53,8 @@ import {
   withDefaultRegisterables,
 } from 'ng2-charts';
 import { DonatePopupComponent } from './info/donate-popup/donate-popup.component';
-import { MemorizeComponent } from './memorize/memorize.component';
-import { PracticeInputDivComponent } from './memorize/practice-input-div/practice-input-div.component';
+import { FreestyleComponent } from './freestyle/freestyle.component';
+import { FreestyleInputDivComponent } from './freestyle/freestyle-input-div/freestyle-input-div.component';
 import { BlanksComponent } from './blanks/blanks.component';
 
 @NgModule({
@@ -75,7 +75,7 @@ import { BlanksComponent } from './blanks/blanks.component';
     DeleteGoalDialogComponent,
     GoalComponent,
     DonatePopupComponent,
-    MemorizeComponent,
+    FreestyleComponent,
     BlanksComponent,
   ],
   bootstrap: [AppComponent],
@@ -107,7 +107,7 @@ import { BlanksComponent } from './blanks/blanks.component';
     VerseSelectorComponent,
     VerseSelectorPopupComponent,
     PassageSelectDialogComponent,
-    PracticeInputDivComponent,
+    FreestyleInputDivComponent,
   ],
   providers: [
     StorageService,

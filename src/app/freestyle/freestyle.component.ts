@@ -12,7 +12,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
-import { PracticeInputDivComponent } from './practice-input-div/practice-input-div.component';
+import { FreestyleInputDivComponent } from './freestyle-input-div/freestyle-input-div.component';
 
 declare const annyang: any;
 
@@ -26,11 +26,11 @@ enum InputState {
 }
 
 @Component({
-  selector: 'app-memorize',
-  templateUrl: './memorize.component.html',
-  styleUrls: ['./memorize.component.scss'],
+  selector: 'app-freestyle',
+  templateUrl: './freestyle.component.html',
+  styleUrls: ['./freestyle.component.scss'],
 })
-export class MemorizeComponent
+export class FreestyleComponent
   implements OnDestroy, OnInit
 {
   attempt = '';
@@ -42,7 +42,7 @@ export class MemorizeComponent
   InputState = InputState
   inputState = InputState.NO_LOCK;
 
-  @ViewChild('input') input: PracticeInputDivComponent | null = null;
+  @ViewChild('input') input: FreestyleInputDivComponent | null = null;
 
   constructor(
     private _bibleService: BibleService,
@@ -83,14 +83,14 @@ export class MemorizeComponent
   }
 
   ngOnInit(): void {
-    const pageTitle = 'Practice Scripture Recitation | Pericopy';
-    const pageDescription = 'Practice reciting scripture with real-time error detection and intelligent feedback. Start typing any passage and our system will automatically identify what you\'re working on and guide your memorization.';
+    const pageTitle = 'Freestyle Scripture Practice | Pericopy';
+    const pageDescription = 'Practice reciting scripture freestyle with real-time error detection and intelligent feedback. Start typing any passage and our system will automatically identify what you\'re working on and guide your memorization.';
 
     this.titleService.setTitle(pageTitle);
     this.metaService.updateTag({ name: 'description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
     this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/practice' });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/freestyle' });
   }
 
   ngOnDestroy(): void {

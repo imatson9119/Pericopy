@@ -403,7 +403,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   memorize() {
-    this._router.navigate(['/practice']);
+    this._router.navigate(['/freestyle']);
   }
 
   archiveGoal() {

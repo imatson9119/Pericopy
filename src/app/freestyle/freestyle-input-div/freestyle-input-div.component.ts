@@ -33,13 +33,13 @@ class DynamicSpan {
 }
 
 @Component({
-  selector: 'app-practice-input-div',
+  selector: 'app-freestyle-input-div',
   standalone: true,
   imports: [],
-  templateUrl: './practice-input-div.component.html',
-  styleUrl: './practice-input-div.component.scss'
+  templateUrl: './freestyle-input-div.component.html',
+  styleUrl: './freestyle-input-div.component.scss'
 })
-export class PracticeInputDivComponent {
+export class FreestyleInputDivComponent {
   attempt = '';
   detectPassage = true;
   _passage: BiblePassage | undefined = undefined;
@@ -47,7 +47,7 @@ export class PracticeInputDivComponent {
   keyPressTimeout: any;
   InputState = InputState
   _inputState = InputState.NO_LOCK;
-  STORAGE_KEY = 'practice-text';
+  STORAGE_KEY = 'freestyle-text';
   history: LinkedList<string> = new LinkedList<string>();
   redoStack: string[] = [];
 

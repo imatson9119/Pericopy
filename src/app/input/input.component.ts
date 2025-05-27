@@ -7,7 +7,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-// https://github.com/kpdecker/jsdiff
 import { StorageService } from '../services/storage.service';
 import { Router } from '@angular/router';
 import { BibleService } from '../services/bible.service';

@@ -147,7 +147,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       }
     };
     this.dataSource.paginator = this.paginator;
-    this.applyFilter(new Event(''));
+    this.applyFilter();
     this.dataSource.sort = this.sort;
   }
 
@@ -155,7 +155,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     this.router.navigate(['/goal'], { queryParams: { id: row.id } });
   }
 
-  applyFilter(event: Event) {
+  applyFilter() {
     this.dataSource.filterPredicate = (data: Goal, _filter: string): boolean => {
       if (!this.showArchived && data.archived) {
         return false;
@@ -207,6 +207,7 @@ export class HomeComponent implements OnDestroy, OnInit {
       if (goal) {
         this.goals.unshift(goal);
         this.dataSource = new MatTableDataSource<Goal>(this.goals);
+        this.applyFilter();
       } 
     });
   }

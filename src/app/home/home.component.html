@@ -119,7 +119,7 @@
           <h3 class="all-goals-title">All Goals</h3>
           <div class="all-goals-controls">
             <div class="archived-toggle">
-              <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter($event)" labelPosition="before" color="primary">
+              <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter()" labelPosition="before" color="primary">
                 Show Archived
               </mat-checkbox>  
             </div>
@@ -133,7 +133,7 @@
               matInput
               value=""
               [(ngModel)]="filterValue"
-              (keyup)="this.applyFilter($event)"
+              (keyup)="this.applyFilter()"
               aria-label="Filter goals"
             />
             <mat-icon matSuffix>filter_list</mat-icon>

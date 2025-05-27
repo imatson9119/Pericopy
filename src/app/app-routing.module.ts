@@ -7,7 +7,7 @@ import { HeatmapComponent } from './results/heatmap/heatmap.component';
 import { InfoComponent } from './info/info.component';
 import { HomeComponent } from './home/home.component';
 import { GoalComponent } from './goal/goal.component';
-import { MemorizeComponent } from './memorize/memorize.component';
+import { FreestyleComponent } from './freestyle/freestyle.component';
 import { BlanksComponent } from './blanks/blanks.component';
 
 const routes: Routes = [
@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'heatmap', component: HeatmapComponent },
   { path: 'info', component: InfoComponent },
   { path: 'goal', component: GoalComponent },
-  { path: 'practice', component: MemorizeComponent },
+  { path: 'freestyle', component: FreestyleComponent },
   { path: 'blanks', component: BlanksComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '',}
