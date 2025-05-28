@@ -160,7 +160,7 @@
         min-width: auto;
         height: 32px;
         line-height: 32px;
-        border-radius: 16px;
+        border-radius: 6px;
         background: rgba(74, 85, 91, 0.08);
         color: #4a555b;
         transition: all 0.2s ease;
@@ -309,7 +309,7 @@ mat-checkbox { user-select: none; font-weight: 100; }
         padding: 0 8px;
         height: 28px;
         line-height: 28px;
-        border-radius: 14px;
+        border-radius: 6px;
         mat-icon { margin-right: 0.2rem; font-size: 14px; width: 14px; height: 14px; }
       }
     }
