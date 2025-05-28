@@ -76,16 +76,16 @@
 }
 
 // Goals overview
-.goals-overview .goals-header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.goals-overview {
   margin-bottom: 2rem;
-  gap: 2rem;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-radius: 12px;
-  border: 1px solid #f1f3f4;
+
+  .goals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 2rem;
+  }
 
   .goals-header-content { flex: 1; }
   .goals-main-title { font-size: 2.2rem; font-weight: 300; margin: 0 0 0.5rem 0; color: #2c3e50; }
@@ -104,8 +104,6 @@
 // Quick actions
 .quick-actions {
   margin-bottom: 3rem;
-
-  .quick-actions-title { font-size: 1.6rem; font-weight: 300; margin: 0 0 1.5rem 0; color: #2c3e50; }
   
   .quick-goals-grid {
     display: grid;
@@ -128,7 +126,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1rem;
+      margin-bottom: .4rem;
 
       .quick-goal-title { font-size: 1.2rem; font-weight: 400; margin: 0; color: #2c3e50; flex: 1; margin-right: 1rem; }
     }
@@ -218,11 +216,10 @@ mat-checkbox { user-select: none; font-weight: 100; }
     .welcome-icon { font-size: 6rem; width: 6rem; height: 6rem; }
   }
 
-  .goals-header-section {
+  .goals-overview .goals-header {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-    padding: 1.25rem 1.5rem;
     .primary-cta { align-self: center; }
   }
 
@@ -243,7 +240,7 @@ mat-checkbox { user-select: none; font-weight: 100; }
 
   .quick-actions .quick-goal-card {
     padding: 1rem;
-    .quick-goal-header { margin-bottom: 0.75rem; .quick-goal-title { font-size: 1.3rem; margin-right: 0.75rem; } }
+    .quick-goal-header { margin-bottom: 0.3rem; .quick-goal-title { font-size: 1.3rem; margin-right: 0.75rem; } }
     .quick-goal-progress { margin-bottom: 1rem; .progress-info .progress-text { font-size: 0.8rem; font-weight: 300; } }
   }
 
@@ -293,13 +290,12 @@ mat-checkbox { user-select: none; font-weight: 100; }
     }
   }
 
-  .goals-header-section { padding: 1rem 1.25rem; }
   .goal-centric-section::after { width: 90%; }
   .quick-goals-grid { gap: 0.75rem; }
 
   .quick-actions .quick-goal-card {
     padding: 0.75rem;
-    .quick-goal-header { margin-bottom: 0.5rem; .quick-goal-title { font-size: 1.2rem; margin-right: 0.5rem; } }
+    .quick-goal-header { margin-bottom: 0.3rem; .quick-goal-title { font-size: 1.2rem; margin-right: 0.5rem; } }
     .quick-goal-progress { margin-bottom: 0.75rem; .progress-info .progress-text { font-size: 0.75rem; font-weight: 300; } }
     .quick-goal-actions {
       gap: 0.25rem;

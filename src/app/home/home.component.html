@@ -40,7 +40,7 @@
       } @else {
         <!-- Existing goals with prominent CTA -->
         <div class="goals-overview">
-          <div class="goals-header-section">
+          <div class="goals-header">
             <div class="goals-header-content">
               <h2 class="goals-main-title">Your Memorization Goals</h2>
               <p class="goals-subtitle">Continue your progress or start a new goal</p>
@@ -61,7 +61,6 @@
           <!-- Quick Action Goals (Active/Due Goals) -->
           @if (this.getActiveGoals().length > 0) {
             <div class="quick-actions">
-              <h3 class="quick-actions-title">Continue Working</h3>
               <div class="quick-goals-grid">
                 @for (goal of this.getActiveGoals(); track goal.id) {
                   <div class="quick-goal-card" (click)="this.navigateToGoal(goal)">
