@@ -73,14 +73,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Scripture Recitation Analysis | Pericopy';
-    const pageDescription = 'Comprehensive analysis of your scripture recitation attempt with detailed metrics, goal tracking, and performance insights.';
-
-    this.titleService.setTitle(pageTitle);
-    this.metaService.updateTag({ name: 'description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
-    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/results' });
+    this.updatePageMetadata();
     
     this.result_bank = this._storageService.getBank();
     let id = this._router.parseUrl(this._router.url).queryParams['id'];
@@ -101,6 +94,22 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
+  private updatePageMetadata(): void {
+    let pageTitle = 'Recitation Result | Pericopy';
+    let pageDescription = 'Comprehensive analysis of your scripture recitation attempt with detailed metrics, goal tracking, and performance insights.';
+
+    if(this.currentResult){
+      pageTitle = `${this.currentResult.diff.p} - Recitation | Pericopy`;
+      pageDescription = `Comprehensive analysis of your scripture recitation attempt for ${this.currentResult.diff.p} with detailed metrics, goal tracking, and performance insights.`;
+    }
+    
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/results' });
+  } 
+
   setResult(id: string): void {
     if(!this.result_bank.results.has(id)){
       this._router.navigateByUrl('/history');
@@ -111,6 +120,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     this.loadRelatedGoals();
     this.generatePerformanceMetrics();
     this.generateStatCards();
+    this.updatePageMetadata();
   }
 
   loadRelatedGoals(): void {
