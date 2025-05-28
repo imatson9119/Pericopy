@@ -8,7 +8,7 @@ import { Bible } from '../classes/Bible';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
 import { MemorizationPracticeService } from './memorization-practice.service';
 import { IResult } from '../classes/models';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { Goal } from '../classes/Goal';
 
@@ -50,9 +50,6 @@ export class BlanksComponent implements OnInit {
   goal: Goal | null = null;
   isGoalMode: boolean = false;
 
-  // Inputs to allow for passing in a passage
-
-
   constructor(
     private dialog: MatDialog,
     private bibleService: BibleService,
@@ -63,36 +60,28 @@ export class BlanksComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
+    // Create a joint observable that combines both bible and query params
     this.subscriptions.push(
-      this.bibleService.curBible.subscribe(bible => {
+      combineLatest([
+        this.bibleService.curBible,
+        this.route.queryParams
+      ]).subscribe(([bible, params]) => {
         this.bible = bible;
-        if(this.bible) {
+        this.goalId = params['goalId'] || null;
+        this.isGoalMode = !!this.goalId;
+        
+        if (this.bible) {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
-          
-          // If we're in goal mode and haven't loaded the goal context yet, try now
-          // Note: This will be called again from ngOnInit if needed
-          this.tryLoadGoalContext();
         }
+        
+        // Load goal context when both bible and params are available
+        this.tryLoadGoalContext();
+        this.updatePageMetadata();
       })
     );
   }
 
   ngOnInit(): void {
-    // Check for goal context from URL parameters
-    this.subscriptions.push(
-      this.route.queryParams.subscribe(params => {
-        this.goalId = params['goalId'] || null;
-        this.isGoalMode = !!this.goalId;
-        
-        if (this.isGoalMode && this.goalId) {
-          // Try to load goal context now that we have the goalId
-          this.tryLoadGoalContext();
-        }
-        
-        this.updatePageMetadata();
-      })
-    );
-
     // Initialize text measurement canvas
     this.initializeTextMeasurement();
     // Optionally auto-open passage selection if not in goal mode
@@ -102,14 +91,14 @@ export class BlanksComponent implements OnInit {
   }
 
   private tryLoadGoalContext(): void {
-    // Only attempt to load if we have a goalId and are in goal mode, and haven't loaded the goal yet
-    if (this.isGoalMode && this.goalId && !this.goal) {
+    // Only attempt to load if we have a goalId, are in goal mode, have a bible, and haven't loaded the goal yet
+    if (this.isGoalMode && this.goalId && this.bible && !this.goal) {
       this.loadGoalContext();
     }
   }
 
   private loadGoalContext(): void {
-    if (!this.goalId) return;
+    if (!this.goalId || !this.bible) return;
     
     const goal = this._storageService.getGoal(this.goalId);
     if (!goal) {
@@ -120,15 +109,12 @@ export class BlanksComponent implements OnInit {
     
     this.goal = goal;
     
-    // If bible is available, load the passage immediately
-    if (this.bible) {
-      const goalPassage = this.bible.getPassage(goal.i, goal.j);
-      if (goalPassage) {
-        this.passage = goalPassage;
-        this.generateBlanks();
-      }
+    // Load the passage immediately since we know bible is available
+    const goalPassage = this.bible.getPassage(goal.i, goal.j);
+    if (goalPassage) {
+      this.passage = goalPassage;
+      this.generateBlanks();
     }
-    // If bible is not available yet, the constructor's bible subscription will handle it
   }
 
   private updatePageMetadata(): void {

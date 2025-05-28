@@ -1,163 +1,169 @@
-<div class="input-container">
-  <h2>Fill in the Blanks</h2>
-  <div class="subtitle">
-    <p>
-      Practice your memorization by filling in the missing words from the passage. The difficulty will adjust as you improve. Select a passage to begin.
-    </p>
-  </div>
-
-  <div class="content-area" *ngIf="!passage">
-    <div class="empty-state">
-      <p>Select a passage to begin your practice session</p>
-      <button mat-fab extended color="primary" (click)="openPassageSelect()" class="select-passage-btn">
-        <mat-icon>menu_book</mat-icon>
-        Select Passage
-      </button>
+@if (this.bible) {
+  <div class="input-container">
+    <h2>Fill in the Blanks</h2>
+    <div class="subtitle">
+      <p>
+        Practice your memorization by filling in the missing words from the passage. The difficulty will adjust as you improve. Select a passage to begin.
+      </p>
     </div>
-  </div>
 
-  <div class="content-area" *ngIf="passage">
-    <div class="passage-info-bar">
-      <div class="passage-details">
-        <div class="passage-reference">{{ passage.toString() }}</div>
-        <div class="passage-stats">
-          <span class="stat-item">
-            <span class="stat-value">{{ passageText.length }}</span>
-            <span class="stat-label">words</span>
-          </span>
-          <span class="stat-divider">•</span>
-          <span class="stat-item">
-            <span class="stat-value">{{ blankIndices.size }}</span>
-            <span class="stat-label">blanks</span>
-          </span>
-          <span class="stat-divider">•</span>
-          <span class="stat-item">
-            <span class="stat-value">{{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
-            <span class="stat-label">difficulty</span>
-          </span>
-          <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
-          <span class="stat-item velocity-status" *ngIf="velocityInfo.lastResult">
-            <span class="stat-value">{{ getVelocityStatusText() }}</span>
+    <div class="content-area" *ngIf="!passage">
+      <div class="empty-state">
+        <p>Select a passage to begin your practice session</p>
+        <button mat-fab extended color="primary" (click)="openPassageSelect()" class="select-passage-btn">
+          <mat-icon>menu_book</mat-icon>
+          Select Passage
+        </button>
+      </div>
+    </div>
+
+    <div class="content-area" *ngIf="passage">
+      <div class="passage-info-bar">
+        <div class="passage-details">
+          <div class="passage-reference">{{ passage.toString() }}</div>
+          <div class="passage-stats">
+            <span class="stat-item">
+              <span class="stat-value">{{ passageText.length }}</span>
+              <span class="stat-label">words</span>
+            </span>
+            <span class="stat-divider">•</span>
+            <span class="stat-item">
+              <span class="stat-value">{{ blankIndices.size }}</span>
+              <span class="stat-label">blanks</span>
+            </span>
+            <span class="stat-divider">•</span>
+            <span class="stat-item">
+              <span class="stat-value">{{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
+              <span class="stat-label">difficulty</span>
+            </span>
+            <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
+            <span class="stat-item velocity-status" *ngIf="velocityInfo.lastResult">
+              <span class="stat-value">{{ getVelocityStatusText() }}</span>
+            </span>
+          </div>
+        </div>
+        <div class="passage-actions">
+          <button mat-stroked-button (click)="openPassageSelect()" size="small">
+            Change Passage
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-section" *ngIf="!feedback.show">
+        <div class="progress-info">
+          <span>Progress: {{ Object.keys(userAnswers).length }} of {{ blankIndices.size }} completed</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="(Object.keys(userAnswers).length / blankIndices.size) * 100"></div>
+        </div>
+      </div>
+
+      <div class="passage-workspace">
+        <div class="passage-text">
+          <span *ngFor="let word of passageText; let i = index" class="word-container">
+            <ng-container *ngIf="blankIndices.has(i); else staticWord">
+              <input
+                #blankInput
+                type="text"
+                class="blank-input"
+                [ngClass]="{ 
+                  'correct': feedback.show && isBlankCorrect(i), 
+                  'incorrect': feedback.show && !isBlankCorrect(i),
+                  'filled': userAnswers[i] && userAnswers[i].trim() !== ''
+                }"
+                [value]="userAnswers[i] || ''"
+                (input)="onInput(i, $event)"
+                (keydown)="onKeyDown($event, i)"
+                [readonly]="feedback.show"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                [style.width]="getInputWidth(word, userAnswers[i])"
+                [matTooltip]="feedback.show && !isBlankCorrect(i) ? passageText[i] : null"
+                matTooltipPosition="above"
+              />
+            </ng-container>
+            <ng-template #staticWord>
+              <span class="static-word">{{ word }}</span>
+            </ng-template>
           </span>
         </div>
       </div>
-      <div class="passage-actions">
-        <button mat-stroked-button (click)="openPassageSelect()" size="small">
-          Change Passage
-        </button>
-      </div>
-    </div>
 
-    <div class="progress-section" *ngIf="!feedback.show">
-      <div class="progress-info">
-        <span>Progress: {{ Object.keys(userAnswers).length }} of {{ blankIndices.size }} completed</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="(Object.keys(userAnswers).length / blankIndices.size) * 100"></div>
-      </div>
-    </div>
-
-    <div class="passage-workspace">
-      <div class="passage-text">
-        <span *ngFor="let word of passageText; let i = index" class="word-container">
-          <ng-container *ngIf="blankIndices.has(i); else staticWord">
-            <input
-              #blankInput
-              type="text"
-              class="blank-input"
-              [ngClass]="{ 
-                'correct': feedback.show && isBlankCorrect(i), 
-                'incorrect': feedback.show && !isBlankCorrect(i),
-                'filled': userAnswers[i] && userAnswers[i].trim() !== ''
-              }"
-              [value]="userAnswers[i] || ''"
-              (input)="onInput(i, $event)"
-              (keydown)="onKeyDown($event, i)"
-              [readonly]="feedback.show"
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-              [style.width]="getInputWidth(word, userAnswers[i])"
-              [matTooltip]="feedback.show && !isBlankCorrect(i) ? passageText[i] : null"
-              matTooltipPosition="above"
-            />
-          </ng-container>
-          <ng-template #staticWord>
-            <span class="static-word">{{ word }}</span>
-          </ng-template>
-        </span>
-      </div>
-    </div>
-
-    <div class="action-section">
-      <div class="action-buttons">
-        <button 
-          mat-flat-button 
-          color="primary" 
-          (click)="submit()" 
-          [disabled]="feedback.show || !allBlanksFilled()"
-          class="submit-btn">
-          Submit
-        </button>
-        <button 
-          mat-flat-button 
-          color="primary"
-          (click)="retry()" 
-          [disabled]="!feedback.show"
-          class="retry-btn"
-          #retryButton>
-          Retry
-        </button>
-      </div>
-    </div>
-
-    <div class="results-section" *ngIf="feedback.show">
-      <div class="results-header">
-        <div class="score-display">
-          <div class="score-circle" 
-               [ngClass]="{ 'perfect': feedback.correct === feedback.total, 'good': feedback.correct / feedback.total >= 0.7, 'needs-work': feedback.correct / feedback.total < 0.7 }"
-               [style.--accuracy-percentage]="(feedback.correct / feedback.total * 100) + '%'"
-               [style.--border-color]="feedback.correct === feedback.total ? '#1e7e34' : (feedback.correct / feedback.total >= 0.7 ? '#1e7e34' : '#bd2130')"
-               [style.--base-border-color]="feedback.correct === feedback.total ? 'rgba(30, 126, 52, 0.3)' : (feedback.correct / feedback.total >= 0.7 ? 'rgba(30, 126, 52, 0.3)' : 'rgba(189, 33, 48, 0.3)')">
-            <svg class="score-circle-svg">
-              <circle class="score-circle-base" cx="44" cy="44" r="40"></circle>
-              <circle class="score-circle-progress" cx="44" cy="44" r="40"></circle>
-            </svg>
-            <span class="score-percentage">{{ (feedback.correct / feedback.total * 100) | number:'1.0-0' }}%</span>
-          </div>
-          <div class="score-details">
-            <div class="score-fraction">{{ feedback.correct }} / {{ feedback.total }}</div>
-            <div class="score-label">correct</div>
-          </div>
+      <div class="action-section">
+        <div class="action-buttons">
+          <button 
+            mat-flat-button 
+            color="primary" 
+            (click)="submit()" 
+            [disabled]="feedback.show || !allBlanksFilled()"
+            class="submit-btn">
+            Submit
+          </button>
+          <button 
+            mat-flat-button 
+            color="primary"
+            (click)="retry()" 
+            [disabled]="!feedback.show"
+            class="retry-btn"
+            #retryButton>
+            Retry
+          </button>
         </div>
-        <div class="results-message">
-          <div class="primary-message">
-            <span *ngIf="feedback.correct === feedback.total" class="success-message">
-              🎉 Perfect! {{ getDifficultyChangeText() }}
-            </span>
-            <span *ngIf="feedback.correct < feedback.total && feedback.correct / feedback.total >= 0.7" class="good-message">
-              👏 Great work! {{ getDifficultyChangeText() }}
-            </span>
-            <span *ngIf="feedback.correct / feedback.total < 0.7" class="practice-message">
-              📚 Keep practicing! {{ getDifficultyChangeText() }}
-            </span>
+      </div>
+
+      <div class="results-section" *ngIf="feedback.show">
+        <div class="results-header">
+          <div class="score-display">
+            <div class="score-circle" 
+                 [ngClass]="{ 'perfect': feedback.correct === feedback.total, 'good': feedback.correct / feedback.total >= 0.7, 'needs-work': feedback.correct / feedback.total < 0.7 }"
+                 [style.--accuracy-percentage]="(feedback.correct / feedback.total * 100) + '%'"
+                 [style.--border-color]="feedback.correct === feedback.total ? '#1e7e34' : (feedback.correct / feedback.total >= 0.7 ? '#1e7e34' : '#bd2130')"
+                 [style.--base-border-color]="feedback.correct === feedback.total ? 'rgba(30, 126, 52, 0.3)' : (feedback.correct / feedback.total >= 0.7 ? 'rgba(30, 126, 52, 0.3)' : 'rgba(189, 33, 48, 0.3)')">
+              <svg class="score-circle-svg">
+                <circle class="score-circle-base" cx="44" cy="44" r="40"></circle>
+                <circle class="score-circle-progress" cx="44" cy="44" r="40"></circle>
+              </svg>
+              <span class="score-percentage">{{ (feedback.correct / feedback.total * 100) | number:'1.0-0' }}%</span>
+            </div>
+            <div class="score-details">
+              <div class="score-fraction">{{ feedback.correct }} / {{ feedback.total }}</div>
+              <div class="score-label">correct</div>
+            </div>
           </div>
-          <div class="velocity-info" *ngIf="difficultyAdjustment && difficultyAdjustment.adjustmentType !== 'maintain'">
-            <div class="velocity-details">
-              <span class="velocity-label">Velocity:</span>
-              <span class="velocity-value">{{ difficultyAdjustment.velocity.toFixed(1) }}x</span>
-              <span class="velocity-explanation">
-                {{ difficultyAdjustment.adjustmentType === 'increase' ? 'Success streak' : 'Learning mode' }}
+          <div class="results-message">
+            <div class="primary-message">
+              <span *ngIf="feedback.correct === feedback.total" class="success-message">
+                🎉 Perfect! {{ getDifficultyChangeText() }}
+              </span>
+              <span *ngIf="feedback.correct < feedback.total && feedback.correct / feedback.total >= 0.7" class="good-message">
+                👏 Great work! {{ getDifficultyChangeText() }}
+              </span>
+              <span *ngIf="feedback.correct / feedback.total < 0.7" class="practice-message">
+                📚 Keep practicing! {{ getDifficultyChangeText() }}
               </span>
             </div>
-            <div class="difficulty-change">
-              <span class="difficulty-from">{{ (difficultyAdjustment.currentDifficulty * 100) | number:'1.0-0' }}%</span>
-              <span class="difficulty-arrow">→</span>
-              <span class="difficulty-to">{{ (difficultyAdjustment.newDifficulty * 100) | number:'1.0-0' }}%</span>
+            <div class="velocity-info" *ngIf="difficultyAdjustment && difficultyAdjustment.adjustmentType !== 'maintain'">
+              <div class="velocity-details">
+                <span class="velocity-label">Velocity:</span>
+                <span class="velocity-value">{{ difficultyAdjustment.velocity.toFixed(1) }}x</span>
+                <span class="velocity-explanation">
+                  {{ difficultyAdjustment.adjustmentType === 'increase' ? 'Success streak' : 'Learning mode' }}
+                </span>
+              </div>
+              <div class="difficulty-change">
+                <span class="difficulty-from">{{ (difficultyAdjustment.currentDifficulty * 100) | number:'1.0-0' }}%</span>
+                <span class="difficulty-arrow">→</span>
+                <span class="difficulty-to">{{ (difficultyAdjustment.newDifficulty * 100) | number:'1.0-0' }}%</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div> 
+} @else {
+  <div class="page-loader">
+    <mat-spinner></mat-spinner>
+  </div>
+} 
