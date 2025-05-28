@@ -1,12 +1,12 @@
-@if(this.bible) {
+@if(this.bible && this.currentResult) {
   <main class="result-container">
     <header class="result-header">
       <div>
         <h1 class="result-title">
-          {{ this.currentResult?.diff?.p }}
+          {{ this.currentResult.diff.p }}
         </h1>
         <p class="result-subtitle">
-          {{ this.currentResult?.timestamp | date: 'longDate'}}
+          {{ this.currentResult.timestamp | date: 'longDate'}}
         </p>
       </div>
       <div class="result-actions">
@@ -27,66 +27,101 @@
           <mat-icon color="primary">edit</mat-icon>
         </button>
       </div>
-    </header> 
+    </header>
+
+    <!-- Related Goals Section -->
+    @if(this.relatedGoals.length > 0) {
+      <section class="goals-section" aria-label="Related goals">
+        <div class="goals-container">
+          <div class="goals-list">
+            @for(goal of this.relatedGoals; track goal.id) {
+              <button 
+                matTooltip="Navigate to goal"
+                mat-button 
+                class="goal-chip"
+                (click)="this.navigateToGoal(goal.id)"
+                [attr.aria-label]="'Navigate to goal: ' + goal.title"
+              >
+                <mat-icon class="goal-icon">{{ this.getGoalStatusIcon(goal.status) }}</mat-icon>
+                {{ goal.title }}
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+    }
     
-    <section class="stats-container" aria-label="Recitation statistics">
-      <div class="stat-container accuracy" [style.background]="this.getColor()">
-        <div class="stat-value">
-          {{this.getAccuracy()}}%
-        </div>
-        <div class="stat-label">
-          accuracy
-        </div>
-      </div>
-      <div class="stat-container words">
-        <div class="stat-value">
-          {{this.totalWords}}
-        </div>
-        <div class="stat-label">
-          words
-        </div>
-      </div>
-      <div class="stat-container wordsAdded">
-        <div class="stat-value">
-          {{this.totalMistakes}}
-        </div>
-        <div class="stat-label">
-          mistakes
-        </div>
-      </div>
-      <div class="stat-container wordsRemoved">
-        <div class="stat-value">
-          {{this.longestSequence}}
-        </div>
-        <div class="stat-label">
-          word streak
-        </div>
+    <!-- Performance Metrics Section -->
+    <section class="metrics-section" aria-label="Performance metrics">
+      <div class="stats-grid">
+        @for(stat of this.statCards; track stat.label) {
+          <div class="stat-card" [style.--accent-color]="stat.color">
+            <div class="stat-header">
+              <div class="stat-icon-container">
+                <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+              </div>
+              @if(stat.trend) {
+                <mat-icon 
+                  class="trend-icon"
+                  [style.color]="this.getTrendColor(stat.trend)"
+                >
+                  {{ this.getTrendIcon(stat.trend) }}
+                </mat-icon>
+              }
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ stat.value }}</div>
+              <div class="stat-label">{{ stat.label }}</div>
+              @if(stat.description) {
+                <div class="stat-description">{{ stat.description }}</div>
+              }
+            </div>
+          </div>
+        }
       </div>
     </section>
     
-    <section aria-label="Recitation details">
-      <mat-tab-group>
+    <section class="analysis-section" aria-label="Recitation analysis">
+      <mat-tab-group class="analysis-tabs">
         <mat-tab label="Difference">
-          <div class="tab-inner-container">
-            <app-diff-display [diff]="this.currentResult?.diff" [bible]="this.bible"></app-diff-display>
+          <div class="tab-content">
+            <div class="tab-description">
+              <mat-icon>compare</mat-icon>
+              <p>Compare your attempt with the original scripture. Added words are highlighted in <span class="highlight-added">green</span>, removed words in <span class="highlight-removed">red</span>.</p>
+            </div>
+            <div class="tab-inner-container">
+              <app-diff-display [diff]="this.currentResult.diff" [bible]="this.bible"></app-diff-display>
+            </div>
           </div>
         </mat-tab>
         <mat-tab label="Attempt">
-          <div class="tab-inner-container">
-            <app-diff-display
-              [type]="displayTypes.attempt"
-              [bible]="this.bible"
-              [diff]="this.currentResult?.diff"
-            ></app-diff-display>
+          <div class="tab-content">
+            <div class="tab-description">
+              <mat-icon>edit</mat-icon>
+              <p>Your complete recitation attempt as you typed it, showing the full text you provided.</p>
+            </div>
+            <div class="tab-inner-container">
+              <app-diff-display
+                [type]="displayTypes.attempt"
+                [bible]="this.bible"
+                [diff]="this.currentResult.diff"
+              ></app-diff-display>
+            </div>
           </div>
         </mat-tab>
         <mat-tab label="Scripture">
-          <div class="tab-inner-container">
-            <app-diff-display
-              [type]="displayTypes.scripture"
-              [bible]="this.bible"
-              [diff]="this.currentResult?.diff"
-            ></app-diff-display>
+          <div class="tab-content">
+            <div class="tab-description">
+              <mat-icon>menu_book</mat-icon>
+              <p>The original scripture text from the Bible, showing the target you were aiming to recite.</p>
+            </div>
+            <div class="tab-inner-container">
+              <app-diff-display
+                [type]="displayTypes.scripture"
+                [bible]="this.bible"
+                [diff]="this.currentResult.diff"
+              ></app-diff-display>
+            </div>
           </div>
         </mat-tab>
       </mat-tab-group>
@@ -96,4 +131,4 @@
   <div class="page-loader" aria-label="Loading results">
     <mat-spinner></mat-spinner>
   </div>
-}
+} 

@@ -2,17 +2,36 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { DiffType, IResult, ResultBank, VerseChange } from 'src/app/classes/models';
+import { DiffType, IResult, ResultBank } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
 import { DisplayType } from '../diff-display/diff-display.component';
-import { numberToColorHsl } from 'src/app/utils/utils';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAttemptDialogComponent } from './delete-attempt-dialog/delete-attempt-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Bible } from 'src/app/classes/Bible';
 import { Subscription } from 'rxjs';
 import { BibleService } from 'src/app/services/bible.service';
+import { Goal, GoalStatus } from 'src/app/classes/Goal';
 
+interface StatCard {
+  label: string;
+  value: string | number;
+  icon: string;
+  color: string;
+  description?: string;
+  trend?: 'up' | 'down' | 'neutral';
+}
+
+interface PerformanceMetrics {
+  accuracy: number;
+  totalWords: number;
+  totalMistakes: number;
+  longestSequence: number;
+  wordsPerMinute?: number;
+  consistencyScore: number;
+  difficultyRating: number;
+  improvementTrend: 'improving' | 'declining' | 'stable';
+}
 
 @Component({
   selector: 'app-single-attempt',
@@ -26,13 +45,21 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
   resultId = "";
 
   currentResult: IResult | undefined = undefined;
-  totalWords: number = 0;
-  totalMistakes: number = 0;
-  longestSequence: number = 0;
+  relatedGoals: Goal[] = [];
+  performanceMetrics: PerformanceMetrics = {
+    accuracy: 0,
+    totalWords: 0,
+    totalMistakes: 0,
+    longestSequence: 0,
+    consistencyScore: 0,
+    difficultyRating: 0,
+    improvementTrend: 'stable'
+  };
+  
+  statCards: StatCard[] = [];
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
-  
-
+  GoalStatus = GoalStatus;
 
   constructor(
     private _router: Router,
@@ -46,8 +73,8 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Scripture Recitation Results | Pericopy';
-    const pageDescription = 'See detailed analysis of your scripture recitation attempt, including accuracy percentage, mistakes, and visualized performance data.';
+    const pageTitle = 'Scripture Recitation Analysis | Pericopy';
+    const pageDescription = 'Comprehensive analysis of your scripture recitation attempt with detailed metrics, goal tracking, and performance insights.';
 
     this.titleService.setTitle(pageTitle);
     this.metaService.updateTag({ name: 'description', content: pageDescription });
@@ -81,15 +108,197 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     }
     this.resultId = id;
     this.currentResult = this.result_bank.results.get(id);
-    this.generateResultStats();
+    this.loadRelatedGoals();
+    this.generatePerformanceMetrics();
+    this.generateStatCards();
   }
 
-  isScripture(diff: VerseChange): boolean {
-    return diff.t === DiffType.UNCHANGED || diff.t === DiffType.REMOVED;
+  loadRelatedGoals(): void {
+    if (!this.currentResult) return;
+    
+    this.relatedGoals = [];
+    const allGoals = this._storageService.getGoals();
+    
+    for (const goalId of this.currentResult.goals) {
+      const goal = allGoals.get(goalId);
+      if (goal) {
+        this.relatedGoals.push(goal);
+      }
+    }
   }
 
-  isAttempt(diff: VerseChange): boolean {
-    return diff.t === DiffType.UNCHANGED || diff.t === DiffType.ADDED;
+  generatePerformanceMetrics(): void {
+    if(!this.currentResult) return;
+    
+    let totalWords = 0;
+    let totalMistakes = 0;
+    let longestSequence = 0;
+    let currentSequence = 0;
+    let addedWords = 0;
+    let removedWords = 0;
+    let unchangedWords = 0;
+
+    for(let bookDiff of this.currentResult.diff.v){
+      for(let chapterDiff of bookDiff.v){
+        for(let verseDiff of chapterDiff.v){
+          for(let change of verseDiff.v){
+            if (change.t === DiffType.ADDED) {
+              addedWords += change.v.length;
+              totalMistakes += change.v.length;
+              longestSequence = Math.max(longestSequence, currentSequence);
+              currentSequence = 0;
+            } else if (change.t === DiffType.REMOVED) {
+              removedWords += change.v.length;
+              totalMistakes += change.v.length;
+              longestSequence = Math.max(longestSequence, currentSequence);
+              currentSequence = 0;
+            } else {
+              unchangedWords += change.v.length;
+              currentSequence += change.v.length;
+            }
+            totalWords += change.v.length;
+          }
+        }
+      }
+    }
+    longestSequence = Math.max(longestSequence, currentSequence);
+
+    this.performanceMetrics = {
+      accuracy: Math.round(this.currentResult.score * 100),
+      totalWords,
+      totalMistakes,
+      longestSequence,
+      consistencyScore: 0,
+      difficultyRating: 0,
+      improvementTrend: 'stable'
+    };
+
+    // Calculate consistency score (based on distribution of mistakes)
+    this.performanceMetrics.consistencyScore = this.calculateConsistencyScore();
+    
+    // Calculate difficulty rating (based on passage complexity and performance)
+    this.performanceMetrics.difficultyRating = this.calculateDifficultyRating();
+    
+    // Calculate improvement trend
+    this.performanceMetrics.improvementTrend = this.calculateImprovementTrend();
+  }
+
+  calculateConsistencyScore(): number {
+    // Simplified consistency calculation based on mistake distribution
+    if (!this.currentResult) return 0;
+    
+    const accuracy = this.currentResult.score;
+    
+    // Avoid division by zero
+    if (this.performanceMetrics.totalWords === 0) return 0;
+    
+    const mistakeDistribution = this.performanceMetrics.totalMistakes / this.performanceMetrics.totalWords;
+    
+    // Higher consistency when mistakes are fewer and more evenly distributed
+    const consistencyScore = (accuracy * 0.7 + (1 - mistakeDistribution) * 0.3) * 100;
+    
+    // Ensure we return a valid number
+    return Math.round(isNaN(consistencyScore) ? 0 : consistencyScore);
+  }
+
+  calculateDifficultyRating(): number {
+    // Simplified difficulty calculation based on passage length and performance
+    if (!this.currentResult) return 0;
+    
+    const passageLength = this.performanceMetrics.totalWords;
+    const accuracy = this.currentResult.score;
+    
+    // Difficulty increases with passage length and decreases with accuracy
+    const lengthFactor = Math.min(passageLength / 100, 1); // Normalize to 0-1
+    const performanceFactor = 1 - accuracy;
+    
+    return Math.round((lengthFactor * 0.4 + performanceFactor * 0.6) * 10);
+  }
+
+  calculateImprovementTrend(): 'improving' | 'declining' | 'stable' {
+    // Get recent attempts for comparison
+    const recentAttempts = Array.from(this.result_bank.results.values())
+      .filter(attempt => attempt.timestamp < this.currentResult!.timestamp)
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 3);
+
+    if (recentAttempts.length === 0) return 'stable';
+
+    const currentScore = this.currentResult!.score;
+    const avgRecentScore = recentAttempts.reduce((sum, attempt) => sum + attempt.score, 0) / recentAttempts.length;
+
+    if (currentScore > avgRecentScore + 0.05) return 'improving';
+    if (currentScore < avgRecentScore - 0.05) return 'declining';
+    return 'stable';
+  }
+
+  generateStatCards(): void {
+    const metrics = this.performanceMetrics;
+    
+    this.statCards = [
+      {
+        label: 'Accuracy',
+        value: `${metrics.accuracy}%`,
+        icon: 'gps_fixed',
+        color: this.getAccuracyColor(metrics.accuracy),
+        description: 'Overall recitation accuracy',
+        trend: metrics.improvementTrend === 'improving' ? 'up' : metrics.improvementTrend === 'declining' ? 'down' : 'neutral'
+      },
+      {
+        label: 'Total Words',
+        value: metrics.totalWords,
+        icon: 'text_fields',
+        color: '#6366f1',
+        description: 'Words in this passage'
+      },
+      {
+        label: 'Mistakes',
+        value: metrics.totalMistakes,
+        icon: 'error_outline',
+        color: metrics.totalMistakes === 0 ? '#10b981' : metrics.totalMistakes < 5 ? '#f59e0b' : '#ef4444',
+        description: 'Words added or removed'
+      },
+      {
+        label: 'Best Streak',
+        value: metrics.longestSequence,
+        icon: 'trending_up',
+        color: '#8b5cf6',
+        description: 'Longest correct word sequence'
+      },
+      {
+        label: 'Consistency',
+        value: `${metrics.consistencyScore}%`,
+        icon: 'analytics',
+        color: this.getConsistencyColor(metrics.consistencyScore),
+        description: 'Performance consistency score'
+      },
+      {
+        label: 'Difficulty',
+        value: `${metrics.difficultyRating}/10`,
+        icon: 'psychology',
+        color: this.getDifficultyColor(metrics.difficultyRating),
+        description: 'Estimated passage difficulty'
+      }
+    ];
+  }
+
+  getAccuracyColor(accuracy: number): string {
+    if (accuracy >= 95) return '#10b981'; // green
+    if (accuracy >= 85) return '#f59e0b'; // yellow
+    if (accuracy >= 70) return '#f97316'; // orange
+    return '#ef4444'; // red
+  }
+
+  getConsistencyColor(consistency: number): string {
+    if (consistency >= 90) return '#10b981';
+    if (consistency >= 75) return '#f59e0b';
+    return '#ef4444';
+  }
+
+  getDifficultyColor(difficulty: number): string {
+    if (difficulty <= 3) return '#10b981';
+    if (difficulty <= 6) return '#f59e0b';
+    return '#ef4444';
   }
 
   deleteResult(): void {
@@ -112,42 +321,50 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     this._router.navigate(['/recite'], { queryParams: { id: this.resultId } });
   }
 
-  generateResultStats(): void {
-    if(this.currentResult === undefined){
-      return;
-    }
-    this.totalWords = 0;
-    this.totalMistakes = 0;
-    this.longestSequence = 0;
-    let currentSequence = 0;
-    for(let bookDiff of this.currentResult.diff.v){
-      for(let chapterDiff of bookDiff.v){
-        for(let verseDiff of chapterDiff.v){
-          for(let change of verseDiff.v){
-            if (change.t === DiffType.ADDED || change.t === DiffType.REMOVED){
-              this.longestSequence = Math.max(this.longestSequence, currentSequence);
-              currentSequence = 0;
-              this.totalMistakes += change.v.length;
-            } else {
-              currentSequence += change.v.length;
-            }
-            this.totalWords += change.v.length;
-          }
-        }
-      }
-    }
-    this.longestSequence = Math.max(this.longestSequence, currentSequence);
+  navigateToGoal(goalId: string): void {
+    this._router.navigate(['/goal'], { queryParams: { id: goalId } });
   }
 
-  getColor(){
-    if (!this.currentResult){
-      return 'transparent';
+  getGoalStatusIcon(status: GoalStatus | undefined): string {
+    switch (status) {
+      case GoalStatus.MEMORIZING: return 'flag';
+      case GoalStatus.MAINTAINING: return 'flag';
+      case GoalStatus.MASTERED: return 'flag';
+      default: return 'flag';
     }
-    let weightedScore = Math.max(0,this.currentResult.score * 2 - 1)
-    return numberToColorHsl(1-weightedScore, .117, .32);
   }
 
-  getAccuracy(): number {
-    return this.currentResult ? Math.round(this.currentResult.score * 100) : 0;
+  getGoalStatusColor(status: GoalStatus | undefined): string {
+    switch (status) {
+      case GoalStatus.MEMORIZING: return '#3b82f6';
+      case GoalStatus.MAINTAINING: return '#f59e0b';
+      case GoalStatus.MASTERED: return '#10b981';
+      default: return '#6b7280';
+    }
   }
-}
+
+  getGoalStatusText(status: GoalStatus | undefined): string {
+    switch (status) {
+      case GoalStatus.MEMORIZING: return 'Memorizing';
+      case GoalStatus.MAINTAINING: return 'Maintaining';
+      case GoalStatus.MASTERED: return 'Mastered';
+      default: return 'Unknown';
+    }
+  }
+
+  getTrendIcon(trend?: 'up' | 'down' | 'neutral'): string {
+    switch (trend) {
+      case 'up': return 'trending_up';
+      case 'down': return 'trending_down';
+      default: return 'trending_flat';
+    }
+  }
+
+  getTrendColor(trend?: 'up' | 'down' | 'neutral'): string {
+    switch (trend) {
+      case 'up': return '#10b981';
+      case 'down': return '#ef4444';
+      default: return '#6b7280';
+    }
+  }
+} 
