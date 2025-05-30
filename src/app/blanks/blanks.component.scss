@@ -40,7 +40,7 @@ h2 {
   margin-bottom: 2rem;
 }
 
-.select-passage-btn.mat-mdc-fab.mat-primary {
+.mat-mdc-fab.mat-primary {
   --mdc-fab-container-color: #4a555b;
   --mat-fab-foreground-color: white;
   --mat-fab-state-layer-color: white;
@@ -105,11 +105,6 @@ h2 {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.toggle-container {
-  display: flex;
-  align-items: center;
 }
 
 .width-toggle {
@@ -195,6 +190,12 @@ h2 {
   border-color: #536a75;
   background: #f0f4f8;
   color: #2c3e50;
+}
+
+.blank-input.hinted {
+  border-color: #a3915a;
+  background: #f0f4f8;
+  color: #695943;
 }
 
 .blank-input.correct {

@@ -552,33 +552,4 @@ export class MemorizationPracticeService {
     }
     this.saveAll(storage);
   }
-
-  /**
-   * Migrate existing freestyle data to a goal (useful for creating goals from existing practice)
-   */
-  migrateFreestyleDataToGoal(goalId: string, passageId: string): void {
-    const storage = this.loadAll();
-    const freestyleData = storage.passages[passageId];
-    
-    if (freestyleData) {
-      // Copy the freestyle data to the goal-specific storage
-      if (!storage.goalPassages) {
-        storage.goalPassages = {};
-      }
-      if (!storage.goalPassages[goalId]) {
-        storage.goalPassages[goalId] = {};
-      }
-      
-      // Deep copy the data to avoid reference issues
-      storage.goalPassages[goalId][passageId] = {
-        blanking: freestyleData.blanking,
-        attempts: [...freestyleData.attempts],
-        successVelocity: freestyleData.successVelocity,
-        failureVelocity: freestyleData.failureVelocity,
-        lastResult: freestyleData.lastResult
-      };
-      
-      this.saveAll(storage);
-    }
-  }
 } 

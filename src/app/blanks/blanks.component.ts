@@ -12,6 +12,25 @@ import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { Goal } from '../classes/Goal';
 
+
+enum BlankType {
+  EMPTY,
+  FILLED,
+  CORRECT,
+  INCORRECT,
+  HINTED
+}
+
+interface BlankState {
+  index: number;
+  blankIndex: number;
+  value: string;
+  answer: string;
+  type: BlankType;
+  prev: number | null;
+  next: number | null;
+}
+
 @Component({
   selector: 'app-blanks',
   templateUrl: './blanks.component.html',
@@ -21,10 +40,9 @@ export class BlanksComponent implements OnInit {
   attempts: Map<string,IResult> = new Map();
   passage: BiblePassage | null = null;
   passageText: string[] = [];
-  blankIndices: Set<number> = new Set();
-  blankIndicesSorted: number[] = []; // Pre-sorted array for efficient navigation
-  blankIndexMap: Map<number, number> = new Map(); // Maps blank index to position in sorted array
-  userAnswers: { [index: number]: string } = {};
+  curFocusedBlankIndex: number | null = null;
+  blanks: Map<number, BlankState> = new Map();
+  nFilledBlanks: number = 0;
   blankingPercent: number = 0.2;
   feedback: { correct: number; total: number; show: boolean } = { correct: 0, total: 0, show: false };
   velocityInfo: { successVelocity: number; failureVelocity: number; lastResult: string | null } = { successVelocity: 1, failureVelocity: 1, lastResult: null };
@@ -36,12 +54,12 @@ export class BlanksComponent implements OnInit {
     adjustmentType: 'increase' | 'decrease' | 'maintain' 
   } | null = null;
   bible: Bible | undefined;
-  loading: boolean = false;
   subscriptions: Subscription[] = [];
   @ViewChildren('blankInput') blankInputs!: QueryList<ElementRef<HTMLInputElement>>;
   @ViewChild('retryButton') retryButton!: ElementRef<HTMLButtonElement>;
   public Math = Math; // Expose Math for template
   public Object = Object; // Expose Object for template
+  public BlankType = BlankType;
   private textMeasureCanvas: HTMLCanvasElement | null = null;
   private textMeasureContext: CanvasRenderingContext2D | null = null;
 
@@ -93,12 +111,7 @@ export class BlanksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialize text measurement canvas
     this.initializeTextMeasurement();
-    // Optionally auto-open passage selection if not in goal mode
-    if (!this.isGoalMode) {
-      // Could auto-open passage selection here if desired
-    }
   }
 
   private setPassage(passage: BiblePassage): void {
@@ -194,7 +207,8 @@ export class BlanksComponent implements OnInit {
     if (!this.passage || !this.bible) return;
     const text = this.bible.getText(this.passage.i, this.passage.j);
     this.passageText = text.split(/\s+/);
-    this.userAnswers = {};
+    this.blanks = new Map();
+    this.nFilledBlanks = 0;
     
     // Get adaptive blanking percent and velocity info - use goal-specific methods when in goal mode
     if (this.isGoalMode && this.goalId) {
@@ -208,17 +222,25 @@ export class BlanksComponent implements OnInit {
     // Randomly select blank indices
     const numBlanks = Math.max(1, Math.floor(this.passageText.length * this.blankingPercent));
     const indices = Array.from({ length: this.passageText.length }, (_, i) => i);
-    this.blankIndices = new Set();
-    while (this.blankIndices.size < numBlanks && indices.length > 0) {
+    let blankIndices = new Set<number>();
+    while (blankIndices.size < numBlanks && indices.length > 0) {
       const idx = Math.floor(Math.random() * indices.length);
-      this.blankIndices.add(indices[idx]);
+      blankIndices.add(indices[idx]);
       indices.splice(idx, 1);
     }
-    this.blankIndicesSorted = Array.from(this.blankIndices).sort((a, b) => a - b);
-    this.blankIndexMap = new Map();
-    this.blankIndicesSorted.forEach((blankIndex, position) => {
-      this.blankIndexMap.set(blankIndex, position);
-    });
+    const blankIndicesSorted = Array.from(blankIndices).sort((a, b) => a - b);
+    for (let i = 0; i < blankIndicesSorted.length; i++) {
+      const wordIndex = blankIndicesSorted[i];
+      this.blanks.set(wordIndex, {
+        index: wordIndex,
+        blankIndex: i,
+        value: '',
+        answer: this.passageText[wordIndex],
+        type: BlankType.EMPTY,
+        prev: i > 0 ? blankIndicesSorted[i - 1] : null,
+        next: i < blankIndicesSorted.length - 1 ? blankIndicesSorted[i + 1] : null,
+      })
+    }
     this.feedback = { correct: 0, total: 0, show: false };
     this.difficultyAdjustment = null;
     
@@ -228,130 +250,154 @@ export class BlanksComponent implements OnInit {
     }, 100);
   }
 
-  private focusFirstBlank() {
-    if (this.blankIndicesSorted.length > 0 && this.blankInputs) {
-      const firstBlankIndex = this.blankIndicesSorted[0];
-      const firstInputPosition = this.blankIndexMap.get(firstBlankIndex);
-      if (firstInputPosition !== undefined) {
-        const inputArray = this.blankInputs.toArray();
-        const firstInput = inputArray[firstInputPosition];
-        if (firstInput) {
-          firstInput.nativeElement.focus();
-          firstInput.nativeElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center',
-            inline: 'nearest'
-          });
-        }
-      }
-    }
+  toggleInputWidth() {
+    this.dynamicInputWidth = !this.dynamicInputWidth;
   }
 
-  onInput(index: number, event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.userAnswers[index] = input.value;
-    
-    // Update input width based on current content
-    const targetWord = this.passageText[index];
-    const newWidth = this.getInputWidth(targetWord, input.value);
-    input.style.width = newWidth;
-    
-    // Scroll the input into view when focused/clicked
-    setTimeout(() => {
-      input.scrollIntoView({ 
+  revealAnswer() {
+    if (this.curFocusedBlankIndex == null) return;
+    const blank = this.blanks.get(this.curFocusedBlankIndex);
+    if (blank == undefined) return;
+    if (blank.type === BlankType.EMPTY) {
+      this.nFilledBlanks++;
+    }
+    blank.type = BlankType.HINTED;
+    blank.value = blank.answer;
+    const input = this.blankInputs.toArray()[blank.blankIndex].nativeElement;
+    input.value = blank.value;
+    input.style.width = this.getInputWidth(blank.value, blank.value);
+    if (blank.next != null) {
+      const nextInput = this.nextBlank(blank);
+      if (nextInput == null) return;
+      nextInput.focus();
+      nextInput.select();
+      nextInput.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'center',
         inline: 'nearest'
       });
-    }, 100);
+    }
+  }
+
+  private focusFirstBlank() {
+    const firstInput = this.blankInputs.first.nativeElement;
+    if (firstInput) {
+      firstInput.focus();
+      firstInput.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest'
+      });
+    }
+  }
+
+  onFocus(index: number) {
+    this.curFocusedBlankIndex = index;
+  }
+  
+  nextBlank(blank: BlankState): HTMLInputElement | null {
+    const inputs = this.blankInputs.toArray();
+    let currentBlank: BlankState | undefined = blank;
+    while (currentBlank.next != null) {
+      currentBlank = this.blanks.get(currentBlank.next);
+      if (currentBlank == undefined) return null;
+      if (currentBlank.type === BlankType.EMPTY || currentBlank.type === BlankType.FILLED) {
+        return inputs[currentBlank.blankIndex].nativeElement;
+      }
+    }
+    return null;
+  }
+
+  prevBlank(blank: BlankState): HTMLInputElement | null {
+    const inputs = this.blankInputs.toArray();
+    let currentBlank: BlankState | undefined = blank;
+    while (currentBlank.prev != null) {
+      currentBlank = this.blanks.get(currentBlank.prev);
+      if (currentBlank == undefined) return null;
+      if (currentBlank.type === BlankType.EMPTY || currentBlank.type === BlankType.FILLED) {
+        return inputs[currentBlank.blankIndex].nativeElement;
+      }
+    }
+    return null;
+  }
+
+  onInput(index: number, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const blank = this.blanks.get(index);
+    blank!.value = input.value;
+    if (blank == undefined) return;
+    const newWidth = this.getInputWidth(blank.answer, blank.value);
+    input.style.width = newWidth;
+    if (blank.type !== BlankType.FILLED) {
+      blank.type = BlankType.FILLED;
+      this.nFilledBlanks++;
+    }
   }
 
   onKeyDown(event: KeyboardEvent, index: number) {
+    const blank = this.blanks.get(index);
     if ((event.key === 'Tab' || event.key === ' ' || event.key === 'Spacebar') && !event.shiftKey) {
       event.preventDefault();
-      // Find the next blank index
-      const currentIdx = this.blankIndexMap.get(index);
-      if (currentIdx !== undefined && currentIdx < this.blankIndicesSorted.length - 1) {
-        const nextIndex = this.blankIndicesSorted[currentIdx + 1];
-        // Focus the next input
-        setTimeout(() => {
-          const inputArray = this.blankInputs.toArray();
-          const nextInputIdx = this.blankIndexMap.get(nextIndex);
-          if (nextInputIdx !== undefined) {
-            const nextInput = inputArray[nextInputIdx];
-            if (nextInput) {
-              nextInput.nativeElement.focus();
-              nextInput.nativeElement.select();
-              // Scroll the input into view and center it
-              nextInput.nativeElement.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'nearest'
-              });
-            }
-          }
-        });
-      } else {
-        // Optionally blur or do nothing if at the end
-        (event.target as HTMLInputElement).blur();
-      }
+      if (blank == undefined) return;
+      const nextInput = this.nextBlank(blank);
+      if (nextInput == null) return;
+      nextInput.focus();
+      nextInput.select();
+      nextInput.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest'
+      });
     }
     
     // Handle backspace on empty input to move to previous blank
     if (event.key === 'Backspace') {
       const input = event.target as HTMLInputElement;
-      if (input.value === '' || input.value.trim() === '') {
-        event.preventDefault();
-        // Find the previous blank index
-        const currentIdx = this.blankIndexMap.get(index);
-        if (currentIdx !== undefined && currentIdx > 0) {
-          const prevIndex = this.blankIndicesSorted[currentIdx - 1];
-          // Focus the previous input
-          setTimeout(() => {
-            const inputArray = this.blankInputs.toArray();
-            const prevInputIdx = this.blankIndexMap.get(prevIndex);
-            if (prevInputIdx !== undefined) {
-              const prevInput = inputArray[prevInputIdx];
-              if (prevInput) {
-                prevInput.nativeElement.focus();
-                prevInput.nativeElement.select();
-                // Scroll the input into view and center it
-                prevInput.nativeElement.scrollIntoView({ 
-                  behavior: 'smooth', 
-                  block: 'center',
-                  inline: 'nearest'
-                });
-              }
-            }
-          });
-        }
-      }
+      if (input.value !== '') return;
+      event.preventDefault();
+      if (blank == undefined) return;
+      const prevInput = this.prevBlank(blank);
+      if (prevInput == null) return;
+      prevInput.focus();
+      prevInput.select();
+      prevInput.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest'
+      });
     }
     
-    if (event.key === 'Enter' && this.allBlanksFilled()) {
-      this.submit();
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        this.revealAnswer();
+      } else {
+        this.submit();
+      }
     }
   }
 
-  isBlankCorrect(index: number): boolean {
-    const answer = (this.userAnswers[index] || '').trim();
-    const actual = this.passageText[index].trim();
-    const answerClean = answer.replace(/[^a-zA-Z0-9]/g, '');
-    const actualClean = actual.replace(/[^a-zA-Z0-9]/g, '');
-    return answerClean.toLowerCase() === actualClean.toLowerCase();
+  isBlankCorrect(blank: BlankState): boolean {
+    if (blank == undefined) return false;
+    const answer = (blank.value || '').trim();
+    const actual = blank.answer.trim();
+    const answerClean = answer.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const actualClean = actual.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    return answerClean === actualClean;
   }
 
   submit() {
-    if (!this.passage || !this.allBlanksFilled() || this.feedback.show) return;
+    if (!this.passage || this.feedback.show) return;
     let correct = 0;
-    let total = this.blankIndices.size;
-    for (const idx of this.blankIndices) {
-      const answer = (this.userAnswers[idx] || '').trim();
-      const actual = this.passageText[idx].trim();
-      // Remove non-alphanumeric characters 
-      const answerClean = answer.replace(/[^a-zA-Z0-9]/g, '');
-      const actualClean = actual.replace(/[^a-zA-Z0-9]/g, '');
-      if (answerClean.toLowerCase() === actualClean.toLowerCase()) correct++;
+    let total = this.blanks.size;
+    for (let blank of this.blanks.values()) {
+      if (this.isBlankCorrect(blank)) {
+        if (blank.type === BlankType.FILLED) {
+          correct++;
+          blank.type = BlankType.CORRECT;
+        } 
+      } else {
+        blank.type = BlankType.INCORRECT;
+      }
     }
     this.feedback = { correct, total, show: true };
     
@@ -383,9 +429,9 @@ export class BlanksComponent implements OnInit {
   }
 
   allBlanksFilled(): boolean {
-    if (!this.passageText || !this.blankIndices) return false;
-    for (const idx of this.blankIndices) {
-      if (!this.userAnswers[idx] || this.userAnswers[idx].trim() === '') {
+    if (!this.blanks) return false;
+    for (let blank of this.blanks.values()) {
+      if (blank.type === BlankType.EMPTY) {
         return false;
       }
     }
