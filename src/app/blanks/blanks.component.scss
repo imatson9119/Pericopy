@@ -100,8 +100,24 @@ h2 {
   font-style: italic;
 }
 
-.passage-actions button {
-  font-size: 0.9rem;
+
+.passage-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.width-toggle {
+  .toggle-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-left: 0.5rem;
+  }
 }
 
 .progress-section {
@@ -112,6 +128,10 @@ h2 {
   font-size: 0.9rem;
   color: #6c757d;
   margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap-reverse;
 }
 
 .progress-bar {

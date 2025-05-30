@@ -50,6 +50,13 @@ export class BlanksComponent implements OnInit {
   goal: Goal | null = null;
   isGoalMode: boolean = false;
 
+  // Query params
+  i: number | null = null;
+  j: number | null = null;
+
+  // Dynamic width toggle
+  dynamicInputWidth: boolean = true;
+
   constructor(
     private dialog: MatDialog,
     private bibleService: BibleService,
@@ -69,14 +76,18 @@ export class BlanksComponent implements OnInit {
         this.bible = bible;
         this.goalId = params['goalId'] || null;
         this.isGoalMode = !!this.goalId;
+        this.i = params['i'] || null;
+        this.j = params['j'] || null;
         
         if (this.bible) {
           this.attempts = this._storageService.getAttempts(this.bible.m.t);
         }
-        
-        // Load goal context when both bible and params are available
-        this.tryLoadGoalContext();
-        this.updatePageMetadata();
+
+        if (this.i && this.j && this.bible) {
+          this.setPassage(this.bible.getPassage(this.i, this.j));
+        } else if (this.goalId) {
+          this.loadGoalContext();
+        }
       })
     );
   }
@@ -90,11 +101,10 @@ export class BlanksComponent implements OnInit {
     }
   }
 
-  private tryLoadGoalContext(): void {
-    // Only attempt to load if we have a goalId, are in goal mode, have a bible, and haven't loaded the goal yet
-    if (this.isGoalMode && this.goalId && this.bible && !this.goal) {
-      this.loadGoalContext();
-    }
+  private setPassage(passage: BiblePassage): void {
+    this.passage = passage;
+    this.generateBlanks();
+    this.updatePageMetadata();
   }
 
   private loadGoalContext(): void {
@@ -102,19 +112,12 @@ export class BlanksComponent implements OnInit {
     
     const goal = this._storageService.getGoal(this.goalId);
     if (!goal) {
-      // Goal not found, redirect to home
-      this.router.navigate(['/']);
+      this.router.navigate(['/blanks']);
       return;
     }
     
     this.goal = goal;
-    
-    // Load the passage immediately since we know bible is available
-    const goalPassage = this.bible.getPassage(goal.i, goal.j);
-    if (goalPassage) {
-      this.passage = goalPassage;
-      this.generateBlanks();
-    }
+    this.setPassage(this.bible.getPassage(goal.i, goal.j));
   }
 
   private updatePageMetadata(): void {
@@ -124,6 +127,9 @@ export class BlanksComponent implements OnInit {
     if (this.isGoalMode && this.goal) {
       pageTitle = `${this.goal.title} - Fill in the Blanks | Pericopy`;
       pageDescription = `Practice fill-in-the-blanks for your goal: ${this.goal.title}. Track your progress and improve your scripture memorization.`;
+    } else if (this.passage) {
+      pageTitle = `${this.passage.toString()} - Fill in the Blanks | Pericopy`;
+      pageDescription = `Practice fill-in-the-blanks for the passage: ${this.passage.toString()}. Track your progress and improve your scripture memorization.`;
     }
 
     this.titleService.setTitle(pageTitle);
@@ -139,18 +145,6 @@ export class BlanksComponent implements OnInit {
 
   openPassageSelect() {
     if(!this.bible) return;
-    
-    // In goal mode, only allow the goal's passage
-    if (this.isGoalMode && this.goal && this.goalId) {
-      const goalPassage = this.bible.getPassage(this.goal.i, this.goal.j);
-      if (goalPassage) {
-        this.passage = goalPassage;
-        // Track this passage as recently used for the goal
-        this.practiceService.trackRecentPassageForGoal(this.goalId, goalPassage.id, goalPassage.i, goalPassage.j);
-        this.generateBlanks();
-      }
-      return;
-    }
     
     // Get recent passages from the practice service instead of general attempts
     const recentPassages = this.practiceService.getRecentPassages();
@@ -184,10 +178,14 @@ export class BlanksComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: BiblePassage | undefined) => {
       if (result && this.bible) {
-        this.passage = result;
+        this.isGoalMode = false;
+        this.goalId = null;
+        this.goal = null;
+        // set i and j query params to the result
+        this.router.navigate([], { queryParams: { i: result.i, j: result.j } });
+        this.setPassage(result);
         // Track this passage as recently used
         this.practiceService.trackRecentPassage(result.id, result.i, result.j);
-        this.generateBlanks();
       }
     });
   }
@@ -472,11 +470,12 @@ export class BlanksComponent implements OnInit {
   }
 
   getInputWidth(targetWord: string, currentValue?: string): string {
+    // If dynamic width is disabled, return a fixed width
     // Update font to match actual input styling
     this.updateFontFromInput();
     
     // Use the current value if it exists and is longer, otherwise use the target word
-    const textToMeasure = currentValue && currentValue.length > targetWord.length ? currentValue : targetWord;
+    const textToMeasure = (currentValue && currentValue.length > targetWord.length) || !this.dynamicInputWidth ? currentValue : targetWord;
     
     // If no text to measure, use a reasonable default
     if (!textToMeasure) {

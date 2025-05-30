@@ -20,39 +20,49 @@
     <div class="content-area" *ngIf="passage">
       <div class="passage-info-bar">
         <div class="passage-details">
-          <div class="passage-reference">{{ passage.toString() }}</div>
-          <div class="passage-stats">
-            <span class="stat-item">
-              <span class="stat-value">{{ passageText.length }}</span>
-              <span class="stat-label">words</span>
-            </span>
-            <span class="stat-divider">•</span>
-            <span class="stat-item">
-              <span class="stat-value">{{ blankIndices.size }}</span>
-              <span class="stat-label">blanks</span>
-            </span>
-            <span class="stat-divider">•</span>
-            <span class="stat-item">
-              <span class="stat-value">{{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
-              <span class="stat-label">difficulty</span>
-            </span>
-            <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
-            <span class="stat-item velocity-status" *ngIf="velocityInfo.lastResult">
-              <span class="stat-value">{{ getVelocityStatusText() }}</span>
-            </span>
-          </div>
-        </div>
-        <div class="passage-actions">
-          <button mat-stroked-button (click)="openPassageSelect()" size="small">
-            Change Passage
+          <button 
+            mat-raised-button 
+            color="primary"
+            (click)="openPassageSelect()">
+            <mat-icon>menu_book</mat-icon> {{ passage.toString() }}
           </button>
         </div>
-      </div>
-
-      <div class="progress-section" *ngIf="!feedback.show">
-        <div class="progress-info">
-          <span>Progress: {{ Object.keys(userAnswers).length }} of {{ blankIndices.size }} completed</span>
+        <div class="passage-actions">
+          <div class="toggle-container">
+            <mat-checkbox
+            [(ngModel)]="dynamicInputWidth"
+            color="primary"
+            class="width-toggle">
+            <span class="toggle-label">Dynamic Width</span>
+          </mat-checkbox>
         </div>
+      </div>
+    </div>
+    
+    <div class="progress-section" *ngIf="!feedback.show">
+      <div class="progress-info">
+        <span>Progress: {{ Object.keys(userAnswers).length }} of {{ blankIndices.size }} completed</span>
+        <div class="passage-stats">
+          <span class="stat-item">
+            <span class="stat-value">{{ passageText.length }}</span>
+            <span class="stat-label">words</span>
+          </span>
+          <span class="stat-divider">•</span>
+          <span class="stat-item">
+            <span class="stat-value">{{ blankIndices.size }}</span>
+            <span class="stat-label">blanks</span>
+          </span>
+          <span class="stat-divider">•</span>
+          <span class="stat-item">
+            <span class="stat-value">{{ (blankingPercent * 100) | number:'1.0-0' }}%</span>
+            <span class="stat-label">difficulty</span>
+          </span>
+          <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
+          <span class="stat-item velocity-status" *ngIf="velocityInfo.lastResult">
+            <span class="stat-value">{{ getVelocityStatusText() }}</span>
+          </span>
+        </div>
+      </div>
         <div class="progress-bar">
           <div class="progress-fill" [style.width.%]="(Object.keys(userAnswers).length / blankIndices.size) * 100"></div>
         </div>
@@ -92,23 +102,26 @@
 
       <div class="action-section">
         <div class="action-buttons">
-          <button 
-            mat-flat-button 
-            color="primary" 
-            (click)="submit()" 
-            [disabled]="feedback.show || !allBlanksFilled()"
-            class="submit-btn">
-            Submit
-          </button>
-          <button 
-            mat-flat-button 
-            color="primary"
-            (click)="retry()" 
-            [disabled]="!feedback.show"
-            class="retry-btn"
-            #retryButton>
-            Retry
-          </button>
+          @if (!feedback.show) {
+            <button 
+              mat-flat-button 
+              color="primary" 
+              (click)="submit()" 
+              [disabled]="feedback.show || !allBlanksFilled()"
+              class="submit-btn">
+              Submit
+            </button>
+          } @else {
+            <button 
+              mat-flat-button 
+              color="primary"
+              (click)="retry()" 
+              [disabled]="!feedback.show"
+              class="retry-btn"
+              #retryButton>
+              Retry
+            </button>
+          }
         </div>
       </div>
 
