@@ -64,14 +64,14 @@
           <span class="stat-divider">•</span>
           <span class="stat-item">
             <span class="stat-value"
-              >{{ blankingPercent * 100 | number : "1.0-0" }}%</span
+              >{{ passageData!.blanking * 100 | number : "1.0-0" }}%</span
             >
             <span class="stat-label">difficulty</span>
           </span>
-          <span class="stat-divider" *ngIf="velocityInfo.lastResult">•</span>
+          <span class="stat-divider" *ngIf="passageData!.velocityInfo.lastResult">•</span>
           <span
             class="stat-item velocity-status"
-            *ngIf="velocityInfo.lastResult"
+            *ngIf="passageData!.velocityInfo.lastResult"
           >
             <span class="stat-value">{{ getVelocityStatusText() }}</span>
           </span>

@@ -339,7 +339,7 @@ export class HomeComponent implements OnDestroy, OnInit {
   startBlanks(goal: Goal, event: Event): void {
     event.stopPropagation(); // Prevent card click navigation
     this.router.navigate(['/blanks'], { 
-      queryParams: { goalId: goal.id } 
+      queryParams: { i: goal.i, j: goal.j } 
     });
   }
 

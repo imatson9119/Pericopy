@@ -426,7 +426,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   goToBlanks() {
-    this._router.navigate(['/blanks'], { queryParams: { goalId: this.goalId } });
+    if (!this.goal) {
+      return;
+    }
+    this._router.navigate(['/blanks'], { queryParams: { i: this.goal.i, j: this.goal.j } });
   }
 }
 
