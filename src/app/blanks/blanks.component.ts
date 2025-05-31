@@ -11,6 +11,7 @@ import { IResult } from '../classes/models';
 import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { Goal } from '../classes/Goal';
+import seedrandom from 'seedrandom';
 
 
 enum BlankType {
@@ -55,6 +56,7 @@ export class BlanksComponent implements OnInit {
   } | null = null;
   bible: Bible | undefined;
   subscriptions: Subscription[] = [];
+  rng: seedrandom.PRNG = seedrandom();
   @ViewChildren('blankInput') blankInputs!: QueryList<ElementRef<HTMLInputElement>>;
   @ViewChild('retryButton') retryButton!: ElementRef<HTMLButtonElement>;
   public Math = Math; // Expose Math for template

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
 
 interface PassageData {
   blanking: number;
@@ -6,6 +7,7 @@ interface PassageData {
   successVelocity: number;
   failureVelocity: number;
   lastResult: 'success' | 'failure' | null;
+  seed: string;
 }
 
 interface RecentPassage {
@@ -83,7 +85,8 @@ export class MemorizationPracticeService {
       attempts: [],
       successVelocity: 1,
       failureVelocity: 1,
-      lastResult: null
+      lastResult: null,
+      seed: uuidv4()
     };
   }
 
