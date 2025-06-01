@@ -213,6 +213,9 @@ export class BlanksComponent implements OnInit {
       if ( passageData.cache && passageData.cache.length === numBlanks){
         blankValue.value = passageData.cache[i].value;
         blankValue.type = passageData.cache[i].type;
+        if (blankValue.type === BlankType.FILLED || blankValue.type === BlankType.HINTED) {
+          this.nFilledBlanks++;
+        }
       }
       this.blanks.set(wordIndex, blankValue)
     }
