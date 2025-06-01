@@ -35,6 +35,7 @@ export class PassageSelectDialogComponent implements OnDestroy {
       if (data.title) this.title = data.title;
       if (data.subtitle) this.subtitle = data.subtitle;
       if (data.options) this.providedOptions = data.options
+      if (data.passage) this.passage = data.passage;
     }
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {

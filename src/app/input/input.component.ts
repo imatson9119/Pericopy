@@ -15,14 +15,14 @@ import { Title, Meta } from '@angular/platform-browser';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
 import { BiblePassage } from '../classes/BiblePassage';
 import { getAttemptText, intersection, sanitizeText } from '../utils/utils';
-import { BibleDiff, BiblePointer, DiffType, getRatingFromAttempt, IResult } from '../classes/models';
+import { BibleDiff, DiffType, getRatingFromAttempt, IResult } from '../classes/models';
 import { v4 as uuidv4 } from 'uuid';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { DifficultyDialogComponent } from './difficulty-dialog/difficulty-dialog.component';
 import { SelectionType } from '../misc-components/verse-selector/verse-selector.component';
 
-declare const annyang: any;
+const PASSAGE_DEBOUNCE_TIME = 3000;
 
 @Component({
   selector: 'app-input',
@@ -33,15 +33,14 @@ export class InputComponent
   implements AfterViewChecked, OnDestroy, OnInit
 {
   attempt = '';
-  annyang = annyang;
-  recording = false;
   detectPassage = true;
   editingId = '';
-  startRef: BiblePointer | undefined = undefined;
-  endRef: BiblePointer | undefined = undefined;
+  passage: BiblePassage | undefined = undefined;
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   SelectionType = SelectionType;
+  passageDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  recentAttempts: IResult[] = [];
 
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
@@ -59,62 +58,22 @@ export class InputComponent
       this._bibleService.curBible.subscribe((bible) => {
         if (bible) {
           this.bible = bible;
-  
+          this.passage = undefined;
+          this.recentAttempts = Array.from(this._storageService.getAttempts().values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
           const queryParams = this.router.parseUrl(this.router.url).queryParams;
           let id = queryParams['id'];
           let i = queryParams['i'];
           let j = queryParams['j'];
-  
-          if (i < j) {
-            let start = this.bible.get(i); 
-            let end = this.bible.get(j-1); 
-
-            this.startRef = {
-              book: start.book,
-              chapter: start.chapter,
-              verse: start.verse,
-              index: i - start.verse.m.i,
-            };
-            this.endRef = {
-              book: end.book,
-              chapter: end.chapter,
-              verse: end.verse,
-              index: j - end.verse.m.i - 1,
-            }
-            this.detectPassage = false;
-          }
-        
           if (id != undefined) {
             this.editResult(id);
+          } else if (i != undefined && j != undefined && i < j) {
+            this.passage = this.bible.getPassage(i, j);
+            this.detectPassage = false;
           }
-          // Don't redirect if no id - preserve existing query parameters (i, j, etc.)
+          this.updatePageMetadata();
         }
       })
     );
-    annyang.addCallback('result', (userSaid: string[] | undefined) => {
-      if (userSaid && userSaid.length > 0) {
-        ngZone.run(() => {
-          if (
-            this.attempt.length > 0 &&
-            this.attempt[this.attempt.length - 1] !== ' '
-          ) {
-            this.attempt += ' ';
-          }
-          this.attempt += userSaid[0].trim();
-        });
-        this.adjustInputHeight();
-      }
-    });
-    annyang.addCallback('end', () => {
-      ngZone.run(() => {
-        this.recording = false;
-      });
-    });
-    annyang.addCallback('start', () => {
-      ngZone.run(() => {
-        this.recording = true;
-      });
-    });
   }
 
   ngAfterViewChecked(): void {
@@ -123,6 +82,9 @@ export class InputComponent
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    if (this.passageDebounceTimeout) {
+      clearTimeout(this.passageDebounceTimeout);
+    }
   }
 
   ngOnInit(): void {
@@ -135,16 +97,10 @@ export class InputComponent
     this.metaService.updateTag({ property: 'og:description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/recite' });
   }
+  
 
   valid() {
-    return ( 
-      this.attempt.trim().length > 0 &&
-      (this.detectPassage
-        ? true
-        : this.startRef &&
-          this.endRef &&
-          this.startRef.verse.m.i <= this.endRef.verse.m.i)
-    );
+    return this.attempt.trim().length > 0;
   }
 
   editResult(id: string) {
@@ -157,31 +113,36 @@ export class InputComponent
       return;
     }
     this.attempt = result.raw ? result.raw : getAttemptText(result);
-    // this.detectPassage = false;
-    // let start = this.bible.get(result.diff.i);
-    // let end = this.bible.get(result.diff.j - 1);
-    // this.startRef = {
-    //   book: start.book,
-    //   chapter: start.chapter,
-    //   verse: start.verse,
-    //   index: result.diff.i - start.verse.m.i,
-    // };
-    // this.endRef = { // End is inclusive
-    //   book: end.book,
-    //   chapter: end.chapter,
-    //   verse: end.verse,
-    //   index: result.diff.j - end.verse.m.i - 1,
-    // };
     this.editingId = id;
+  }
+
+  getPassageDebounced() {
+    if (this.passageDebounceTimeout) {
+      clearTimeout(this.passageDebounceTimeout);
+    }
+    this.passageDebounceTimeout = setTimeout(() => {
+      this.passage = this.getPassage();
+    }, PASSAGE_DEBOUNCE_TIME);
+  }
+
+  getPassage(): BiblePassage | undefined {
+    const anchors = this.getAnchors();
+    if (anchors.length === 0 || !this.canAutoLock(anchors, this.attempt)) {
+      return undefined;
+    }
+    return anchors[0][0];
+  }
+
+  getAnchors(): [BiblePassage, number][] {
+    return this.bible?.anchorText(this.attempt) ?? [];
   }
 
   submit() {
     if (!this.valid() || !this.bible) {
       return;
     }
-    this.annyang.abort();
     if (this.detectPassage) {
-      let anchors = this.bible.anchorText(this.attempt);
+      const anchors = this.getAnchors();
       if (!this.canAutoLock(anchors, this.attempt)) {
         this._dialog
           .open(PassageSelectDialogComponent, {
@@ -202,12 +163,10 @@ export class InputComponent
         this.getAndStoreDiff(anchors[0][0]);
       }
     } else {
-      if (!this.startRef || !this.endRef) {
+      if (!this.passage) {
         return;
       }
-      let start = this.startRef.verse.m.i + this.startRef.index;
-      let end = this.endRef.verse.m.i + this.endRef.index;
-      this.getAndStoreDiff(this.bible.getPassage(start, end));
+      this.getAndStoreDiff(this.passage);
     }
   }
 
@@ -275,12 +234,28 @@ export class InputComponent
     }
   }
 
-  toggleVoice() {
-    if (annyang.isListening()) {
-      annyang.abort();
-    } else {
-      annyang.start();
-    }
+  onInput(e: Event) {
+    this.getPassageDebounced();
+  }
+
+  openPassageSelect() {
+    const dialogRef = this._dialog.open(PassageSelectDialogComponent, {
+      data: {
+        title: 'Select a Passage',
+        subtitle: 'Please select a passage from the Bible.',
+        options: this.recentAttempts.map((a) => this.bible?.getPassage(a.diff.i, a.diff.j)),
+        passage: this.passage,
+      },
+    });
+    dialogRef.afterClosed().subscribe((passage: BiblePassage) => {
+      if (passage) {
+        this.passage = passage;
+        this.updatePageMetadata();
+        this.passageDebounceTimeout = null;
+        this.detectPassage = false;
+        this.router.navigate(['/recite'], { queryParams: { i: passage.i, j: passage.j } });
+      }
+    });
   }
 
   processDiff(diff: BibleDiff): IResult {
@@ -325,7 +300,19 @@ export class InputComponent
     }
   }
 
-  togglePassageSelection() {
-    this.detectPassage = !this.detectPassage;
-  }
+  private updatePageMetadata(): void {
+    let pageTitle = 'Recitation | Pericopy';
+    let pageDescription = 'Practice reciting scripture passages. Our intelligent system identifies your passage and provides detailed feedback on your recitation accuracy.';
+    
+    if (this.passage) {
+      pageTitle = `${this.passage.toString()} - Recitation | Pericopy`;
+      pageDescription = `Practice reciting the passage: ${this.passage.toString()}. Track your progress and improve your scripture memorization.`;
+    }
+
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/recite' });
+  } 
 }

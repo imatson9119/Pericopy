@@ -34,7 +34,6 @@
     </div>
     <app-freestyle-input-div 
       #input
-      (click)="this.annyang.abort()" 
       [bible]='this.bible'
       (onInputStateChange)="this.inputState = $event"
       (onPassageChange)="this.passage = $event"
@@ -70,15 +69,6 @@
           >
         }
       </div>
-      <button
-        (click)="toggleVoice()"
-        [ngClass]="{ recording: this.recording }"
-        class="record-button"
-        mat-mini-fab
-        aria-label="Dictate"
-      >
-        <mat-icon>mic</mat-icon>
-      </button>
     </div>
   </div>
 } @else {

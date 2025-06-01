@@ -93,7 +93,7 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   }
 
   startRefChangeMethod() {
-    if (this.startRef && !this.endRef) {
+    if ((this.startRef && !this.endRef) || (this.startRef && this.endRef && this.startRef.verse.m.i > this.endRef.verse.m.i)) {
       this.endRef = {
         book: this.startRef.book,
         chapter: this.startRef.chapter,
@@ -105,6 +105,14 @@ export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   }
 
   endRefChangeMethod() {
+    if ((this.endRef && !this.startRef) || (this.startRef && this.endRef && this.startRef.verse.m.i > this.endRef.verse.m.i)) {
+      this.startRef = {
+        book: this.endRef.book,
+        chapter: this.endRef.chapter,
+        verse: this.endRef.verse,
+        index: this.endRef.index - this.endRef.verse.m.l,
+      };
+    }
     this.checkValidityAndEmit();
   }
 

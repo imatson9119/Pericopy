@@ -170,6 +170,7 @@ export class BlanksComponent implements OnInit {
         title: 'Select a Passage',
         subtitle: 'Please select a passage from the Bible.',
         options: passages,
+        passage: this.passage,
       },
     });
     dialogRef.afterClosed().subscribe((result: BiblePassage | undefined) => {

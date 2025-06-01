@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   NgZone,
   OnDestroy,
@@ -34,8 +33,6 @@ export class FreestyleComponent
   implements OnDestroy, OnInit
 {
   attempt = '';
-  annyang = annyang;
-  recording = false;
   passage: BiblePassage | undefined = undefined;
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
@@ -50,31 +47,6 @@ export class FreestyleComponent
     private titleService: Title,
     private metaService: Meta
   ) {
-    annyang.addCallback('result', (userSaid: string[] | undefined) => {
-      if (userSaid && userSaid.length > 0) {
-        ngZone.run(() => {
-          let result = ""
-          if (
-            this.input!.attempt.length > 0 &&
-            this.input!.attempt[this.attempt.length - 1] !== ' '
-          ) {
-            result += ' ';
-          }
-          result += userSaid[0].trim();
-          this.input!.addToAttempt(result);
-        });
-      }
-    });
-    annyang.addCallback('end', () => {
-      ngZone.run(() => {
-        this.recording = false;
-      });
-    });
-    annyang.addCallback('start', () => {
-      ngZone.run(() => {
-        this.recording = true;
-      });
-    });
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
         this.bible = bible;
@@ -97,14 +69,6 @@ export class FreestyleComponent
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   
-  toggleVoice() {
-    if (annyang.isListening()) {
-      annyang.abort();
-    } else {
-      annyang.start();
-    }
-  } 
-
   nextWord() {
     if (!this.input) {
       return;
