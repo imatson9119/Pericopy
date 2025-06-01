@@ -258,10 +258,17 @@ export class BlanksComponent implements OnInit {
   }
 
   private focusFirstBlank() {
-    const firstInput = this.blankInputs.first.nativeElement;
-    if (firstInput) {
-      firstInput.focus();
-      firstInput.scrollIntoView({ 
+    let input = this.blankInputs.first.nativeElement;
+    if (this.blanks.size === 0) return;
+    for (let blank of this.blanks.values()) {
+      if (blank.type === BlankType.EMPTY) {
+        input = this.blankInputs.toArray()[blank.blankIndex].nativeElement;
+        break;
+      }
+    } 
+    if (input) {
+      input.focus();
+      input.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'center',
         inline: 'nearest'
