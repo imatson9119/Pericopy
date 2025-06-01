@@ -55,12 +55,6 @@ h2 {
   margin-bottom: 1.5rem;
 }
 
-.passage-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .passage-reference {
   font-size: 1.3rem;
   font-weight: 600;
@@ -400,12 +394,6 @@ h2 {
 @media (max-width: 768px) {
   .input-container {
     padding: 1rem;
-  }
-  
-  .passage-info-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
   }
   
   .results-header {

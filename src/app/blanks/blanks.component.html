@@ -27,11 +27,9 @@
 
   <div class="content-area" *ngIf="passage">
     <div class="passage-info-bar">
-      <div class="passage-details">
-        <button mat-fab extended color="primary" (click)="openPassageSelect()">
-          <mat-icon>menu_book</mat-icon> {{ passage.toString() }}
-        </button>
-      </div>
+      <button mat-fab extended color="primary" (click)="openPassageSelect()">
+        <mat-icon>menu_book</mat-icon> {{ passage.toString() }}
+      </button>
       <div class="passage-actions">
         <button
           mat-icon-button
