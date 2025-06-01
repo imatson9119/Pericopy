@@ -6,7 +6,7 @@ import { BibleService } from '../services/bible.service';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
-import { BlankCache, MemorizationPracticeService } from './memorization-practice.service';
+import { BlankCache, BlanksModulePreferences, MemorizationPracticeService } from './memorization-practice.service';
 import { IResult } from '../classes/models';
 import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
@@ -56,6 +56,7 @@ export class BlanksComponent implements OnInit {
   bible: Bible | undefined;
   subscriptions: Subscription[] = [];
   rng: seedrandom.PRNG = seedrandom();
+  preferences: BlanksModulePreferences = this.practiceService.getPreferences();
   @ViewChildren('blankInput') blankInputs!: QueryList<ElementRef<HTMLInputElement>>;
   @ViewChild('retryButton') retryButton!: ElementRef<HTMLButtonElement>;
   public Math = Math; // Expose Math for template
@@ -68,9 +69,6 @@ export class BlanksComponent implements OnInit {
   // Query params
   i: number | null = null;
   j: number | null = null;
-
-  // Dynamic width toggle
-  dynamicInputWidth: boolean = true;
 
   constructor(
     private dialog: MatDialog,
@@ -228,7 +226,8 @@ export class BlanksComponent implements OnInit {
   }
 
   toggleInputWidth() {
-    this.dynamicInputWidth = !this.dynamicInputWidth;
+    this.preferences.dynamicInputWidth = !this.preferences.dynamicInputWidth;
+    this.practiceService.savePreferences(this.preferences);
   }
 
   revealAnswer() {
@@ -424,8 +423,6 @@ export class BlanksComponent implements OnInit {
     this.practiceService.saveAttempt(this.passage.id, { correct, total });
     this.practiceService.adjustBlankingPercentage(this.passage.id, score);
     this.passageData = this.practiceService.getPassageData(this.passage.id);
-    this.passageData.cache = [];
-    this.saveCache();
   }
 
   retry() {
@@ -526,7 +523,7 @@ export class BlanksComponent implements OnInit {
     this.updateFontFromInput();
     
     // Use the current value if it exists and is longer, otherwise use the target word
-    const textToMeasure = (currentValue && currentValue.length > targetWord.length) || !this.dynamicInputWidth ? currentValue : targetWord;
+    const textToMeasure = (currentValue && currentValue.length > targetWord.length) || !this.preferences.dynamicInputWidth ? currentValue : targetWord;
     
     // If no text to measure, use a reasonable default
     if (!textToMeasure) {

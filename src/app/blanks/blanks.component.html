@@ -36,6 +36,14 @@
         <button
           mat-icon-button
           color="primary"
+          (click)="toggleInputWidth()"
+          [matTooltip]="preferences.dynamicInputWidth ? 'Switch to fixed width inputs' : 'Switch to dynamic width inputs'"
+        >
+          <mat-icon>{{preferences.dynamicInputWidth ? 'unfold_less' : 'unfold_more'}}</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
           (click)="revealAnswer()"
           [disabled]="curFocusedBlankIndex == null"
           [matTooltip]="curFocusedBlankIndex == null ? 'No blank selected' : 'Reveal next blank (shift+enter)'"

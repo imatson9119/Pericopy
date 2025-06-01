@@ -8,6 +8,10 @@ export interface VelocityInfo {
   lastResult: 'success' | 'failure' | null;
 }
 
+export interface BlanksModulePreferences {
+  dynamicInputWidth: boolean;
+}
+
 export interface BlankCache {
   value: string;
   type: BlankType;
@@ -34,6 +38,7 @@ interface RecentPassage {
 interface BlanksStorage {
   passages: Record<string, PassageData>;
   recentPassages: RecentPassage[];
+  preferences: BlanksModulePreferences;
 }
 
 @Injectable({
@@ -71,18 +76,24 @@ export class MemorizationPracticeService {
         return {
           passages: data.passages || {},
           recentPassages: data.recentPassages || [],
+          preferences: data.preferences || this.createDefaultPreferences()
         };
       } catch {
-        return { 
-          passages: {}, 
-          recentPassages: [],
-        };
+        return this.createDefaultBlanksStorage();
       }
     }
-    return { 
-      passages: {}, 
-      recentPassages: [],
-    };
+    return this.createDefaultBlanksStorage();
+  }
+
+  getPreferences(): BlanksModulePreferences {
+    const storage = this.getAll();
+    return storage.preferences;
+  }
+
+  savePreferences(preferences: BlanksModulePreferences): void {
+    const storage = this.getAll();
+    storage.preferences = preferences;
+    this.saveAll(storage);
   }
 
   getPassageData(passageId: string): PassageData {
@@ -131,6 +142,20 @@ export class MemorizationPracticeService {
     };
   }
 
+  private createDefaultPreferences(): BlanksModulePreferences {
+    return {
+      dynamicInputWidth: true
+    };
+  }
+
+  private createDefaultBlanksStorage(): BlanksStorage {
+    return {
+      passages: {},
+      recentPassages: [],
+      preferences: this.createDefaultPreferences()
+    };
+  }
+
   trackRecentPassage(passageId: string, i: number, j: number): void {
     const storage = this.getAll();
     const timestamp = Date.now();
@@ -175,6 +200,7 @@ export class MemorizationPracticeService {
     }
     
     storage.passages[passageId].attempts.push(attemptWithTimestamp);
+    storage.passages[passageId].cache = [];
     this.saveAll(storage);
   }
 
