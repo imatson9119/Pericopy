@@ -334,10 +334,14 @@ export class BlanksComponent implements OnInit {
     if (blank == undefined) return;
     const newWidth = this.getInputWidth(blank.answer, blank.value);
     input.style.width = newWidth;
-    if (blank.type !== BlankType.FILLED) {
+    if (blank.value.length === 0 && blank.type === BlankType.FILLED) {
+      blank.type = BlankType.EMPTY;
+      this.nFilledBlanks--;
+    } else if (blank.type !== BlankType.FILLED) {
       blank.type = BlankType.FILLED;
       this.nFilledBlanks++;
     }
+    
     this.saveCacheDebounced();
   }
 
@@ -387,10 +391,6 @@ export class BlanksComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const blank = this.blanks.get(index);
     if (blank == undefined) return;
-    if (input.value.length === 0 && blank.type === BlankType.FILLED) {
-      blank.type = BlankType.EMPTY;
-      this.nFilledBlanks--;
-    }
   }
 
   isBlankCorrect(blank: BlankState): boolean {
