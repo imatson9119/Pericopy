@@ -32,8 +32,8 @@ export class BiblePassage {
     if (i < 0 || j < 0 || i > j) {
       throw new Error('Invalid indices');
     }
-    this.i = i;
-    this.j = j;
+    this.i = Number(i);
+    this.j = Number(j);
     this.b1 = b1;
     this.c1 = c1;
     this.v1 = v1;
@@ -43,7 +43,7 @@ export class BiblePassage {
     this.startGranularity =
       this.i === b1.m.i
         ? ReferenceLevel.BOOK
-        : this.i === c2.m.i
+        : this.i === c1.m.i
         ? ReferenceLevel.CHAPTER
         : ReferenceLevel.VERSE
     this.endGranularity =

@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
+import { BlankType } from './blanks.component';
 
 export interface VelocityInfo {
   successVelocity: number;
   failureVelocity: number;
   lastResult: 'success' | 'failure' | null;
+}
+
+export interface BlankCache {
+  value: string;
+  type: BlankType;
 }
 
 export interface PassageData {
@@ -15,6 +21,7 @@ export interface PassageData {
   lastResult: 'success' | 'failure' | null;
   seed: string;
   velocityInfo: VelocityInfo;
+  cache: BlankCache[];
 }
 
 interface RecentPassage {
@@ -111,7 +118,8 @@ export class MemorizationPracticeService {
       failureVelocity: 1,
       lastResult: null,
       seed: uuidv4(),
-      velocityInfo: this.createDefaultVelocityInfo()
+      velocityInfo: this.createDefaultVelocityInfo(),
+      cache: []
     };
   }
 

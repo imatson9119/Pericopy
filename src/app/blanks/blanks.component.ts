@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren, ElementRef, Input, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title, Meta } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,15 +6,15 @@ import { BibleService } from '../services/bible.service';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
-import { MemorizationPracticeService } from './memorization-practice.service';
+import { BlankCache, MemorizationPracticeService } from './memorization-practice.service';
 import { IResult } from '../classes/models';
-import { Subscription, combineLatest, retry } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { PassageData } from './memorization-practice.service';
 import seedrandom from 'seedrandom';
 
 
-enum BlankType {
+export enum BlankType {
   EMPTY,
   FILLED,
   CORRECT,
@@ -63,6 +63,7 @@ export class BlanksComponent implements OnInit {
   public BlankType = BlankType;
   private textMeasureCanvas: HTMLCanvasElement | null = null;
   private textMeasureContext: CanvasRenderingContext2D | null = null;
+  private saveCacheTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Query params
   i: number | null = null;
@@ -132,6 +133,12 @@ export class BlanksComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    
+    // Clean up debounce timer to prevent memory leaks
+    if (this.saveCacheTimer) {
+      clearTimeout(this.saveCacheTimer);
+      this.saveCacheTimer = null;
+    }
   }
 
   openPassageSelect() {
@@ -178,6 +185,7 @@ export class BlanksComponent implements OnInit {
 
   generateBlanks(passage: BiblePassage, passageData: PassageData) {
     if (!this.bible) return;
+    
     const text = this.bible.getText(passage.i, passage.j);
     this.passageText = text.split(/\s+/);
     this.blanks = new Map();
@@ -195,7 +203,7 @@ export class BlanksComponent implements OnInit {
     const blankIndicesSorted = Array.from(blankIndices).sort((a, b) => a - b);
     for (let i = 0; i < blankIndicesSorted.length; i++) {
       const wordIndex = blankIndicesSorted[i];
-      this.blanks.set(wordIndex, {
+      let blankValue = {
         index: wordIndex,
         blankIndex: i,
         value: '',
@@ -203,7 +211,12 @@ export class BlanksComponent implements OnInit {
         type: BlankType.EMPTY,
         prev: i > 0 ? blankIndicesSorted[i - 1] : null,
         next: i < blankIndicesSorted.length - 1 ? blankIndicesSorted[i + 1] : null,
-      })
+      }
+      if ( passageData.cache && passageData.cache.length === numBlanks){
+        blankValue.value = passageData.cache[i].value;
+        blankValue.type = passageData.cache[i].type;
+      }
+      this.blanks.set(wordIndex, blankValue)
     }
     this.feedback = { correct: 0, total: 0, show: false };
     this.difficultyAdjustment = null;
@@ -241,6 +254,7 @@ export class BlanksComponent implements OnInit {
         inline: 'nearest'
       });
     }
+    this.saveCacheDebounced();
   }
 
   private focusFirstBlank() {
@@ -285,6 +299,28 @@ export class BlanksComponent implements OnInit {
     return null;
   }
 
+  saveCache() {
+    if (!this.passageData || !this.passage) return;
+    let cache: BlankCache[] = [];
+    for (let blank of this.blanks.values()) {
+      cache.push({
+        value: blank.value,
+        type: blank.type
+      })
+    }
+    this.passageData.cache = cache;
+    this.practiceService.savePassageData(this.passage.id, this.passageData);
+  }
+
+  saveCacheDebounced() {
+    if (this.saveCacheTimer) {
+      clearTimeout(this.saveCacheTimer);
+    }
+    this.saveCacheTimer = setTimeout(() => {
+      this.saveCache();
+    }, 5000);
+  }
+
   onInput(index: number, event: Event) {
     const input = event.target as HTMLInputElement;
     const blank = this.blanks.get(index);
@@ -296,6 +332,7 @@ export class BlanksComponent implements OnInit {
       blank.type = BlankType.FILLED;
       this.nFilledBlanks++;
     }
+    this.saveCacheDebounced();
   }
 
   onKeyDown(event: KeyboardEvent, index: number) {
@@ -340,6 +377,16 @@ export class BlanksComponent implements OnInit {
     }
   }
 
+  onKeyUp(event: KeyboardEvent, index: number) {
+    const input = event.target as HTMLInputElement;
+    const blank = this.blanks.get(index);
+    if (blank == undefined) return;
+    if (input.value.length === 0 && blank.type === BlankType.FILLED) {
+      blank.type = BlankType.EMPTY;
+      this.nFilledBlanks--;
+    }
+  }
+
   isBlankCorrect(blank: BlankState): boolean {
     if (blank == undefined) return false;
     const answer = (blank.value || '').trim();
@@ -370,6 +417,8 @@ export class BlanksComponent implements OnInit {
     this.practiceService.saveAttempt(this.passage.id, { correct, total });
     this.practiceService.adjustBlankingPercentage(this.passage.id, score);
     this.passageData = this.practiceService.getPassageData(this.passage.id);
+    this.passageData.cache = [];
+    this.saveCache();
   }
 
   retry() {

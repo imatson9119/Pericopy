@@ -108,6 +108,7 @@
               [value]="blanks.get(i)?.value || ''"
               (input)="onInput(i, $event)"
               (keydown)="onKeyDown($event, i)"
+              (keyup)="onKeyUp($event, i)"
               [readonly]="feedback.show || blanks.get(i)!.type === BlankType.HINTED"
               (focus)="onFocus(i)"
               autocomplete="off"
