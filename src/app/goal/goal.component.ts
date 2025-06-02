@@ -302,7 +302,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
 
     let ranges: [number,number][] = [];
     for (let attempt of this.attempts.values()) {
-      if (attempt.score > .8) {
+      if (attempt.score > .9) {
         ranges.push([attempt.diff.i, attempt.diff.j]);
       }
     }
@@ -347,7 +347,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     let maxTime = 0;
     let ranges: [number,number][] = [];
     for (let attempt of [...this.attempts.values()].sort((a, b) => a.timestamp - b.timestamp)) {
-      if(attempt.score > .8){
+      if(attempt.score > .9){
         ranges.push([attempt.diff.i, attempt.diff.j]);
       }
       if (attempt.timestamp > maxTime) {
