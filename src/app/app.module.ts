@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { InputComponent } from './input/input.component';
+import { ReciteComponent } from './recite/recite.component';
 import { StorageService } from './services/storage.service';
 import { FormsModule } from '@angular/forms';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
@@ -62,7 +62,7 @@ import { PortalModule } from '@angular/cdk/portal';
 @NgModule({
   declarations: [
     AppComponent,
-    InputComponent,
+    ReciteComponent,
     SingleAttemptComponent,
     HeatmapComponent,
     HistoryComponent,

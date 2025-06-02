@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { InputComponent } from './input/input.component';
+import { ReciteComponent } from './recite/recite.component';
 import { HistoryComponent } from './results/history/history.component';
 import { SingleAttemptComponent } from './results/single-attempt/single-attempt.component';
 import { HeatmapComponent } from './results/heatmap/heatmap.component';
@@ -11,7 +11,7 @@ import { FreestyleComponent } from './freestyle/freestyle.component';
 import { BlanksComponent } from './blanks/blanks.component';
 
 const routes: Routes = [
-  { path: 'recite', component: InputComponent },
+  { path: 'recite', component: ReciteComponent },
   { path: 'results', component: SingleAttemptComponent },
   { path: 'history', component: HistoryComponent },
   { path: 'heatmap', component: HeatmapComponent },

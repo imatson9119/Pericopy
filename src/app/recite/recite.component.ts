@@ -35,10 +35,10 @@ export interface CachedAttempt {
 
 @Component({
   selector: 'app-input',
-  templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss'],
+  templateUrl: './recite.component.html',
+  styleUrls: ['./recite.component.scss'],
 })
-export class InputComponent
+export class ReciteComponent
   implements AfterViewChecked, OnDestroy, OnInit
 {
   attempt = '';
@@ -148,6 +148,9 @@ export class InputComponent
   submit() {
     if (!this.valid() || !this.bible) {
       return;
+    }
+    if (this.passageSaveTimeout) {
+      clearTimeout(this.passageSaveTimeout);
     }
     this.uncacheAttempt();
     if (this.detectPassage) {
