@@ -202,6 +202,9 @@ export class BlanksComponent implements OnInit {
       indices.splice(idx, 1);
     }
     const blankIndicesSorted = Array.from(blankIndices).sort((a, b) => a - b);
+    if (passageData.cache && passageData.cache.length === numBlanks){
+      this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
+    }
     for (let i = 0; i < blankIndicesSorted.length; i++) {
       const wordIndex = blankIndicesSorted[i];
       let blankValue = {
@@ -235,9 +238,9 @@ export class BlanksComponent implements OnInit {
     this.preferences.dynamicInputWidth = !this.preferences.dynamicInputWidth;
     this.practiceService.savePreferences(this.preferences);
     if (this.preferences.dynamicInputWidth) {
-      this._snackbarService.showEmoji('Dynamic input width enabled!', '✅', 3000);
+      this._snackbarService.showEmoji('✅', 'Dynamic input width enabled!', 3000);
     } else {
-      this._snackbarService.showEmoji('Dynamic input width disabled!', '🚫', 3000);
+      this._snackbarService.showEmoji('🚫', 'Dynamic input width disabled!', 3000);
     }
   }
 
@@ -253,7 +256,7 @@ export class BlanksComponent implements OnInit {
     const input = this.blankInputs.toArray()[blank.blankIndex].nativeElement;
     input.value = blank.value;
     input.style.width = this.getInputWidth(blank.value, blank.value);
-    this._snackbarService.showEmoji('Blank revealed!', '💡', 3000);
+    this._snackbarService.showEmoji('💡', 'Blank revealed!', 3000);
     if (blank.next != null) {
       const nextInput = this.nextBlank(blank);
       if (nextInput == null) return;

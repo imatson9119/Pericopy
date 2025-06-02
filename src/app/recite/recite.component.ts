@@ -85,6 +85,7 @@ export class ReciteComponent
             const cachedAttempt = this.getCachedAttempt();
             if (cachedAttempt) {
               this.attempt = cachedAttempt.attempt;
+              this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
             }
           }
           this.updatePageMetadata();

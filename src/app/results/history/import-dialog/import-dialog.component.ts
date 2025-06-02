@@ -29,7 +29,7 @@ export class ImportDialogComponent {
         file.text().then(text => {
           let data = JSON.parse(text, reviver);
           this._storageService.importBank(data) 
-          this._snackbarService.showEmoji('Attempts imported successfully!', '📂', 3000);
+          this._snackbarService.showEmoji('📂', 'Attempts imported successfully!', 3000);
         });
       });
     }

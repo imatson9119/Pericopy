@@ -223,7 +223,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe((result) => {
         if (result) {
           this._storageService.deleteGoal(this.goalId);
-          this._snackbarService.showEmoji('Goal deleted. It\'s been a good run!', '🪦', 3000);
+          this._snackbarService.showEmoji('🪦', 'Goal deleted. It\'s been a good run!', 3000);
           this._router.navigateByUrl('');
         }
       });
@@ -264,7 +264,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     this.triggerConfetti();
     
     // Show success snackbar with celebration message
-    this._snackbarService.showEmoji('Goal promoted - congratulations!', '🎉', 3000);
+    this._snackbarService.showEmoji('🎉', 'Goal promoted - congratulations!', 3000);
   }
 
   private triggerConfetti() {
@@ -415,7 +415,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.goal.archived = true;
     this._storageService.storeGoals();
-    this._snackbarService.showEmoji('Goal archived. You can always unarchive it later!', '🥹', 3000);
+    this._snackbarService.showEmoji('🥹', 'Goal archived. You can always unarchive it later!', 3000);
     this._router.navigateByUrl('');
   }
 
@@ -425,7 +425,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.goal.archived = false;
     this._storageService.storeGoals();
-    this._snackbarService.showEmoji('Goal unarchived - go crazy!', '🚀', 3000);
+    this._snackbarService.showEmoji('🚀', 'Goal unarchived - go crazy!', 3000);
   }
 
   goToBlanks() {

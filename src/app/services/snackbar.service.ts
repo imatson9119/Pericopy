@@ -63,7 +63,7 @@ export class SnackbarService {
     });
   }
 
-  showEmoji(message: string, emoji: string, duration: number = 5000, dismissible: boolean = true): void {
+  showEmoji(emoji: string, message: string, duration: number = 5000, dismissible: boolean = true): void {
     this.show({
       message,
       duration,

@@ -135,6 +135,6 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     a.download = 'pericopy_attempts.json';
     a.click();
     window.URL.revokeObjectURL(url);
-    this._snackbarService.showEmoji('Attempts downloaded successfully!', '📂', 3000);
+    this._snackbarService.showEmoji('📂', 'Attempts downloaded successfully!', 3000);
   }
 }

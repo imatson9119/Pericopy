@@ -462,6 +462,7 @@ export class FreestyleInputDivComponent {
     this.lastSavedAttempt = text ?? '';
     if (text) {
       this.setAttempt(text);
+      this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
     }
   }
 }
