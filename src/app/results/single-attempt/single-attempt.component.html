@@ -13,16 +13,16 @@
         <button
           mat-icon-button
           (click)="this.deleteResult()"
-          matTooltip="Delete this attempt"
-          aria-label="Delete this attempt"
+          matTooltip="Delete this recitation"
+          aria-label="Delete this recitation"
         >
           <mat-icon color="primary">delete</mat-icon>
         </button>
         <button
           mat-icon-button
           (click)="this.editResult()"
-          matTooltip="Edit this attempt"
-          aria-label="Edit this attempt"
+          matTooltip="Edit this recitation"
+          aria-label="Edit this recitation"
           >
           <mat-icon color="primary">edit</mat-icon>
         </button>
@@ -87,18 +87,18 @@
           <div class="tab-content">
             <div class="tab-description">
               <mat-icon>compare</mat-icon>
-              <p>Compare your attempt with the original scripture. Added words are highlighted in <span class="highlight-added">red</span>, removed words in <span class="highlight-removed">green</span>.</p>
+              <p>Compare your recitation with the original scripture. Added words are highlighted in <span class="highlight-added">red</span>, removed words in <span class="highlight-removed">green</span>.</p>
             </div>
             <div class="tab-inner-container">
               <app-diff-display [diff]="this.currentResult.diff" [bible]="this.bible"></app-diff-display>
             </div>
           </div>
         </mat-tab>
-        <mat-tab label="Attempt">
+        <mat-tab label="Recitation">
           <div class="tab-content">
             <div class="tab-description">
               <mat-icon>edit</mat-icon>
-              <p>Your complete recitation attempt as you typed it, showing the full text you provided.</p>
+              <p>Your complete recitation as you typed it, showing the full text you provided.</p>
             </div>
             <div class="tab-inner-container">
               <app-diff-display

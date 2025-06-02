@@ -237,7 +237,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
         lastAttempt = attempt;
       }
     }
-    return lastAttempt ? `Last attempt ${getRelativeDate(lastAttempt.timestamp)}` : 'No attempts yet';
+    return lastAttempt ? `Last recitation ${getRelativeDate(lastAttempt.timestamp)}` : 'No recitations yet';
   }
 
   makeAttempt() {
