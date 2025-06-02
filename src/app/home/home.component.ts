@@ -268,7 +268,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     const days = this.getDueInDays(goal);
     if (typeof days === 'number') {
       if (days === 0) {
-        return 'Due today';
+        return 'today';
       }
       return `${days} day${days !== 1 ? 's' : ''}`;
     } 
