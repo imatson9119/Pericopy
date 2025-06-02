@@ -1,0 +1,28 @@
+<div 
+  class="snackbar"
+  [class]="getTypeClass()"
+  [@slideIn]="animationState"
+  (@slideIn.done)="onAnimationDone($event)"
+  [attr.role]="'alert'"
+  [attr.aria-live]="'polite'"
+  (click)="onDismiss()">
+  
+  <!-- Icon -->
+  <div class="snackbar__icon">
+    @if (config.type === 'emoji') {
+      <span class="snackbar__emoji">{{ config.emoji }}</span>
+    } @else {
+      <mat-icon [fontIcon]="getIcon()"></mat-icon>
+    }
+  </div>
+  
+  <!-- Message -->
+  <div class="snackbar__message">
+    {{ config.message }}
+  </div>
+  
+  <!-- Close button (optional) -->
+  <div class="snackbar__close" *ngIf="config.dismissible">
+    <mat-icon fontIcon="close"></mat-icon>
+  </div>
+</div> 

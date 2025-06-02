@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -19,6 +18,7 @@ import 'chartjs-adapter-luxon';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Goal, GoalStatus } from '../classes/Goal';
 import confetti from 'canvas-confetti';
+import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
   selector: 'app-goal',
@@ -115,20 +115,12 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     private _storageService: StorageService,
     private _bibleService: BibleService,
     private dialog: MatDialog,
-    private snackbar: MatSnackBar,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private _snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
-    const pageTitle = 'Scripture Memorization Goal | Pericopy';
-    const pageDescription = 'Track and monitor your scripture memorization goals. Set targets, view progress analytics, and measure your improvement over time.';
-
-    this.titleService.setTitle(pageTitle);
-    this.metaService.updateTag({ name: 'description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
-    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/goal' });
     
     let id = this._router.parseUrl(this._router.url).queryParams['id'];
     if (id != undefined) {
@@ -136,6 +128,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     } else {
       this._router.navigateByUrl('');
     }
+    this.updatePageMetadata();
 
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
@@ -162,6 +155,19 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngAfterViewInit() {
     this.initSort();
+  }
+
+  updatePageMetadata() {
+    let pageTitle = 'Scripture Memorization Goal | Pericopy';
+    if (this.goal) {
+      pageTitle = this.goal.title + ' - Scripture Memorization Goal | Pericopy';
+    }
+    const pageDescription = 'Track and monitor your scripture memorization goals. Set targets, view progress analytics, and measure your improvement over time.';
+    this.titleService.setTitle(pageTitle);
+    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
+    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/goal' });
   }
 
   initSort() {
@@ -217,7 +223,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe((result) => {
         if (result) {
           this._storageService.deleteGoal(this.goalId);
-          this.snackbar.open('Goal deleted.', 'Dismiss', { duration: 2000 });
+          this._snackbarService.showEmoji('Goal deleted. It\'s been a good run!', '🪦', 3000);
           this._router.navigateByUrl('');
         }
       });
@@ -258,10 +264,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     this.triggerConfetti();
     
     // Show success snackbar with celebration message
-    this.snackbar.open('🎉 Goal promoted! 🎉', 'Dismiss', { 
-      duration: 4000,
-      panelClass: ['success-snackbar']
-    });
+    this._snackbarService.showEmoji('Goal promoted - congratulations!', '🎉', 3000);
   }
 
   private triggerConfetti() {
@@ -412,7 +415,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.goal.archived = true;
     this._storageService.storeGoals();
-    this.snackbar.open('Goal archived.', 'Dismiss', { duration: 2000 });
+    this._snackbarService.showEmoji('Goal archived. You can always unarchive it later!', '🥹', 3000);
     this._router.navigateByUrl('');
   }
 
@@ -422,7 +425,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.goal.archived = false;
     this._storageService.storeGoals();
-    this.snackbar.open('Goal unarchived.', 'Dismiss', { duration: 2000 });
+    this._snackbarService.showEmoji('Goal unarchived - go crazy!', '🚀', 3000);
   }
 
   goToBlanks() {

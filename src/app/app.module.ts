@@ -28,7 +28,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { DeleteAttemptDialogComponent } from './results/single-attempt/delete-attempt-dialog/delete-attempt-dialog.component';
 import { DiffDisplayComponent } from './results/diff-display/diff-display.component';
 import { BibleDisplayComponent } from './results/bible-display/bible-display.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRippleModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { InfoComponent } from './info/info.component';
@@ -56,6 +55,9 @@ import { DonatePopupComponent } from './info/donate-popup/donate-popup.component
 import { FreestyleComponent } from './freestyle/freestyle.component';
 import { FreestyleInputDivComponent } from './freestyle/freestyle-input-div/freestyle-input-div.component';
 import { BlanksComponent } from './blanks/blanks.component';
+import { SnackbarComponent } from './misc-components/snackbar/snackbar.component';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { PortalModule } from '@angular/cdk/portal';
 
 @NgModule({
   declarations: [
@@ -77,6 +79,7 @@ import { BlanksComponent } from './blanks/blanks.component';
     DonatePopupComponent,
     FreestyleComponent,
     BlanksComponent,
+    SnackbarComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -98,7 +101,6 @@ import { BlanksComponent } from './blanks/blanks.component';
     MatPaginatorModule,
     MatTooltipModule,
     MatSortModule,
-    MatSnackBarModule,
     MatRippleModule,
     MatProgressBarModule,
     MatSlideToggleModule,
@@ -108,6 +110,8 @@ import { BlanksComponent } from './blanks/blanks.component';
     VerseSelectorPopupComponent,
     PassageSelectDialogComponent,
     FreestyleInputDivComponent,
+    OverlayModule,
+    PortalModule,
   ],
   providers: [
     StorageService,

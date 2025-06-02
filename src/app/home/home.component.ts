@@ -10,11 +10,11 @@ import { Router } from '@angular/router';
 import { BiblePassage } from '../classes/BiblePassage';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortable, Sort } from '@angular/material/sort';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
 import { Goal, GoalStatus } from '../classes/Goal';
 import { Title, Meta } from '@angular/platform-browser';
+import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
   selector: 'app-home',
@@ -43,7 +43,8 @@ export class HomeComponent implements OnDestroy, OnInit {
     private _bibleService: BibleService,
     private router: Router,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private _snackbarService: SnackbarService
   ) {
   
   }
@@ -208,6 +209,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         this.goals.unshift(goal);
         this.dataSource = new MatTableDataSource<Goal>(this.goals);
         this.applyFilter();
+        this._snackbarService.showSuccess('Created new goal: ' + goal.title, 3000);
       } 
     });
   }

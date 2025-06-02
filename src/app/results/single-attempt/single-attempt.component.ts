@@ -7,11 +7,11 @@ import { StorageService } from 'src/app/services/storage.service';
 import { DisplayType } from '../diff-display/diff-display.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAttemptDialogComponent } from './delete-attempt-dialog/delete-attempt-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Bible } from 'src/app/classes/Bible';
 import { Subscription } from 'rxjs';
 import { BibleService } from 'src/app/services/bible.service';
 import { Goal, GoalStatus } from 'src/app/classes/Goal';
+import { SnackbarService } from 'src/app/services/snackbar.service';
 
 interface StatCard {
   label: string;
@@ -66,10 +66,10 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     private _storageService: StorageService,
     private _bibleService: BibleService, 
     private dialog: MatDialog, 
-    private snackbar: MatSnackBar, 
     private _location: Location,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private _snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -318,7 +318,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     this.dialog.open(DeleteAttemptDialogComponent).afterClosed().subscribe(result => {
       if(result){
         this._storageService.deleteAttempt(this.resultId);
-        this.snackbar.open('Result deleted.', 'Dismiss', {duration: 2000});
+        this._snackbarService.showSuccess('Result deleted. Just like it never happened. 👀', 3000);
         this._location.back();
       }
     });

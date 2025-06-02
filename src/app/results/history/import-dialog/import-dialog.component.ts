@@ -3,6 +3,7 @@ import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { StorageService } from 'src/app/services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
 import { reviver } from 'src/app/utils/utils';
+import { SnackbarService } from 'src/app/services/snackbar.service';
 
 @Component({
   selector: 'app-import-dialog',
@@ -12,7 +13,11 @@ import { reviver } from 'src/app/utils/utils';
 export class ImportDialogComponent {
   @ViewChild('fileUpload') fileUpload: FileUploadComponent | null = null;
 
-  constructor(private _storageService: StorageService, private dialog: MatDialog) { }
+  constructor(
+    private _storageService: StorageService, 
+    private dialog: MatDialog,
+    private _snackbarService: SnackbarService
+  ) { }
 
   canSubmit() {
     return this.fileUpload ? this.fileUpload.getFiles().length > 0 : false;
@@ -24,6 +29,7 @@ export class ImportDialogComponent {
         file.text().then(text => {
           let data = JSON.parse(text, reviver);
           this._storageService.importBank(data) 
+          this._snackbarService.showEmoji('Attempts imported successfully!', '📂', 3000);
         });
       });
     }

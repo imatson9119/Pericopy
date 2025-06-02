@@ -15,7 +15,11 @@ export class AppComponent {
   bibleVersion: string = localStorage.getItem('bibleVersion') || 'esv';
   supportedVersions = this._bibleService.getSupportedVersions();
 
-  constructor(private _storageService: StorageService, private _bibleService: BibleService, private dialog: MatDialog) {
+  constructor(
+    private _storageService: StorageService, 
+    private _bibleService: BibleService, 
+    private dialog: MatDialog,
+  ) {
     this.setBibleVersion(this.bibleVersion);
     this.handleDialogs();
   }

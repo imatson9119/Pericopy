@@ -12,6 +12,7 @@ import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { Bible } from 'src/app/classes/Bible';
 import { BibleService } from 'src/app/services/bible.service';
 import { Subscription } from 'rxjs';
+import { SnackbarService } from 'src/app/services/snackbar.service';
 
 @Component({
   selector: 'app-history',
@@ -36,7 +37,8 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     private _bibleService: BibleService, 
     private dialog: MatDialog,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private _snackbarService: SnackbarService
   ) {
     this.subscriptions.push(this._bibleService.curBible.subscribe(
       (bible) => {
@@ -119,7 +121,7 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   openImportDialog() {
     this.dialog.open(ImportDialogComponent).afterClosed().subscribe(result => {
       this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
-      this.dataSource.sort = this.sort;
+      this.initSorting();
     });
   }
   
@@ -133,5 +135,6 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     a.download = 'pericopy_attempts.json';
     a.click();
     window.URL.revokeObjectURL(url);
+    this._snackbarService.showEmoji('Attempts downloaded successfully!', '📂', 3000);
   }
 }

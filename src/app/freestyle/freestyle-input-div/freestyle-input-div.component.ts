@@ -5,6 +5,7 @@ import { BiblePassage } from 'src/app/classes/BiblePassage';
 import { WordChange, DiffType, AnchorType } from 'src/app/classes/models';
 import { sanitizeText, saveCaretPosition, normalizeString, LinkedList, Node } from 'src/app/utils/utils';
 import { DynamicSpanComponent } from '../dynamic-span/dynamic-span.component';
+import { SnackbarService } from 'src/app/services/snackbar.service';
 
 declare const annyang: any;
 
@@ -44,10 +45,12 @@ export class FreestyleInputDivComponent {
   detectPassage = true;
   _passage: BiblePassage | undefined = undefined;
   subscriptions: Subscription[] = [];
-  keyPressTimeout: any;
+  keyPressTimeout: ReturnType<typeof setTimeout> | null = null;
+  saveTimeout: ReturnType<typeof setTimeout> | null = null;
   InputState = InputState
   _inputState = InputState.NO_LOCK;
   STORAGE_KEY = 'freestyle-text';
+  lastSavedAttempt = '';
   history: LinkedList<string> = new LinkedList<string>();
   redoStack: string[] = [];
 
@@ -58,7 +61,8 @@ export class FreestyleInputDivComponent {
   @Output() onInputStateChange: any = new EventEmitter<InputState>();
 
   constructor(
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private _snackbarService: SnackbarService
   ) {
   }
 
@@ -71,6 +75,12 @@ export class FreestyleInputDivComponent {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    if (this.keyPressTimeout) {
+      clearTimeout(this.keyPressTimeout);
+    }
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -97,16 +107,6 @@ export class FreestyleInputDivComponent {
     return this._passage;
   }
 
-  // canAutoLock(anchorList: [BiblePassage, number][], attempt: string) {
-  //   if (anchorList.length === 0) {
-  //     return false;
-  //   }
-  //   let topAnchor = anchorList[0][0];
-  //   return (
-  //     anchorList[0][1] === 1 &&
-  //     topAnchor.j - topAnchor.i < sanitizeText(attempt).split(/\s+/).length * 2
-  //   );
-  // }
 
   onKeyDown(e: KeyboardEvent) {
     if (e.code === 'Enter') {
@@ -134,7 +134,7 @@ export class FreestyleInputDivComponent {
       this.redoStack = [];
     }
     this.attempt = this.input!.nativeElement.textContent;
-    this.saveToLocalStorage();
+    this.saveToLocalStorageDebounced();
     if (this.keyPressTimeout) {
       clearTimeout(this.keyPressTimeout);
     }
@@ -376,7 +376,7 @@ export class FreestyleInputDivComponent {
     selection.getRangeAt(0).insertNode(document.createTextNode(text));
     selection.collapseToEnd();
     this.attempt = this.input!.nativeElement.textContent;
-    this.saveToLocalStorage();
+    this.saveToLocalStorageDebounced();
     this.processDiff();
     this.addToHistory();
   }
@@ -401,6 +401,7 @@ export class FreestyleInputDivComponent {
     this.input!.nativeElement.innerHTML = text;
     this.attempt = text;
     this.processDiff();
+    this._snackbarService.showSuccess('All errors have been fixed!', 3000, true);
   }
 
   nextWord() {
@@ -425,7 +426,7 @@ export class FreestyleInputDivComponent {
   setAttempt(text: string) {
     this.attempt = text;
     this.input!.nativeElement.innerHTML = text;
-    this.saveToLocalStorage();
+    this.saveToLocalStorageDebounced();
     this.processDiff();
   }
 
@@ -439,12 +440,26 @@ export class FreestyleInputDivComponent {
     this.input?.nativeElement.appendChild(elementRef);
   }
 
+  saveToLocalStorageDebounced() {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    this.saveTimeout = setTimeout(() => {
+      this.saveToLocalStorage();
+    }, 5000);
+  }
+
   saveToLocalStorage() {
-    localStorage.setItem(this.STORAGE_KEY, this.attempt);
+    if (this.attempt !== this.lastSavedAttempt) {
+      localStorage.setItem(this.STORAGE_KEY, this.attempt);
+      this.lastSavedAttempt = this.attempt;
+      this._snackbarService.showSuccess('Progress saved!', 3000);
+    }
   }
 
   loadFromLocalStorage() {
     const text = localStorage.getItem(this.STORAGE_KEY);
+    this.lastSavedAttempt = text ?? '';
     if (text) {
       this.setAttempt(text);
     }

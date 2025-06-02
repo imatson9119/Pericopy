@@ -12,6 +12,7 @@ import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { PassageData } from './memorization-practice.service';
 import seedrandom from 'seedrandom';
+import { SnackbarService } from '../services/snackbar.service';
 
 
 export enum BlankType {
@@ -78,7 +79,8 @@ export class BlanksComponent implements OnInit {
     private titleService: Title,
     private metaService: Meta,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private _snackbarService: SnackbarService,
   ) {
     // Create a joint observable that combines both bible and query params
     this.subscriptions.push(
@@ -232,6 +234,11 @@ export class BlanksComponent implements OnInit {
   toggleInputWidth() {
     this.preferences.dynamicInputWidth = !this.preferences.dynamicInputWidth;
     this.practiceService.savePreferences(this.preferences);
+    if (this.preferences.dynamicInputWidth) {
+      this._snackbarService.showEmoji('Dynamic input width enabled!', '✅', 3000);
+    } else {
+      this._snackbarService.showEmoji('Dynamic input width disabled!', '🚫', 3000);
+    }
   }
 
   revealAnswer() {
@@ -246,6 +253,7 @@ export class BlanksComponent implements OnInit {
     const input = this.blankInputs.toArray()[blank.blankIndex].nativeElement;
     input.value = blank.value;
     input.style.width = this.getInputWidth(blank.value, blank.value);
+    this._snackbarService.showEmoji('Blank revealed!', '💡', 3000);
     if (blank.next != null) {
       const nextInput = this.nextBlank(blank);
       if (nextInput == null) return;
@@ -320,6 +328,7 @@ export class BlanksComponent implements OnInit {
     }
     this.passageData.cache = cache;
     this.practiceService.savePassageData(this.passage.id, this.passageData);
+    this._snackbarService.showSuccess('Progress saved!', 3000);
   }
 
   saveCacheDebounced() {

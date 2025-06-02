@@ -21,8 +21,17 @@ import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { DifficultyDialogComponent } from './difficulty-dialog/difficulty-dialog.component';
 import { SelectionType } from '../misc-components/verse-selector/verse-selector.component';
+import { SnackbarService } from '../services/snackbar.service';
 
-const PASSAGE_DEBOUNCE_TIME = 3000;
+const PASSAGE_SAVE_DEBOUNCE_TIME = 5000;
+const LOCALSTORAGE_KEY = 'pericopy-cached-recitations';
+const CACHE_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+export interface CachedAttempt {
+  passage: string;
+  attempt: string;
+  timestamp: number;
+}
 
 @Component({
   selector: 'app-input',
@@ -39,8 +48,9 @@ export class InputComponent
   bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   SelectionType = SelectionType;
-  passageDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  passageSaveTimeout: ReturnType<typeof setTimeout> | null = null;
   recentAttempts: IResult[] = [];
+  cachedAttempts: Map<string, CachedAttempt> | null = null;
 
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
@@ -52,8 +62,11 @@ export class InputComponent
     private _dialog: MatDialog,
     private ngZone: NgZone,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private _snackbarService: SnackbarService
   ) {
+    this.cachedAttempts = this.getCachedAttempts();
+    this.cleanCachedAttempts();
     this.subscriptions.push(
       this._bibleService.curBible.subscribe((bible) => {
         if (bible) {
@@ -69,6 +82,10 @@ export class InputComponent
           } else if (i != undefined && j != undefined && i < j) {
             this.passage = this.bible.getPassage(i, j);
             this.detectPassage = false;
+            const cachedAttempt = this.getCachedAttempt();
+            if (cachedAttempt) {
+              this.attempt = cachedAttempt.attempt;
+            }
           }
           this.updatePageMetadata();
         }
@@ -82,8 +99,8 @@ export class InputComponent
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
-    if (this.passageDebounceTimeout) {
-      clearTimeout(this.passageDebounceTimeout);
+    if (this.passageSaveTimeout) {
+      clearTimeout(this.passageSaveTimeout);
     }
   }
 
@@ -116,15 +133,6 @@ export class InputComponent
     this.editingId = id;
   }
 
-  getPassageDebounced() {
-    if (this.passageDebounceTimeout) {
-      clearTimeout(this.passageDebounceTimeout);
-    }
-    this.passageDebounceTimeout = setTimeout(() => {
-      this.passage = this.getPassage();
-    }, PASSAGE_DEBOUNCE_TIME);
-  }
-
   getPassage(): BiblePassage | undefined {
     const anchors = this.getAnchors();
     if (anchors.length === 0 || !this.canAutoLock(anchors, this.attempt)) {
@@ -141,6 +149,7 @@ export class InputComponent
     if (!this.valid() || !this.bible) {
       return;
     }
+    this.uncacheAttempt();
     if (this.detectPassage) {
       const anchors = this.getAnchors();
       if (!this.canAutoLock(anchors, this.attempt)) {
@@ -235,7 +244,9 @@ export class InputComponent
   }
 
   onInput(e: Event) {
-    this.getPassageDebounced();
+    if (!this.editingId) {
+      this.cacheAttemptDebounced();
+    }
   }
 
   openPassageSelect() {
@@ -251,7 +262,6 @@ export class InputComponent
       if (passage) {
         this.passage = passage;
         this.updatePageMetadata();
-        this.passageDebounceTimeout = null;
         this.detectPassage = false;
         this.router.navigate(['/recite'], { queryParams: { i: passage.i, j: passage.j } });
       }
@@ -314,5 +324,73 @@ export class InputComponent
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
     this.metaService.updateTag({ property: 'og:description', content: pageDescription });
     this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/recite' });
-  } 
+  }
+
+  getCachedAttempts(): Map<string, CachedAttempt> {
+    if (this.cachedAttempts) {
+      return this.cachedAttempts;
+    }
+    const cachedAttempts = localStorage.getItem(LOCALSTORAGE_KEY);
+    if (cachedAttempts) {
+      return new Map(JSON.parse(cachedAttempts));
+    }
+    return new Map();
+  }
+
+  cacheAttemptDebounced() {
+    if (this.passageSaveTimeout) {
+      clearTimeout(this.passageSaveTimeout);
+    }
+    this.passageSaveTimeout = setTimeout(() => {
+      this.cacheAttempt();
+    }, PASSAGE_SAVE_DEBOUNCE_TIME);
+  }
+
+  cacheAttempt() {
+    const key = this.passage ? this.passage.toString() : 'autodetect';
+    const attempt = {
+      passage: key,
+      attempt: this.attempt,
+      timestamp: Date.now(),
+    }
+    if (!this.cachedAttempts) {
+      this.cachedAttempts = new Map();
+    }
+    this.cachedAttempts.set(key, attempt);
+    this.saveCachedAttempts();
+    this._snackbarService.showSuccess('Progress saved.', 3000);
+  }
+
+  uncacheAttempt() {
+    const key = this.passage ? this.passage.toString() : 'autodetect';
+    if (this.cachedAttempts) {
+      this.cachedAttempts.delete(key);
+    }
+    this.saveCachedAttempts();
+  }
+
+  getCachedAttempt(): CachedAttempt | undefined {
+    const key = this.passage ? this.passage.toString() : 'autodetect';
+    if (this.cachedAttempts) {
+      return this.cachedAttempts.get(key);
+    }
+    return undefined;
+  }
+
+  saveCachedAttempts() {
+    if (this.cachedAttempts) {
+      localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(Array.from(this.cachedAttempts.entries())));
+    }
+  }
+
+  cleanCachedAttempts() {
+    if (!this.cachedAttempts) return;
+    const now = Date.now();
+    for (let [key, attempt] of this.cachedAttempts.entries()) {
+      if (now - attempt.timestamp > CACHE_EXPIRATION_TIME) {
+        this.cachedAttempts.delete(key);
+      }
+    }
+    this.saveCachedAttempts();
+  }
 }
