@@ -26,6 +26,7 @@ export interface PassageData {
   seed: string;
   velocityInfo: VelocityInfo;
   cache: BlankCache[];
+  lastSaved: number;
 }
 
 interface RecentPassage {
@@ -63,7 +64,7 @@ export class MemorizationPracticeService {
 
   private getAll(): BlanksStorage {
     if (!this.storage) {
-      this.storage = this.loadAll();
+      this.storage = this.cleanPassageData(this.loadAll());
     }
     return this.storage;
   }
@@ -83,6 +84,17 @@ export class MemorizationPracticeService {
       }
     }
     return this.createDefaultBlanksStorage();
+  }
+
+  cleanPassageData(storage: BlanksStorage): BlanksStorage {
+    const newStorage = { ...storage };
+    for (const passageId in newStorage.passages) {
+      const passageData = newStorage.passages[passageId];
+      if (!passageData.lastSaved || passageData.lastSaved < Date.now() - 1000 * 60 * 60 * 24 * 7) {
+        delete newStorage.passages[passageId];
+      }
+    }
+    return newStorage;
   }
 
   getPreferences(): BlanksModulePreferences {
@@ -130,7 +142,8 @@ export class MemorizationPracticeService {
       lastResult: null,
       seed: uuidv4(),
       velocityInfo: this.createDefaultVelocityInfo(),
-      cache: []
+      cache: [],
+      lastSaved: Date.now()
     };
   }
 
