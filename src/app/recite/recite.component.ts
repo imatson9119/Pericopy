@@ -39,7 +39,7 @@ export interface CachedAttempt {
   styleUrls: ['./recite.component.scss'],
 })
 export class ReciteComponent
-  implements AfterViewChecked, OnDestroy, OnInit
+  implements AfterViewChecked, OnDestroy
 {
   attempt = '';
   detectPassage = true;
@@ -103,18 +103,6 @@ export class ReciteComponent
       clearTimeout(this.passageSaveTimeout);
     }
   }
-
-  ngOnInit(): void {
-    const pageTitle = 'Recite Scripture | Pericopy';
-    const pageDescription = 'Practice reciting your memorized scripture passages. Our intelligent system identifies your passage and provides detailed feedback on your recitation accuracy.';
-
-    this.titleService.setTitle(pageTitle);
-    this.metaService.updateTag({ name: 'description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:title', content: pageTitle });
-    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/recite' });
-  }
-  
 
   valid() {
     return this.attempt.trim().length > 0;

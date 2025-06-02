@@ -96,11 +96,11 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
 
   private updatePageMetadata(): void {
     let pageTitle = 'Recitation Result | Pericopy';
-    let pageDescription = 'Comprehensive analysis of your scripture recitation attempt with detailed metrics, goal tracking, and performance insights.';
+    let pageDescription = 'Comprehensive analysis of your scripture recitation with detailed metrics, goal tracking, and performance insights.';
 
     if(this.currentResult){
-      pageTitle = `${this.currentResult.diff.p} - Recitation | Pericopy`;
-      pageDescription = `Comprehensive analysis of your scripture recitation attempt for ${this.currentResult.diff.p} with detailed metrics, goal tracking, and performance insights.`;
+      pageTitle = `${this.currentResult.diff.p} - Recitation Result | Pericopy`;
+      pageDescription = `Comprehensive analysis of your scripture recitation for ${this.currentResult.diff.p} with detailed metrics, goal tracking, and performance insights.`;
     }
     
     this.titleService.setTitle(pageTitle);
