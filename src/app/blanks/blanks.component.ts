@@ -363,7 +363,7 @@ export class BlanksComponent implements OnInit {
 
   onKeyDown(event: KeyboardEvent, index: number) {
     const blank = this.blanks.get(index);
-    if ((event.key === 'Tab' || event.key === ' ' || event.key === 'Spacebar') && !event.shiftKey) {
+    if ((event.key === 'Tab' || event.key === ' ' || event.key === 'Spacebar' || event.key === 'ArrowRight' || event.key === "Enter") && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault();
       if (blank == undefined) return;
       const nextInput = this.nextBlank(blank);
@@ -396,8 +396,10 @@ export class BlanksComponent implements OnInit {
     
     if (event.key === 'Enter') {
       if (event.shiftKey) {
+        event.preventDefault();
         this.revealAnswer();
-      } else {
+      } else if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
         this.submit();
       }
     }
