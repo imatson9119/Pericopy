@@ -393,7 +393,16 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
       }
     }).afterClosed().subscribe((goals: Goal[]) => {
       if(goals) {
-        this.currentResult!.goals = new Set(goals.map((g) => g.id));
+        let new_goals = new Set(goals.map((g) => g.id));
+        let removed_goals = new Set([...this.currentResult!.goals].filter((g) => !new_goals.has(g)));
+        this.currentResult!.goals = new_goals;
+        for (let goalId of removed_goals) {
+          let goal = this._storageService.getGoal(goalId);
+          if (goal) {
+            goal.attempts.delete(this.resultId);
+            this._storageService.storeGoal(goal);
+          }
+        }
         this._storageService.storeAttempt(this.currentResult!);
         this._snackbarService.showSuccess('Goals updated.', 3000);
         this.loadRelatedGoals();
