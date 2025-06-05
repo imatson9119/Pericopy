@@ -13,7 +13,7 @@
             <span class="verse-number">
               {{ verseDiff.m.v }}
             </span>
-            @for (vDiff of verseDiff.v; track vDiff.i; let i = $index){
+            @for (vDiff of verseDiff.v; track vDiff.i * 10 + vDiff.t; let i = $index){
               @if (vDiff.t === diffTypes.ADDED && this.type !== displayTypes.scripture) {
                 <span class="added">{{ vDiff.v.join(" ") }}</span><span>&nbsp;</span>
               }

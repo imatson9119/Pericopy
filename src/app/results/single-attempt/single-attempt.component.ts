@@ -12,6 +12,8 @@ import { Subscription } from 'rxjs';
 import { BibleService } from 'src/app/services/bible.service';
 import { Goal, GoalStatus } from 'src/app/classes/Goal';
 import { SnackbarService } from 'src/app/services/snackbar.service';
+import { SelectGoalsDialogComponent } from 'src/app/misc-components/select-goals-dialog/select-goals-dialog.component';
+import { intersection } from 'src/app/utils/utils';
 
 interface StatCard {
   label: string;
@@ -376,5 +378,26 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
       case 'down': return '#ef4444';
       default: return '#6b7280';
     }
+  }
+
+  editLinkedGoals(): void {
+    // Need to collect all goals that intersect with the current result
+    const intersectingGoals = [...this._storageService.getGoals().values()].filter((g) => {
+      return intersection(this.currentResult!.diff.i, this.currentResult!.diff.j, g.i, g.j);
+    }).map((g) => {
+      return { goal: g, selected: this.relatedGoals.includes(g) };
+    });
+    this.dialog.open(SelectGoalsDialogComponent, {
+      data: {
+        goals: intersectingGoals
+      }
+    }).afterClosed().subscribe((goals: Goal[]) => {
+      if(goals) {
+        this.currentResult!.goals = new Set(goals.map((g) => g.id));
+        this._storageService.storeAttempt(this.currentResult!);
+        this._snackbarService.showSuccess('Goals updated.', 3000);
+        this.loadRelatedGoals();
+      }
+    });
   }
 } 

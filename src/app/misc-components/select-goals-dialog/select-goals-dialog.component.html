@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<div mat-dialog-content class="mat-typography dialog-content">
+  <span class="message-text">{{ message }}</span>
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef class="checkbox-column">
+        <mat-checkbox color='p-dark' (change)="$event ? masterToggle() : null" [checked]="isAllSelected()" [indeterminate]="isOneSelected() && !isAllSelected()"></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let attempt">
+        <mat-checkbox color='primary' (click)="$event.stopPropagation()" [(ngModel)]="attempt.selected"></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="goal">
+      <mat-header-cell *matHeaderCellDef>Goal</mat-header-cell>
+      <mat-cell *matCellDef="let attempt">{{ attempt.goal }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+      <mat-cell *matCellDef="let attempt">
+        <span class="status-chip" [ngClass]="getStatusClass(attempt.goal)">
+          {{ this.getGoalStatusText(attempt.goal) }}
+        </span>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="row" *matRowDef="let row; columns: displayedColumns;" (click)="row.selected = !row.selected"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Paginate goals"></mat-paginator>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="noChanges()">
+    Submit
+  </button>
+</div>

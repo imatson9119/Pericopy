@@ -191,4 +191,9 @@ export class Goal {
       json.archived || false
     );
   }
+
+  toString(): string {
+    return this.title;
+  }
+  
 }

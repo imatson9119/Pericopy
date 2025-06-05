@@ -1,0 +1,67 @@
+
+.container {
+	padding: 1rem;
+}
+
+.dialog-content{
+	max-width: 600px;
+  overflow: auto;
+}
+
+.message-text{
+	font-size: .9rem;
+}
+
+.row {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.row:hover {
+  background-color: #f5f5f5;
+}
+.table {
+  width: 100%;
+  margin: 1rem;
+}
+td {
+  text-align: center;
+}
+
+.on {
+  background-color: #4a555b;
+}
+
+.off {
+  background-color: transparent;
+  color: #8d9ba3;
+  outline-style: solid;
+  outline-width: 2px;
+  outline-color: #8d9ba3;
+}
+
+.mat-column-select {
+  width: 40px;
+  flex: none;
+  padding: 0;
+}
+
+.mat-column-status {
+  padding: 0 .2rem;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.mat-column-goal {
+  padding: .2rem 0;
+  font-size: 0.8rem;
+}
+
+.status-chip { line-height: normal;padding: 2px 8px; border-radius: 12px; display: inline-block; font-weight: normal; color: inherit; font-size: 0.85rem; }
+.status-memorizing { background: #ffe8cc; color: #543d21; }
+.status-maintaining { background: #cce5ff; color: #004085; }
+.status-mastered { background: #d1ecf1; color: #0c5460; }
+.status-archived { background: #ebebeb; color: #3f3f3f; }

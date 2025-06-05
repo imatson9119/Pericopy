@@ -30,26 +30,33 @@
     </header>
 
     <!-- Related Goals Section -->
-    @if(this.relatedGoals.length > 0) {
-      <section class="goals-section" aria-label="Related goals">
-        <div class="goals-container">
-          <div class="goals-list">
-            @for(goal of this.relatedGoals; track goal.id) {
-              <button 
-                matTooltip="Navigate to goal"
-                mat-button 
-                class="goal-chip"
-                (click)="this.navigateToGoal(goal.id)"
-                [attr.aria-label]="'Navigate to goal: ' + goal.title"
-              >
-                <mat-icon class="goal-icon">{{ this.getGoalStatusIcon(goal.status) }}</mat-icon>
-                {{ goal.title }}
-              </button>
-            }
-          </div>
+    
+    <section class="goals-section" aria-label="Related goals">
+      <div class="goals-container">
+        <div class="goals-list">
+          @for(goal of this.relatedGoals; track goal.id) {
+            <button 
+              matTooltip="Navigate to goal"
+              mat-button 
+              class="goal-chip"
+              (click)="this.navigateToGoal(goal.id)"
+              [attr.aria-label]="'Navigate to goal: ' + goal.title"
+            >
+              <mat-icon class="goal-icon">{{ this.getGoalStatusIcon(goal.status) }}</mat-icon>
+              {{ goal.title }}
+            </button>
+          }
+          <button
+            matTooltip="Edit linked goals"
+            class="edit-linked-goals-button"
+            (click)="this.editLinkedGoals()"
+            [attr.aria-label]="'Edit linked goals'"
+          >
+            <mat-icon>add_link</mat-icon>
+          </button>
         </div>
-      </section>
-    }
+      </div>
+    </section>
     
     <!-- Performance Metrics Section -->
     <section class="metrics-section" aria-label="Performance metrics">
