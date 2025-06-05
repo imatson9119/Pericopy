@@ -345,7 +345,7 @@
     }
 
     @media (max-width: 480px) {
-      padding: 1rem;
+      padding: 1rem 0rem;
     }
   }
 
@@ -660,6 +660,10 @@ h2 {
 
 .tab-inner-container {
   padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0rem;
+  }
 }
 
 .page-loader {
