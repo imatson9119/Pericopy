@@ -6,35 +6,35 @@ import { Subscription } from 'rxjs';
 import { PassageSelectDialogComponent } from 'src/app/misc-components/passage-select-dialog/passage-select-dialog.component';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
+import { IResult } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
 import { getRelativeDate } from 'src/app/utils/utils';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
-import { Goal, GoalStatus } from 'src/app/classes/Goal';
 
-export interface GoalSelector {
-  goal: Goal;
+export interface RecitationSelector {
+  recitation: IResult;
   selected: boolean;
 }
 
 @Component({
-  selector: 'app-select-goals-dialog',
-  templateUrl: './select-goals-dialog.component.html',
-  styleUrls: ['./select-goals-dialog.component.scss'],
+  selector: 'app-select-recitations-dialog',
+  templateUrl: './select-recitations-dialog.component.html',
+  styleUrls: ['./select-recitations-dialog.component.scss'],
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule],
 })
-export class SelectGoalsDialogComponent implements OnDestroy {
+export class SelectRecitationsDialogComponent implements OnDestroy {
   subscriptions: Subscription[] = [];
-  goals: GoalSelector[] = [];
+  recitations: RecitationSelector[] = [];
   originalSelections: boolean[] = [];
-  displayedColumns: string[] = ['select', 'goal', 'status'];
-  dataSource = new MatTableDataSource<GoalSelector>()
+  displayedColumns: string[] = ['select', 'passage', 'time'];
+  dataSource = new MatTableDataSource<RecitationSelector>()
   getRelativeDate = getRelativeDate;
-  title = 'Select goals';
-  message = 'Select goals to link to this recitation.'
+  title = 'Select recitations';
+  message = 'Select recitations to link to this goal.'
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -44,12 +44,14 @@ export class SelectGoalsDialogComponent implements OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     if (data) {
-      if(data.goals) {
-        this.goals = data.goals;
+      if(data.recitations) {
+        this.recitations = data.recitations;
       } else {
-        this.goals = [...this._storageService.getGoals().values()].map((g) => {
-          return { goal: g, selected: false };
-        });
+        this.recitations = [...this._storageService.getAttempts().values()]
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .map((r) => {
+            return { recitation: r, selected: false };
+          });
       }
       this.initDataSource();
       if(data.title) this.title = data.title;
@@ -69,52 +71,32 @@ export class SelectGoalsDialogComponent implements OnDestroy {
   }
 
   initDataSource(): void {
-    this.originalSelections = this.goals.map((g) => g.selected);
-    this.dataSource.data = this.goals;
+    this.originalSelections = this.recitations.map((r) => r.selected);
+    this.dataSource.data = this.recitations;
   }
 
   submit(): void {
-    this._dialogRef.close(this.goals.filter((g) => g.selected).map((g) => g.goal));
+    this._dialogRef.close(this.recitations.filter((r) => r.selected).map((r) => r.recitation));
   }
 
   isAllSelected(): boolean {
-    return this.goals.length > 0 && this.goals.every((a) => a.selected);
+    return this.recitations.length > 0 && this.recitations.every((a) => a.selected);
   }
 
   isOneSelected(): boolean {
-    return this.goals.length > 0 && this.goals.some((a) => a.selected);
+    return this.recitations.length > 0 && this.recitations.some((a) => a.selected);
   }
 
   noChanges(): boolean {
-    return this.goals.every((g, i) => g.selected === this.originalSelections[i]);
+    return this.recitations.every((r, i) => r.selected === this.originalSelections[i]);
   }
 
   masterToggle(): void {
     let value = !this.isAllSelected();
-    this.goals.forEach((a) => a.selected = value);
+    this.recitations.forEach((a) => a.selected = value);
   }
 
-  getGoalStatusText(goal: Goal): string {
-    if (goal.archived) {
-      return 'Archived';
-    }
-    switch (goal.status) {
-      case GoalStatus.MEMORIZING: return 'Memorizing';
-      case GoalStatus.MAINTAINING: return 'Maintaining';
-      case GoalStatus.MASTERED: return 'Mastered';
-      default: return 'Unknown';
-    }
+  formatScore(score: number): string {
+    return Math.round(score * 100) + '%';
   }
-
-  getStatusClass(goal: Goal): string {
-    if (goal.archived) {
-      return 'status-archived';
-    }
-    switch (goal.status) {
-      case GoalStatus.MEMORIZING: return 'status-memorizing';
-      case GoalStatus.MAINTAINING: return 'status-maintaining';
-      case GoalStatus.MASTERED: return 'status-mastered';
-      default: return '';
-    }
-  }
-}
+} 

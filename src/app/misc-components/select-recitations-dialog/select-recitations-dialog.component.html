@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<div mat-dialog-content class="mat-typography dialog-content">
+  <span class="message-text">{{ message }}</span>
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef class="checkbox-column">
+        <mat-checkbox color='p-dark' (change)="$event ? masterToggle() : null" [checked]="isAllSelected()" [indeterminate]="isOneSelected() && !isAllSelected()"></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let recitationSelector">
+        <mat-checkbox color='primary' (click)="$event.stopPropagation()" [(ngModel)]="recitationSelector.selected"></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="passage">
+      <mat-header-cell *matHeaderCellDef>Passage</mat-header-cell>
+      <mat-cell *matCellDef="let recitationSelector">{{ recitationSelector.recitation.diff.p }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="time">
+      <mat-header-cell *matHeaderCellDef>Time</mat-header-cell>
+      <mat-cell *matCellDef="let recitationSelector">
+        <span class="time-text">
+          {{ getRelativeDate(recitationSelector.recitation.timestamp, true) }}
+        </span>
+        <span class="score-chip">
+          {{ formatScore(recitationSelector.recitation.score) }}
+        </span>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="row" *matRowDef="let row; columns: displayedColumns;" (click)="row.selected = !row.selected"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Paginate recitations"></mat-paginator>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="noChanges()">
+    Submit
+  </button>
+</div> 

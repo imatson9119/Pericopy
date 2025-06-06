@@ -19,6 +19,7 @@ import { BiblePassage } from '../classes/BiblePassage';
 import { Goal, GoalStatus } from '../classes/Goal';
 import confetti from 'canvas-confetti';
 import { SnackbarService } from '../services/snackbar.service';
+import { RecitationSelector, SelectRecitationsDialogComponent } from '../misc-components/select-recitations-dialog/select-recitations-dialog.component';
 
 @Component({
   selector: 'app-goal',
@@ -484,10 +485,42 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   linkRecitations(): void {
-    // Placeholder method for linking additional recitations
-    // TODO: Implement recitation linking dialog
-    console.log('Link recitations functionality to be implemented');
-    this._snackbarService.showEmoji('🔗', 'Recitation linking feature coming soon!', 2000);
+    this.dialog.open(SelectRecitationsDialogComponent, {
+      data: {
+        title: 'Link Recitations',
+        message: 'Select recitations to link to this goal.',
+        recitations: this.getIntersectingRecitations()
+      }
+    }).afterClosed().subscribe((result) => {
+      if (result) {
+        const addedAttempts = result.filter((r: IResult) => !this.attempts.has(r.id));
+        const removedAttempts = Array.from(this.attempts.values()).filter((r: IResult) => !result.some((r2: IResult) => r2.id === r.id));
+        const allAttempts = this._storageService.getAttempts();
+        for (let attempt of removedAttempts) {
+          this.goal!.deleteAttempt(attempt.id, allAttempts);
+        }
+        for (let attempt of addedAttempts) {
+          this.goal!.addAttempt(attempt, allAttempts);
+        }
+        this._storageService.storeGoals();
+        this.loadStats();
+        this.attempts = new Map(result.map((r: IResult) => [r.id, r]));
+        this.dataSource.data = Array.from(this.attempts.values()).sort((a, b) => b.timestamp - a.timestamp);
+        
+        this._snackbarService.showEmoji('🔗', 'Recitations linked to goal.', 3000);
+      }
+    });
+  }
+
+  getIntersectingRecitations(): RecitationSelector[] {
+    const allAttempts = this._storageService.getAttempts();
+    let ret: RecitationSelector[] = [];
+    for (let attempt of allAttempts.values()) {
+      if (attempt && intersection(this.goal!.i, this.goal!.j, attempt.diff.i, attempt.diff.j)) {
+        ret.push({recitation: attempt, selected: this.attempts.has(attempt.id)});
+      }
+    }
+    return ret;
   }
 
   getScoreColor(score: number): string {
