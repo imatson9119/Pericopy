@@ -9,22 +9,6 @@
           {{ goal ? this.getLastAttemptText(goal) : "" }}
         </div>
       </div>
-    </div>
-    
-    <div class="toolbar">
-      <button mat-fab extended color="primary" (click)="this.makeAttempt()">
-        <mat-icon>edit_note</mat-icon>
-        Recite
-      </button>
-      <button mat-fab extended color="primary" (click)="this.goToBlanks()">
-        <mat-icon>code</mat-icon>
-        Practice
-      </button>
-      <button mat-fab extended color="primary" (click)="this.viewInHeatmap()">
-        <mat-icon>local_fire_department</mat-icon>
-        Heatmap
-      </button>
-      <div style="flex-grow:1"></div>
       <div>
         @if (!this.goal?.archived) {
           <button
@@ -51,6 +35,23 @@
           <mat-icon color="primary">delete</mat-icon>
         </button>
       </div>
+    </div>
+    
+    <div class="toolbar">
+      <button mat-fab extended color="primary" (click)="this.makeAttempt()">
+        <mat-icon>edit_note</mat-icon>
+        Recite
+      </button>
+      <button mat-fab extended color="primary" (click)="this.goToBlanks()">
+        <mat-icon>code</mat-icon>
+        Blanks
+      </button>
+      <button mat-fab extended color="primary" (click)="this.viewInHeatmap()">
+        <mat-icon>local_fire_department</mat-icon>
+        Heatmap
+      </button>
+      <div style="flex-grow:1"></div>
+      
     </div>
     @if (this.goal?.status === GoalStatus.MEMORIZING && this.percentMemorized !== 100){
       <div (click)="this.goToBlanks()" class="status-banner memorize">
@@ -105,7 +106,10 @@
     }
     @if (this.attempts.size > 0) {
       <div class="goal-body">
-        <mat-tab-group class="tabs">
+        <mat-tab-group 
+          class="tabs" 
+          [selectedIndex]="selectedTabIndex" 
+          (selectedTabChange)="onTabChange($event.index)">
           <mat-tab label="Stats">
             <div class="stat-grid">
               <div class="stat-card">

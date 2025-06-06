@@ -176,15 +176,17 @@ h2 {
   flex-wrap: wrap-reverse;
   margin-top: 1rem;
 
-  .mat-mdc-fab.mat-primary {
-    --mdc-fab-container-color: #4a555b;
-    --mat-fab-foreground-color: white;
-    --mat-fab-state-layer-color: white;
-  }
+  
+}
 
-  .mat-icon.mat-primary {
-    --mat-icon-color: #4a555b;
-  }
+.mat-mdc-fab.mat-primary {
+  --mdc-fab-container-color: #4a555b;
+  --mat-fab-foreground-color: white;
+  --mat-fab-state-layer-color: white;
+}
+
+.mat-icon.mat-primary {
+  --mat-icon-color: #4a555b;
 }
 
 .status-banner {

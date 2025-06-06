@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { Bible } from '../classes/Bible';
@@ -106,12 +106,14 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   percentMemorized = 0;
   totalWords = 0;
   totalWordsMemorized = 0;
+  selectedTabIndex = 0;
   
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
   constructor(
     private _router: Router,
+    private _route: ActivatedRoute,
     private _storageService: StorageService,
     private _bibleService: BibleService,
     private dialog: MatDialog,
@@ -128,6 +130,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     } else {
       this._router.navigateByUrl('');
     }
+    this.initializeTabFromUrl();
     this.updatePageMetadata();
 
     this.subscriptions.push(
@@ -433,6 +436,32 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
     this._router.navigate(['/blanks'], { queryParams: { i: this.goal.i, j: this.goal.j } });
+  }
+
+
+  private initializeTabFromUrl(): void {
+    const tabParam = this._route.snapshot.queryParams['tab'];
+    if (tabParam) {
+      const tabIndex = parseInt(tabParam, 10);
+      // Validate tab index is within valid range (0-2 for Stats, Recitations, Study)
+      if (!isNaN(tabIndex) && tabIndex >= 0 && tabIndex <= 2) {
+        this.selectedTabIndex = tabIndex;
+      }
+    }
+  }
+
+  onTabChange(index: number): void {
+    this.selectedTabIndex = index;
+    
+    // Update URL with current tab, preserving other query parameters
+    const currentParams = { ...this._route.snapshot.queryParams };
+    currentParams['tab'] = index.toString();
+    
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: currentParams,
+      queryParamsHandling: 'merge'
+    });
   }
 }
 
