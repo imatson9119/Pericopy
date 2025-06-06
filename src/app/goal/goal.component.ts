@@ -111,6 +111,16 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
+  get paginatedRecitations(): IResult[] {
+    if (!this.paginator) {
+      return this.dataSource.data;
+    }
+    
+    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+    const endIndex = startIndex + this.paginator.pageSize;
+    return this.dataSource.data.slice(startIndex, endIndex);
+  }
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -146,6 +156,10 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
           this.loadStats();
           setTimeout(() => {
             this.initSort();
+            // Update paginator length after data is loaded
+            if (this.paginator) {
+              this.paginator.length = this.dataSource.data.length;
+            }
           },10);
         }
       })
@@ -187,6 +201,11 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       return data.diff.p.toLowerCase().includes(filter);
     }
     this.dataSource.sort = this.sort;
+    
+    // Set up paginator with the correct length
+    if (this.paginator) {
+      this.paginator.length = this.dataSource.data.length;
+    }
   }
 
   initAttempts() {
@@ -462,6 +481,26 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
       queryParams: currentParams,
       queryParamsHandling: 'merge'
     });
+  }
+
+  linkRecitations(): void {
+    // Placeholder method for linking additional recitations
+    // TODO: Implement recitation linking dialog
+    console.log('Link recitations functionality to be implemented');
+    this._snackbarService.showEmoji('🔗', 'Recitation linking feature coming soon!', 2000);
+  }
+
+  getScoreColor(score: number): string {
+    // Return color based on score thresholds
+    if (score >= 0.9) {
+      return '#10b981'; // Green for excellent scores
+    } else if (score >= 0.8) {
+      return '#f59e0b'; // Orange for good scores  
+    } else if (score >= 0.7) {
+      return '#f97316'; // Orange-red for ok scores
+    } else {
+      return '#ef4444'; // Red for low scores
+    }
   }
 }
 

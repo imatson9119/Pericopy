@@ -128,7 +128,16 @@
       align-items: flex-start;
       margin-bottom: .4rem;
 
-      .quick-goal-title { font-size: 1.2rem; font-weight: 400; margin: 0; color: #2c3e50; flex: 1; margin-right: 1rem; }
+      .quick-goal-title { 
+        font-size: 1.2rem; 
+        font-weight: 400; 
+        margin: 0;
+        color: #2c3e50;
+        flex: 1;
+        margin-right: 1rem; 
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;}
     }
 
     .quick-goal-progress {

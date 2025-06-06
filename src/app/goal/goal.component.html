@@ -157,65 +157,53 @@
           </mat-tab>
           <mat-tab label="Recitations">
             <div class="attempts">
-              <table
-                class="history-table"
-                mat-table
-                matSort
-                matSortActive="time"
-                matSortDirection="desc"
-                matSortDisableClear
-                [dataSource]="dataSource"
-              >
-                <ng-container matColumnDef="time">
-                  <th
-                    mat-header-cell
-                    *matHeaderCellDef
-                    mat-sort-header
-                    sortActionDescription="Sort by time"
+              <div class="recitations-header">
+                <div class="recitations-title">
+                  <mat-icon>history</mat-icon>
+                  <span>Your recitation history</span>
+                </div>
+                <button
+                  matTooltip="Link additional recitations"
+                  class="link-recitations-button"
+                  (click)="this.linkRecitations()"
+                  [attr.aria-label]="'Link additional recitations'"
+                >
+                  <mat-icon>add_link</mat-icon>
+                </button>
+              </div>
+              
+              <div class="recitations-grid">
+                @for(attempt of paginatedRecitations; track attempt.id) {
+                  <div 
+                    class="recitation-card"
+                    (click)="this.loadResult(attempt.id)"
+                    [attr.aria-label]="'View recitation from ' + this.getRelativeTime(attempt.timestamp, true)"
                   >
-                    Time
-                  </th>
-                  <td mat-cell *matCellDef="let attempt">
-                    {{ this.getRelativeTime(attempt.timestamp, true) }}
-                  </td>
-                </ng-container>
-        
-                <ng-container matColumnDef="title">
-                  <th
-                    mat-header-cell
-                    *matHeaderCellDef
-                    mat-sort-header
-                    sortActionDescription="Sort by passage"
-                  >
-                    Passage
-                  </th>
-                  <td mat-cell *matCellDef="let attempt">{{ attempt.diff.p }}</td>
-                </ng-container>
-        
-                <ng-container matColumnDef="score">
-                  <th
-                    mat-header-cell
-                    *matHeaderCellDef
-                    mat-sort-header
-                    sortActionDescription="Sort by score"
-                  >
-                    Accuracy
-                  </th>
-                  <td class="score" mat-cell *matCellDef="let attempt">
-                    {{ formatScore(attempt.score) }}
-                  </td>
-                </ng-container>
-                <tr
-                  class="history-table-header-row"
-                  mat-header-row
-                  *matHeaderRowDef="displayedColumns"
-                ></tr>
-                <tr mat-row class="row" (click)="this.loadResult(row.id)" *matRowDef="let row; columns: displayedColumns"></tr>
-              </table>
+                    <div class="recitation-card-header">
+                      <div class="recitation-passage">
+                        {{ attempt.diff.p }}
+                      </div>
+                      <div 
+                        class="recitation-score"
+                        [style.--accent-color]="this.getScoreColor(attempt.score)"
+                      >
+                        {{ formatScore(attempt.score) }}
+                      </div>
+                    </div>
+                    <div class="recitation-details">
+                      <mat-icon class="recitation-icon">edit_note</mat-icon>
+                      <span class="recitation-date">
+                        {{ this.getRelativeTime(attempt.timestamp, true) }}
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+              
               <mat-paginator
-                class="history-paginator"
-                [pageSize]="5"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                class="recitations-paginator"
+                [pageSize]="12"
+                [pageSizeOptions]="[12, 24, 48, 100]"
                 aria-label="Select page"
               >
               </mat-paginator>

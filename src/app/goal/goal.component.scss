@@ -309,6 +309,151 @@ h2 {
   }
 }
 
+// Recitations Section
+.recitations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.25rem;
+
+  .recitations-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a555b;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    mat-icon {
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+  }
+
+  .link-recitations-button {
+    background: transparent;
+    border: 1px dashed #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+    color: #495057;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(108, 117, 125, 0.1);
+      border-color: #6c757d;
+      color: #495057;
+      transform: translateY(-1px);
+    }
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.recitations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.375rem;
+  }
+}
+
+.recitation-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #dee2e6;
+  }
+
+  .recitation-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    .recitation-score {
+      background: var(--accent-color, #4a555b);
+      color: white;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .recitation-passage {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2c3e50;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .recitation-details {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: #8a8a8a;
+
+    .recitation-icon {
+      font-size: 0.875rem;
+      width: 0.875rem;
+      height: 0.875rem;
+      color: #6c757d;
+    }
+
+    .recitation-date {
+      font-size: 0.75rem;
+      font-weight: 400;
+    }
+  }
+}
+
+.recitations-paginator {
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+
+  ::ng-deep {
+    .mat-mdc-paginator-container {
+      padding: 0.75rem 1rem;
+    }
+  }
+}
+
 // media rule
 @media (max-width: 600px) {
 
@@ -318,5 +463,51 @@ h2 {
   }
   td {
     font-size: 0.8rem;
+  }
+
+  .recitations-header {
+    margin-bottom: 1rem;
+
+    .recitations-title {
+      font-size: 0.8rem;
+    }
+
+    .link-recitations-button {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .recitation-card {
+    padding: 0.5rem;
+
+    .recitation-card-header {
+      margin-bottom: 0.25rem;
+
+      .recitation-score {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.7rem;
+      }
+    }
+
+    .recitation-passage {
+      font-size: 0.75rem;
+      margin-bottom: 0.375rem;
+      line-height: 1.3;
+    }
+
+    .recitation-details {
+      gap: 0.25rem;
+
+      .recitation-icon {
+        font-size: 0.75rem;
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+
+      .recitation-date {
+        font-size: 0.65rem;
+      }
+    }
   }
 }
