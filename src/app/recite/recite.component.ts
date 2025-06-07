@@ -22,6 +22,11 @@ import { Subscription } from 'rxjs';
 import { DifficultyDialogComponent } from './difficulty-dialog/difficulty-dialog.component';
 import { SelectionType } from '../misc-components/verse-selector/verse-selector.component';
 import { SnackbarService } from '../services/snackbar.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
 
 const PASSAGE_SAVE_DEBOUNCE_TIME = 5000;
 const LOCALSTORAGE_KEY = 'pericopy-cached-recitations';
@@ -37,7 +42,7 @@ export interface CachedAttempt {
     selector: 'app-input',
     templateUrl: './recite.component.html',
     styleUrls: ['./recite.component.scss'],
-    standalone: false
+    imports: [MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule]
 })
 export class ReciteComponent
   implements AfterViewChecked, OnDestroy

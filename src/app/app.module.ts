@@ -62,7 +62,6 @@ import { PortalModule } from '@angular/cdk/portal';
 @NgModule({
   declarations: [
     AppComponent,
-    ReciteComponent,
     SingleAttemptComponent,
     HeatmapComponent,
     HistoryComponent,
@@ -77,11 +76,12 @@ import { PortalModule } from '@angular/cdk/portal';
     DeleteGoalDialogComponent,
     GoalComponent,
     DonatePopupComponent,
-    FreestyleComponent,
-    SnackbarComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
+    SnackbarComponent,
+    ReciteComponent,
+    FreestyleComponent,
     BlanksComponent,
     BrowserModule,
     AppRoutingModule,

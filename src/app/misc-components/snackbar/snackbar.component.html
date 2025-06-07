@@ -22,7 +22,9 @@
   </div>
   
   <!-- Close button (optional) -->
-  <div class="snackbar__close" *ngIf="config.dismissible">
+  @if (config.dismissible) {
+  <div class="snackbar__close">
     <mat-icon fontIcon="close"></mat-icon>
   </div>
+  }
 </div> 

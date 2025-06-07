@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 export interface SnackbarConfig {
   message: string;
@@ -41,7 +43,7 @@ export interface SnackbarConfig {
             ])
         ])
     ],
-    standalone: false
+    imports: [MatIconModule, CommonModule]
 })
 export class SnackbarComponent implements OnInit {
   @Output() dismissed = new EventEmitter<void>();

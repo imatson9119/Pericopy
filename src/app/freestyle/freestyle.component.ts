@@ -12,8 +12,11 @@ import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { FreestyleInputDivComponent } from './freestyle-input-div/freestyle-input-div.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-declare const annyang: any;
 
 // Declare state enum
 enum InputState {
@@ -28,7 +31,7 @@ enum InputState {
     selector: 'app-freestyle',
     templateUrl: './freestyle.component.html',
     styleUrls: ['./freestyle.component.scss'],
-    standalone: false
+    imports: [FreestyleInputDivComponent, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule]
 })
 export class FreestyleComponent
   implements OnDestroy, OnInit
