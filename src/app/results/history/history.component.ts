@@ -15,9 +15,10 @@ import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
 @Component({
-  selector: 'app-history',
-  templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss']
+    selector: 'app-history',
+    templateUrl: './history.component.html',
+    styleUrls: ['./history.component.scss'],
+    standalone: false
 })
 export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
 

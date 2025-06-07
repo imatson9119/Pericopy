@@ -36,9 +36,10 @@ interface PerformanceMetrics {
 }
 
 @Component({
-  selector: 'app-single-attempt',
-  templateUrl: './single-attempt.component.html',
-  styleUrls: ['./single-attempt.component.scss']
+    selector: 'app-single-attempt',
+    templateUrl: './single-attempt.component.html',
+    styleUrls: ['./single-attempt.component.scss'],
+    standalone: false
 })
 export class SingleAttemptComponent implements OnInit, OnDestroy {
   result_bank: ResultBank = {"version":1,"results": new Map()};

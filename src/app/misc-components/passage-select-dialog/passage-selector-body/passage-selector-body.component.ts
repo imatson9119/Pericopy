@@ -8,11 +8,10 @@ import { BiblePointer } from 'src/app/classes/models';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-passage-selector-body',
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule, VerseSelectorComponent],
-  templateUrl: './passage-selector-body.component.html',
-  styleUrl: './passage-selector-body.component.scss'
+    selector: 'app-passage-selector-body',
+    imports: [MatDialogModule, MatButtonModule, VerseSelectorComponent],
+    templateUrl: './passage-selector-body.component.html',
+    styleUrl: './passage-selector-body.component.scss'
 })
 export class PassageSelectorBodyComponent implements OnChanges, OnInit {
   abbreviateBookName = abbreviateBookName;

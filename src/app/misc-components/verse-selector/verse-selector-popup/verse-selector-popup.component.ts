@@ -8,11 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-verse-selector-popup',
-  templateUrl: './verse-selector-popup.component.html',
-  styleUrls: ['./verse-selector-popup.component.scss'],
-  standalone: true,
-  imports: [MatDialogModule, MatIconModule, CommonModule]
+    selector: 'app-verse-selector-popup',
+    templateUrl: './verse-selector-popup.component.html',
+    styleUrls: ['./verse-selector-popup.component.scss'],
+    imports: [MatDialogModule, MatIconModule, CommonModule]
 })
 export class VerseSelectorPopupComponent {
   

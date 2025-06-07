@@ -9,9 +9,10 @@ export enum DisplayType {
 }
 
 @Component({
-  selector: 'app-diff-display',
-  templateUrl: './diff-display.component.html',
-  styleUrls: ['./diff-display.component.scss']
+    selector: 'app-diff-display',
+    templateUrl: './diff-display.component.html',
+    styleUrls: ['./diff-display.component.scss'],
+    standalone: false
 })
 export class DiffDisplayComponent implements OnInit {
 

@@ -9,11 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { PassageSelectorBodyComponent } from './passage-selector-body/passage-selector-body.component';
 
 @Component({
-  selector: 'app-passage-select-dialog',
-  templateUrl: './passage-select-dialog.component.html',
-  styleUrls: ['./passage-select-dialog.component.scss'],
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule, PassageSelectorBodyComponent],
+    selector: 'app-passage-select-dialog',
+    templateUrl: './passage-select-dialog.component.html',
+    styleUrls: ['./passage-select-dialog.component.scss'],
+    imports: [MatDialogModule, MatButtonModule, PassageSelectorBodyComponent]
 })
 export class PassageSelectDialogComponent implements OnDestroy {
   nWordsToPreview = 40;

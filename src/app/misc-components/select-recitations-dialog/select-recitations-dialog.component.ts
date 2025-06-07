@@ -20,11 +20,10 @@ export interface RecitationSelector {
 }
 
 @Component({
-  selector: 'app-select-recitations-dialog',
-  templateUrl: './select-recitations-dialog.component.html',
-  styleUrls: ['./select-recitations-dialog.component.scss'],
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule],
+    selector: 'app-select-recitations-dialog',
+    templateUrl: './select-recitations-dialog.component.html',
+    styleUrls: ['./select-recitations-dialog.component.scss'],
+    imports: [MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule]
 })
 export class SelectRecitationsDialogComponent implements OnDestroy {
   subscriptions: Subscription[] = [];

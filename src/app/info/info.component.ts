@@ -4,9 +4,10 @@ import { Title, Meta } from '@angular/platform-browser';
 import { DonatePopupComponent } from './donate-popup/donate-popup.component';
 
 @Component({
-  selector: 'app-info',
-  templateUrl: './info.component.html',
-  styleUrls: ['./info.component.scss']
+    selector: 'app-info',
+    templateUrl: './info.component.html',
+    styleUrls: ['./info.component.scss'],
+    standalone: false
 })
 export class InfoComponent implements OnInit {
 

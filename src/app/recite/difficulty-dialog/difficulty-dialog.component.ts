@@ -6,11 +6,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Rating } from 'ts-fsrs';
 
 @Component({
-  selector: 'app-difficulty-dialog',
-  standalone: true,
-  imports: [MatButtonModule, MatDialogModule, MatTooltipModule, MatIconModule],
-  templateUrl: './difficulty-dialog.component.html',
-  styleUrl: './difficulty-dialog.component.scss'
+    selector: 'app-difficulty-dialog',
+    imports: [MatButtonModule, MatDialogModule, MatTooltipModule, MatIconModule],
+    templateUrl: './difficulty-dialog.component.html',
+    styleUrl: './difficulty-dialog.component.scss'
 })
 export class DifficultyDialogComponent {
   

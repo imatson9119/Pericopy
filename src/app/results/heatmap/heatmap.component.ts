@@ -19,9 +19,10 @@ enum FilterValues {
 }
 
 @Component({
-  selector: 'app-heatmap',
-  templateUrl: './heatmap.component.html',
-  styleUrls: ['./heatmap.component.scss'],
+    selector: 'app-heatmap',
+    templateUrl: './heatmap.component.html',
+    styleUrls: ['./heatmap.component.scss'],
+    standalone: false
 })
 export class HeatmapComponent implements OnDestroy, OnInit {
   filterValues = FilterValues;

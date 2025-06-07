@@ -26,22 +26,21 @@ interface AttemptSelector {
 }
 
 @Component({
-  selector: 'app-new-goal-dialog',
-  templateUrl: './new-goal-dialog.component.html',
-  styleUrls: ['./new-goal-dialog.component.scss'],
-  standalone: true,
-  imports: [PassageSelectorBodyComponent, MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule],
-  animations: [
-    trigger('stepAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-20px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
-      ])
-    ])
-  ]
+    selector: 'app-new-goal-dialog',
+    templateUrl: './new-goal-dialog.component.html',
+    styleUrls: ['./new-goal-dialog.component.scss'],
+    imports: [PassageSelectorBodyComponent, MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule],
+    animations: [
+        trigger('stepAnimation', [
+            transition(':enter', [
+                style({ opacity: 0, transform: 'translateY(-20px)' }),
+                animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+            ]),
+            transition(':leave', [
+                animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+            ])
+        ])
+    ]
 })
 export class NewGoalDialogComponent implements OnDestroy {
   currentStep = 1;

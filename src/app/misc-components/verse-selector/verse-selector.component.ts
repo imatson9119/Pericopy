@@ -20,11 +20,10 @@ export enum SelectionType {
 }
 
 @Component({
-  selector: 'app-verse-selector',
-  templateUrl: './verse-selector.component.html',
-  styleUrls: ['./verse-selector.component.scss'],
-  standalone: true,
-  imports: [MatDialogModule, MatIconModule, CommonModule, MatButtonModule],
+    selector: 'app-verse-selector',
+    templateUrl: './verse-selector.component.html',
+    styleUrls: ['./verse-selector.component.scss'],
+    imports: [MatDialogModule, MatIconModule, CommonModule, MatButtonModule]
 })
 export class VerseSelectorComponent implements OnChanges {
   @Input()

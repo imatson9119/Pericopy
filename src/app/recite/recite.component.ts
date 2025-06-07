@@ -34,9 +34,10 @@ export interface CachedAttempt {
 }
 
 @Component({
-  selector: 'app-input',
-  templateUrl: './recite.component.html',
-  styleUrls: ['./recite.component.scss'],
+    selector: 'app-input',
+    templateUrl: './recite.component.html',
+    styleUrls: ['./recite.component.scss'],
+    standalone: false
 })
 export class ReciteComponent
   implements AfterViewChecked, OnDestroy

@@ -34,11 +34,10 @@ class DynamicSpan {
 }
 
 @Component({
-  selector: 'app-freestyle-input-div',
-  standalone: true,
-  imports: [],
-  templateUrl: './freestyle-input-div.component.html',
-  styleUrl: './freestyle-input-div.component.scss'
+    selector: 'app-freestyle-input-div',
+    imports: [],
+    templateUrl: './freestyle-input-div.component.html',
+    styleUrl: './freestyle-input-div.component.scss'
 })
 export class FreestyleInputDivComponent {
   attempt = '';

@@ -6,9 +6,10 @@ import { NewUserDialogComponent } from './misc-components/new-user-dialog/new-us
 import { UpdateDialogComponent } from './misc-components/update-dialog/update-dialog.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent {
   title = 'roman-road-webapp';

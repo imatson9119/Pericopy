@@ -17,9 +17,10 @@ import { Title, Meta } from '@angular/platform-browser';
 import { SnackbarService } from '../services/snackbar.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 export class HomeComponent implements OnDestroy, OnInit {
   attempts: Map<string,IResult> = new Map();

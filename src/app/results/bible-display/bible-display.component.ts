@@ -5,10 +5,11 @@ import { DiffType, Heatmap, Verse } from 'src/app/classes/models';
 import { intersection, numberToColorHsl } from 'src/app/utils/utils';
 
 @Component({
-  selector: 'app-bible-display',
-  templateUrl: './bible-display.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./bible-display.component.scss']
+    selector: 'app-bible-display',
+    templateUrl: './bible-display.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrls: ['./bible-display.component.scss'],
+    standalone: false
 })
 export class BibleDisplayComponent {
   diffTypes = DiffType;

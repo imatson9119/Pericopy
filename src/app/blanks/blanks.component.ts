@@ -34,9 +34,10 @@ interface BlankState {
 }
 
 @Component({
-  selector: 'app-blanks',
-  templateUrl: './blanks.component.html',
-  styleUrls: ['./blanks.component.scss']
+    selector: 'app-blanks',
+    templateUrl: './blanks.component.html',
+    styleUrls: ['./blanks.component.scss'],
+    standalone: false
 })
 export class BlanksComponent implements OnInit {
   attempts: Map<string,IResult> = new Map();

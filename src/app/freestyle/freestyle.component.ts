@@ -25,9 +25,10 @@ enum InputState {
 }
 
 @Component({
-  selector: 'app-freestyle',
-  templateUrl: './freestyle.component.html',
-  styleUrls: ['./freestyle.component.scss'],
+    selector: 'app-freestyle',
+    templateUrl: './freestyle.component.html',
+    styleUrls: ['./freestyle.component.scss'],
+    standalone: false
 })
 export class FreestyleComponent
   implements OnDestroy, OnInit

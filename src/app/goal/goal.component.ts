@@ -22,9 +22,10 @@ import { SnackbarService } from '../services/snackbar.service';
 import { RecitationSelector, SelectRecitationsDialogComponent } from '../misc-components/select-recitations-dialog/select-recitations-dialog.component';
 
 @Component({
-  selector: 'app-goal',
-  templateUrl: './goal.component.html',
-  styleUrl: './goal.component.scss',
+    selector: 'app-goal',
+    templateUrl: './goal.component.html',
+    styleUrl: './goal.component.scss',
+    standalone: false
 })
 export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   goalId = '';

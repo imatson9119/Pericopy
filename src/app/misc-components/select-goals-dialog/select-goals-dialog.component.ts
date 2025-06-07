@@ -20,11 +20,10 @@ export interface GoalSelector {
 }
 
 @Component({
-  selector: 'app-select-goals-dialog',
-  templateUrl: './select-goals-dialog.component.html',
-  styleUrls: ['./select-goals-dialog.component.scss'],
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule],
+    selector: 'app-select-goals-dialog',
+    templateUrl: './select-goals-dialog.component.html',
+    styleUrls: ['./select-goals-dialog.component.scss'],
+    imports: [MatDialogModule, MatButtonModule, CommonModule, MatRadioModule, FormsModule, MatCheckboxModule, MatTableModule, MatPaginatorModule, MatIconModule]
 })
 export class SelectGoalsDialogComponent implements OnDestroy {
   subscriptions: Subscription[] = [];

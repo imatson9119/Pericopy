@@ -1,7 +1,8 @@
 import { Directive, HostListener, Output, EventEmitter } from '@angular/core';
 
 @Directive({
-  selector: '[appFileDrop]'
+    selector: '[appFileDrop]',
+    standalone: false
 })
 export class FileDropDirective {
 

@@ -4,11 +4,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { StorageService } from '../../services/storage.service';
 @Component({
-  selector: 'app-update-dialog',
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule],
-  templateUrl: './update-dialog.component.html',
-  styleUrl: './update-dialog.component.scss'
+    selector: 'app-update-dialog',
+    imports: [MatDialogModule, MatButtonModule, MatIconModule],
+    templateUrl: './update-dialog.component.html',
+    styleUrl: './update-dialog.component.scss'
 })
 export class UpdateDialogComponent {
   constructor(private _storageService: StorageService) {}

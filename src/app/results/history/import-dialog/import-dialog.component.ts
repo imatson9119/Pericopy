@@ -6,9 +6,10 @@ import { reviver } from 'src/app/utils/utils';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 
 @Component({
-  selector: 'app-import-dialog',
-  templateUrl: './import-dialog.component.html',
-  styleUrls: ['./import-dialog.component.scss']
+    selector: 'app-import-dialog',
+    templateUrl: './import-dialog.component.html',
+    styleUrls: ['./import-dialog.component.scss'],
+    standalone: false
 })
 export class ImportDialogComponent {
   @ViewChild('fileUpload') fileUpload: FileUploadComponent | null = null;
