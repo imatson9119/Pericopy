@@ -214,6 +214,7 @@ export class MemorizationPracticeService {
     
     storage.passages[passageId].attempts.push(attemptWithTimestamp);
     storage.passages[passageId].cache = [];
+    storage.passages[passageId].seed = uuidv4();
     this.saveAll(storage);
   }
 

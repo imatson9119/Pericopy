@@ -13,7 +13,12 @@ import { StorageService } from '../services/storage.service';
 import { PassageData } from './memorization-practice.service';
 import seedrandom from 'seedrandom';
 import { SnackbarService } from '../services/snackbar.service';
-
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
 
 export enum BlankType {
   EMPTY,
@@ -37,7 +42,8 @@ interface BlankState {
     selector: 'app-blanks',
     templateUrl: './blanks.component.html',
     styleUrls: ['./blanks.component.scss'],
-    standalone: false
+    standalone: true,
+    imports: [ MatProgressSpinnerModule, MatTooltipModule, MatButtonModule, MatIconModule, CommonModule, MatInputModule ]
 })
 export class BlanksComponent implements OnInit {
   attempts: Map<string,IResult> = new Map();
@@ -423,6 +429,10 @@ export class BlanksComponent implements OnInit {
 
   submit() {
     if (!this.passage || this.feedback.show) return;
+    if (this.saveCacheTimer) {
+      clearTimeout(this.saveCacheTimer);
+      this.saveCacheTimer = null;
+    }
     let correct = 0;
     let total = this.blanks.size;
     for (let blank of this.blanks.values()) {
@@ -442,6 +452,7 @@ export class BlanksComponent implements OnInit {
     this.practiceService.saveAttempt(this.passage.id, { correct, total });
     this.practiceService.adjustBlankingPercentage(this.passage.id, score);
     this.passageData = this.practiceService.getPassageData(this.passage.id);
+    this.rng = seedrandom(this.passageData.seed);
   }
 
   retry() {

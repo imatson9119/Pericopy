@@ -1,5 +1,7 @@
 @use '@angular/material' as mat;
-@include mat.core();
+@use 'sass:color';
+@include mat.elevation-classes();
+@include mat.app-background();
 
 /* Fonts */
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined';
@@ -96,12 +98,12 @@ $mat-dark-theme-foreground: (
 // Background config
 // Light bg
 $light-background:    #fafafa;
-$light-bg-darker-5:   darken($light-background, 5%);
-$light-bg-darker-10:  darken($light-background, 10%);
-$light-bg-darker-20:  darken($light-background, 20%);
-$light-bg-darker-30:  darken($light-background, 30%);
-$light-bg-lighter-5:  lighten($light-background, 5%);
-$dark-bg-tooltip:     lighten(#2c2c2c, 20%);
+$light-bg-darker-5:   color.scale($light-background, $lightness: -5%);
+$light-bg-darker-10:  color.scale($light-background, $lightness: -10%);
+$light-bg-darker-20:  color.scale($light-background, $lightness: -20%);
+$light-bg-darker-30:  color.scale($light-background, $lightness: -30%);
+$light-bg-lighter-5:  color.scale($light-background, $lightness: 5%);
+$dark-bg-tooltip:     color.scale(#2c2c2c, $lightness: 20%);
 $dark-bg-alpha-4:     rgba(#2c2c2c, 0.04);
 $dark-bg-alpha-12:    rgba(#2c2c2c, 0.12);
 
@@ -125,10 +127,10 @@ $mat-light-theme-background: (
 
 // Dark bg
 $dark-background:     #2c2c2c;
-$dark-bg-lighter-5:   lighten($dark-background, 5%);
-$dark-bg-lighter-10:  lighten($dark-background, 10%);
-$dark-bg-lighter-20:  lighten($dark-background, 20%);
-$dark-bg-lighter-30:  lighten($dark-background, 30%);
+$dark-bg-lighter-5:   color.scale($dark-background, $lightness: 5%);
+$dark-bg-lighter-10:  color.scale($dark-background, $lightness: 10%);
+$dark-bg-lighter-20:  color.scale($dark-background, $lightness: 20%);
+$dark-bg-lighter-30:  color.scale($dark-background, $lightness: 30%);
 $light-bg-alpha-4:    rgba(#fafafa, 0.04);
 $light-bg-alpha-12:   rgba(#fafafa, 0.12);
 

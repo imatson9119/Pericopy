@@ -78,11 +78,11 @@ import { PortalModule } from '@angular/cdk/portal';
     GoalComponent,
     DonatePopupComponent,
     FreestyleComponent,
-    BlanksComponent,
     SnackbarComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
+    BlanksComponent,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
