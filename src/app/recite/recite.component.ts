@@ -27,6 +27,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 const PASSAGE_SAVE_DEBOUNCE_TIME = 5000;
 const LOCALSTORAGE_KEY = 'pericopy-cached-recitations';
@@ -42,7 +44,7 @@ export interface CachedAttempt {
     selector: 'app-input',
     templateUrl: './recite.component.html',
     styleUrls: ['./recite.component.scss'],
-    imports: [MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule]
+    imports: [MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule, CommonModule, FormsModule]
 })
 export class ReciteComponent
   implements AfterViewChecked, OnDestroy
