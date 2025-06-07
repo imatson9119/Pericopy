@@ -59,7 +59,7 @@ h2 {
 }
 
 .mat-mdc-fab.mat-primary {
-  --mdc-fab-container-color: #4a555b;
+  --mat-fab-container-color: #4a555b;
   --mat-fab-foreground-color: white;
   --mat-fab-state-layer-color: white;
 }
@@ -99,11 +99,11 @@ h2 {
   margin-top: .5rem;
 
   .record-button.mat-mdc-mini-fab.mat-accent {
-    --mdc-fab-small-container-color: #555555;
+    --mat-fab-small-container-color: #555555;
     color: white;
   }
   .record-button.mat-mdc-mini-fab.mat-accent.recording {
-    --mdc-fab-small-container-color: #b79a49;
+    --mat-fab-small-container-color: #b79a49;
   }
 }
 

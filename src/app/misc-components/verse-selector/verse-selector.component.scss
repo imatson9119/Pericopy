@@ -8,14 +8,14 @@
 }
 
 .mat-mdc-fab.mat-primary {
-  --mdc-fab-container-color: #4a555b;
+  --mat-fab-container-color: #4a555b;
   --mat-fab-foreground-color: white;
   --mat-fab-state-layer-color: white;
 }
 
 .mat-mdc-unelevated-button.mat-primary {
-  --mdc-filled-button-container-color: #4a555b;
-  --mdc-filled-button-label-text-color: white;
-  --mat-filled-button-state-layer-color: white;
-  --mat-filled-button-ripple-color: rgba(255, 255, 255, 0.1);
+  --mat-button-filled-container-color: #4a555b;
+  --mat-button-filled-label-text-color: white;
+  --mat-button-filled-state-layer-color: white;
+  --mat-button-filled-ripple-color: rgba(255, 255, 255, 0.1);
 }

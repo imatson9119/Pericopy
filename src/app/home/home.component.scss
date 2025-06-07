@@ -61,7 +61,7 @@
   .welcome-description { font-size: 1.1rem; line-height: 1.6; color: #5e5e5e; margin-bottom: 2rem; }
   
   .primary-cta {
-    --mdc-fab-container-color: #4a555b;
+    --mat-fab-container-color: #4a555b;
     --mat-fab-foreground-color: white;
     --mat-fab-state-layer-color: white;
     font-size: 1.1rem;
@@ -92,7 +92,7 @@
   .goals-subtitle { font-size: 1rem; color: #5e5e5e; margin: 0; }
   
   .primary-cta {
-    --mdc-fab-container-color: #4a555b;
+    --mat-fab-container-color: #4a555b;
     --mat-fab-foreground-color: white;
     --mat-fab-state-layer-color: white;
     flex-shrink: 0;
@@ -160,9 +160,9 @@
       gap: 0.5rem;
 
       .practice-button {
-        --mdc-text-button-container-height: 32px;
-        --mdc-text-button-label-text-size: 0.875rem;
-        --mdc-text-button-label-text-weight: 400;
+        --mat-button-text-container-height: 32px;
+        --mat-button-text-label-text-size: 0.875rem;
+        --mat-button-text-label-text-weight: 400;
         padding: 0 12px;
         min-width: auto;
         height: 32px;
@@ -309,8 +309,8 @@ mat-checkbox { user-select: none; font-weight: 100; }
     .quick-goal-actions {
       gap: 0.25rem;
       .practice-button {
-        --mdc-text-button-container-height: 28px;
-        --mdc-text-button-label-text-size: 0.8rem;
+        --mat-button-text-container-height: 28px;
+        --mat-button-text-label-text-size: 0.8rem;
         padding: 0 8px;
         height: 28px;
         line-height: 28px;
