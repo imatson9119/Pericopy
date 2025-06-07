@@ -71,6 +71,8 @@ export class SelectRecitationsDialogComponent implements OnDestroy {
   }
 
   initDataSource(): void {
+    // Sort by timestamp
+    this.recitations.sort((a, b) => b.recitation.timestamp - a.recitation.timestamp);
     this.originalSelections = this.recitations.map((r) => r.selected);
     this.dataSource.data = this.recitations;
   }

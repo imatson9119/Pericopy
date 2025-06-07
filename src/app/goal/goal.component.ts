@@ -507,7 +507,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
         this.attempts = new Map(result.map((r: IResult) => [r.id, r]));
         this.dataSource.data = Array.from(this.attempts.values()).sort((a, b) => b.timestamp - a.timestamp);
         
-        this._snackbarService.showEmoji('🔗', 'Recitations linked to goal.', 3000);
+        this._snackbarService.showEmoji('🔗', 'Updated linked recitations successfully.', 3000);
       }
     });
   }

@@ -402,7 +402,7 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
         }
         this.currentResult!.goals = new Set(goals.map((g) => g.id));
         this._storageService.storeAttempt(this.currentResult!);
-        this._snackbarService.showSuccess('Goals updated.', 3000);
+        this._snackbarService.showEmoji('🔗', 'Updated linked goals successfully.', 3000);
         this.loadRelatedGoals();
       }
     });

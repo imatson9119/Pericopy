@@ -104,57 +104,61 @@
         </button>
       </div>
     }
-    @if (this.attempts.size > 0) {
       <div class="goal-body">
         <mat-tab-group 
           class="tabs" 
           [selectedIndex]="selectedTabIndex" 
           (selectedTabChange)="onTabChange($event.index)">
           <mat-tab label="Stats">
-            <div class="stat-grid">
-              <div class="stat-card">
-                <div class="stat-card-header">
-                  <div class="stat-card-title">Progress</div>
-                  <div class="stat-card-subtitle">Portion Memorized</div>
-                </div>
-                <div class="stat-card-body">
-                  <div class="percent-memorized">
-                    <div matTooltip="Includes >80% accuracy">
-                      {{ this.percentMemorized }}<span class="percent">%</span>
-                    </div>
-                    <div class="word-count">
-                      ({{ this.totalWordsMemorized }} / {{ this.totalWords }} words)
+            @if (this.attempts.size > 0) {
+              <div class="stat-grid">
+                <div class="stat-card">
+                  <div class="stat-card-header">
+                    <div class="stat-card-title">Progress</div>
+                    <div class="stat-card-subtitle">Portion Memorized</div>
+                  </div>
+                  <div class="stat-card-body">
+                    <div class="percent-memorized">
+                      <div matTooltip="Includes >80% accuracy">
+                        {{ this.percentMemorized }}<span class="percent">%</span>
+                      </div>
+                      <div class="word-count">
+                        ({{ this.totalWordsMemorized }} / {{ this.totalWords }} words)
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div class="stat-card accuracy-pie">
+                  <div class="stat-card-header">
+                    <div class="stat-card-title">Accuracy</div>
+                    <div class="stat-card-subtitle">Your overall accuracy</div>
+                  </div>
+                  <canvas
+                    baseChart
+                    [data]="diffTypeData"
+                    [options]="diffTypeConfig"
+                    [type]="'doughnut'"
+                  >
+                  </canvas>
+                </div>
               </div>
-              <div class="stat-card accuracy-pie">
+              <div class="stat-card timeline">
                 <div class="stat-card-header">
-                  <div class="stat-card-title">Accuracy</div>
-                  <div class="stat-card-subtitle">Your overall accuracy</div>
+                  <div class="stat-card-title">Timeline</div>
+                  <div class="stat-card-subtitle">Your stats over time</div>
                 </div>
                 <canvas
                   baseChart
-                  [data]="diffTypeData"
-                  [options]="diffTypeConfig"
-                  [type]="'doughnut'"
-                >
-                </canvas>
+                  [data]="timelineData"
+                  [options]="timelineConfig"
+                  [type]="'line'"
+                ></canvas>
               </div>
-            </div>
-            <div class="stat-card timeline">
-              <div class="stat-card-header">
-                <div class="stat-card-title">Timeline</div>
-                <div class="stat-card-subtitle">Your stats over time</div>
-              </div>
-              <canvas
-                baseChart
-                [data]="timelineData"
-                [options]="timelineConfig"
-                [type]="'line'"
-              ></canvas>
-            </div>
+            } @else {
+              <ng-container *ngTemplateOutlet="noAttempts"></ng-container>
+            }
           </mat-tab>
+          
           <mat-tab label="Recitations">
             <div class="attempts">
               <div class="recitations-header">
@@ -171,42 +175,45 @@
                   <mat-icon>add_link</mat-icon>
                 </button>
               </div>
-              
-              <div class="recitations-grid">
-                @for(attempt of paginatedRecitations; track attempt.id) {
-                  <div 
-                    class="recitation-card"
-                    (click)="this.loadResult(attempt.id)"
-                    [attr.aria-label]="'View recitation from ' + this.getRelativeTime(attempt.timestamp, true)"
-                  >
-                    <div class="recitation-card-header">
-                      <div class="recitation-passage">
-                        {{ attempt.diff.p }}
+              @if (this.attempts.size > 0) {
+                <div class="recitations-grid">
+                  @for(attempt of paginatedRecitations; track attempt.id) {
+                    <div 
+                      class="recitation-card"
+                      (click)="this.loadResult(attempt.id)"
+                      [attr.aria-label]="'View recitation from ' + this.getRelativeTime(attempt.timestamp, true)"
+                    >
+                      <div class="recitation-card-header">
+                        <div class="recitation-passage">
+                          {{ attempt.diff.p }}
+                        </div>
+                        <div 
+                          class="recitation-score"
+                          [style.--accent-color]="this.getScoreColor(attempt.score)"
+                        >
+                          {{ formatScore(attempt.score) }}
+                        </div>
                       </div>
-                      <div 
-                        class="recitation-score"
-                        [style.--accent-color]="this.getScoreColor(attempt.score)"
-                      >
-                        {{ formatScore(attempt.score) }}
+                      <div class="recitation-details">
+                        <mat-icon class="recitation-icon">edit_note</mat-icon>
+                        <span class="recitation-date">
+                          {{ this.getRelativeTime(attempt.timestamp, true) }}
+                        </span>
                       </div>
                     </div>
-                    <div class="recitation-details">
-                      <mat-icon class="recitation-icon">edit_note</mat-icon>
-                      <span class="recitation-date">
-                        {{ this.getRelativeTime(attempt.timestamp, true) }}
-                      </span>
-                    </div>
-                  </div>
-                }
-              </div>
-              
-              <mat-paginator
-                class="recitations-paginator"
-                [pageSize]="12"
-                [pageSizeOptions]="[12, 24, 48, 100]"
-                aria-label="Select page"
-              >
-              </mat-paginator>
+                  }
+                </div>
+                
+                <mat-paginator
+                  class="recitations-paginator"
+                  [pageSize]="12"
+                  [pageSizeOptions]="[12, 24, 48, 100]"
+                  aria-label="Select page"
+                >
+                </mat-paginator>
+              } @else {
+                <ng-container *ngTemplateOutlet="noAttempts"></ng-container>
+              }
             </div>
           </mat-tab>
           <mat-tab label="Study">
@@ -219,18 +226,19 @@
           </mat-tab>
         </mat-tab-group>
       </div>
-    } @else {
-      <div class="no-attempts">
-        <mat-icon> query_stats </mat-icon>
-        <span> You haven't made any recitations for this goal yet. </span>
-        <button mat-raised-button color="primary" (click)="this.makeAttempt()">
-          Go for it!
-        </button>
-      </div>
-    }
   </div>
 } @else {
   <div class="page-loader">
     <mat-spinner></mat-spinner>
   </div>
 }
+
+<ng-template #noAttempts>
+  <div class="no-attempts">
+    <mat-icon> query_stats </mat-icon>
+    <span> You haven't made any recitations for this goal yet. </span>
+    <button mat-raised-button color="primary" (click)="this.makeAttempt()">
+      Go for it!
+    </button>
+  </div>
+</ng-template>

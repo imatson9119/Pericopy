@@ -69,6 +69,8 @@ export class SelectGoalsDialogComponent implements OnDestroy {
   }
 
   initDataSource(): void {
+    // Sort by timestamp
+    this.goals.sort((a, b) => b.goal.t - a.goal.t);
     this.originalSelections = this.goals.map((g) => g.selected);
     this.dataSource.data = this.goals;
   }
