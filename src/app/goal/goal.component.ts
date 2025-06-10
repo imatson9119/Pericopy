@@ -20,12 +20,40 @@ import { Goal, GoalStatus } from '../classes/Goal';
 import confetti from 'canvas-confetti';
 import { SnackbarService } from '../services/snackbar.service';
 import { RecitationSelector, SelectRecitationsDialogComponent } from '../misc-components/select-recitations-dialog/select-recitations-dialog.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { BibleDisplayComponent } from '../results/bible-display/bible-display.component';
+import { CommonModule } from '@angular/common';
+import { BaseChartDirective } from 'ng2-charts';
+
 
 @Component({
     selector: 'app-goal',
     templateUrl: './goal.component.html',
     styleUrl: './goal.component.scss',
-    standalone: false,
+    imports: [
+      MatInputModule,
+      MatButtonModule,
+      MatIconModule,
+      MatTooltipModule,
+      MatProgressSpinnerModule,
+      MatTabsModule,
+      MatPaginatorModule,
+      MatSortModule,
+      MatTableModule,
+      BibleDisplayComponent,
+      CommonModule,
+      MatDialogModule,
+      BaseChartDirective
+    ],  
+    providers: [
+      provideCharts(withDefaultRegisterables()),
+    ]
 })
 export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   goalId = '';

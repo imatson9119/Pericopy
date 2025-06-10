@@ -62,10 +62,10 @@ import { PortalModule } from '@angular/cdk/portal';
 @NgModule({
   declarations: [
     AppComponent,
-    GoalComponent
   ],
   bootstrap: [AppComponent],
   imports: [
+    GoalComponent,
     SingleAttemptComponent,
     HistoryComponent,
     ImportDialogComponent,
