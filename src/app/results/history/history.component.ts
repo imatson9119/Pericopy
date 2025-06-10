@@ -3,22 +3,36 @@ import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { IResult } from 'src/app/classes/models';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { getRelativeDate, replacer } from 'src/app/utils/utils';
-import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { Bible } from 'src/app/classes/Bible';
 import { BibleService } from 'src/app/services/bible.service';
 import { Subscription } from 'rxjs';
 import { SnackbarService } from 'src/app/services/snackbar.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-history',
     templateUrl: './history.component.html',
     styleUrls: ['./history.component.scss'],
-    standalone: false
+    imports: [
+      MatTableModule,
+      MatPaginatorModule,
+      MatSortModule,
+      MatInputModule,
+      MatButtonModule,
+      MatProgressSpinnerModule,
+      MatIconModule,
+      FormsModule
+    ]
 })
 export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
 

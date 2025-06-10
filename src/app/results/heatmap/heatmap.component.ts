@@ -9,6 +9,15 @@ import { Bible } from 'src/app/classes/Bible';
 import { Subscription } from 'rxjs';
 import { intersection } from 'src/app/utils/utils';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { VerseSelectorComponent } from 'src/app/misc-components/verse-selector/verse-selector.component';
+import { BibleDisplayComponent } from '../bible-display/bible-display.component';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 
 enum FilterValues {
   PAST_DAY = 'Past Day',
@@ -22,7 +31,17 @@ enum FilterValues {
     selector: 'app-heatmap',
     templateUrl: './heatmap.component.html',
     styleUrls: ['./heatmap.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule,
+      MatButtonModule,
+      MatIconModule,
+      MatTooltipModule,
+      MatProgressSpinnerModule,
+      VerseSelectorComponent,
+      BibleDisplayComponent,
+      MatSelectModule,
+      FormsModule,
+    ]
 })
 export class HeatmapComponent implements OnDestroy, OnInit {
   filterValues = FilterValues;

@@ -1,15 +1,22 @@
 import { Component, ViewChild } from '@angular/core';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { StorageService } from 'src/app/services/storage.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { reviver } from 'src/app/utils/utils';
 import { SnackbarService } from 'src/app/services/snackbar.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-import-dialog',
     templateUrl: './import-dialog.component.html',
     styleUrls: ['./import-dialog.component.scss'],
-    standalone: false
+    imports: [
+      FileUploadComponent,
+      MatButtonModule,
+      MatDialogModule,
+      MatIconModule
+    ]
 })
 export class ImportDialogComponent {
   @ViewChild('fileUpload') fileUpload: FileUploadComponent | null = null;

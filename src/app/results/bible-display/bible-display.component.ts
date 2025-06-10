@@ -1,15 +1,18 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Bible } from 'src/app/classes/Bible';
 import { BiblePassage } from 'src/app/classes/BiblePassage';
-import { DiffType, Heatmap, Verse } from 'src/app/classes/models';
+import { DiffType, Heatmap } from 'src/app/classes/models';
 import { intersection, numberToColorHsl } from 'src/app/utils/utils';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-bible-display',
     templateUrl: './bible-display.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['./bible-display.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule
+    ]
 })
 export class BibleDisplayComponent {
   diffTypes = DiffType;

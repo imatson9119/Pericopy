@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { DiffType, IResult, ResultBank } from 'src/app/classes/models';
 import { StorageService } from 'src/app/services/storage.service';
-import { DisplayType } from '../diff-display/diff-display.component';
-import { MatDialog } from '@angular/material/dialog';
+import { DiffDisplayComponent, DisplayType } from '../diff-display/diff-display.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DeleteAttemptDialogComponent } from './delete-attempt-dialog/delete-attempt-dialog.component';
 import { Bible } from 'src/app/classes/Bible';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,11 @@ import { Goal, GoalStatus } from 'src/app/classes/Goal';
 import { SnackbarService } from 'src/app/services/snackbar.service';
 import { SelectGoalsDialogComponent } from 'src/app/misc-components/select-goals-dialog/select-goals-dialog.component';
 import { intersection } from 'src/app/utils/utils';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 
 interface StatCard {
   label: string;
@@ -39,7 +44,16 @@ interface PerformanceMetrics {
     selector: 'app-single-attempt',
     templateUrl: './single-attempt.component.html',
     styleUrls: ['./single-attempt.component.scss'],
-    standalone: false
+    imports: [
+      MatButtonModule,
+      MatIconModule,
+      MatDialogModule,
+      MatProgressSpinnerModule,
+      MatTooltipModule,
+      DiffDisplayComponent,
+      MatTabsModule,
+      CommonModule,
+    ]
 })
 export class SingleAttemptComponent implements OnInit, OnDestroy {
   result_bank: ResultBank = {"version":1,"results": new Map()};

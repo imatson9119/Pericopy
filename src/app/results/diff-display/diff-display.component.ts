@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Bible } from 'src/app/classes/Bible';
 import { BibleDiff, DiffType } from 'src/app/classes/models';
+import { CommonModule } from '@angular/common';
 
 export enum DisplayType {
   diff,
@@ -12,7 +13,9 @@ export enum DisplayType {
     selector: 'app-diff-display',
     templateUrl: './diff-display.component.html',
     styleUrls: ['./diff-display.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule
+    ]
 })
 export class DiffDisplayComponent implements OnInit {
 

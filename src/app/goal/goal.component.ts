@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -9,9 +9,9 @@ import { BibleService } from '../services/bible.service';
 import { StorageService } from '../services/storage.service';
 import { daysUntil, getRelativeDate, intersection } from '../utils/utils';
 import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { accuracyChartConfig } from './chart-configs/accuracy-chart-config';
 import { timelineConfig } from './chart-configs/timeline-chart-config';
 import 'chartjs-adapter-luxon';
@@ -25,7 +25,7 @@ import { RecitationSelector, SelectRecitationsDialogComponent } from '../misc-co
     selector: 'app-goal',
     templateUrl: './goal.component.html',
     styleUrl: './goal.component.scss',
-    standalone: false
+    standalone: false,
 })
 export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   goalId = '';

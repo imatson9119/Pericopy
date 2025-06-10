@@ -1,13 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Title, Meta } from '@angular/platform-browser';
 import { DonatePopupComponent } from './donate-popup/donate-popup.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-info',
     templateUrl: './info.component.html',
     styleUrls: ['./info.component.scss'],
-    standalone: false
+    imports: [
+      MatDialogModule,
+      MatButtonModule,
+      MatIconModule
+    ]
 })
 export class InfoComponent implements OnInit {
 

@@ -1,10 +1,17 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { FileDropDirective } from 'src/app/utils/file-drop.directive';
 
 @Component({
     selector: 'app-file-upload',
     templateUrl: './file-upload.component.html',
     styleUrls: ['./file-upload.component.scss'],
-    standalone: false
+    imports: [
+      CommonModule,
+      MatIconModule,
+      FileDropDirective
+    ]
 })
 export class FileUploadComponent {
   @Input()

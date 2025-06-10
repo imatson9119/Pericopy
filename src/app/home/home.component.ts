@@ -8,19 +8,39 @@ import { Bible } from '../classes/Bible';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { BiblePassage } from '../classes/BiblePassage';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
 import { NewGoalDialogComponent } from '../goal/new-goal-dialog/new-goal-dialog.component';
 import { Goal, GoalStatus } from '../classes/Goal';
 import { Title, Meta } from '@angular/platform-browser';
 import { SnackbarService } from '../services/snackbar.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    standalone: false
+    imports: [
+      MatTableModule,
+      MatPaginatorModule,
+      MatSortModule,
+      MatInputModule,
+      MatButtonModule,
+      MatIconModule,
+      MatTooltipModule,
+      MatProgressSpinnerModule,
+      CommonModule,
+      MatCheckboxModule,
+      FormsModule
+    ]
 })
 export class HomeComponent implements OnDestroy, OnInit {
   attempts: Map<string,IResult> = new Map();
@@ -110,7 +130,6 @@ export class HomeComponent implements OnDestroy, OnInit {
       // Will be applied in initSorting
       setTimeout(() => {
         if (this.paginator) {
-          console.log(`Setting page size to ${settings.pageSize} and page index to ${settings.pageIndex}`);
           this.paginator.pageSize = settings.pageSize;
           this.paginator.pageIndex = settings.pageIndex;
         }

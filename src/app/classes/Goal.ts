@@ -106,7 +106,6 @@ export class Goal {
       return covers(a.diff.i, a.diff.j + 1, i, j)
     }).sort((a, b) => a.timestamp - b.timestamp);
 
-    console.log("Full attempts: ", fullAttempts.length);
     const params = generatorParameters({
       enable_fuzz: false,
       enable_short_term: false,
@@ -123,7 +122,6 @@ export class Goal {
       // @ts-ignore
       card = f.repeat(card, attempt.timestamp)[aDiff].card;
     }
-    console.log("Refreshed FSRS card: ", card);
     return card;
   }
 
