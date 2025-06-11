@@ -10,7 +10,7 @@ import { GoalComponent } from './goal/goal.component';
 import { FreestyleComponent } from './freestyle/freestyle.component';
 import { BlanksComponent } from './blanks/blanks.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: 'recite', component: ReciteComponent },
   { path: 'results', component: SingleAttemptComponent },
   { path: 'history', component: HistoryComponent },
