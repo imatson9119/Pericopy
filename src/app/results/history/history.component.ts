@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -36,8 +36,16 @@ import { FormsModule } from '@angular/forms';
 })
 export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
 
+  private _storageService = inject(StorageService);
+  private _router = inject(Router);
+  private _bibleService = inject(BibleService);
+  private dialog = inject(MatDialog);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private _snackbarService = inject(SnackbarService);
+
   filterValue = ''
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   nAttempts = 0;
   
@@ -46,25 +54,12 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'time', start: 'desc'}) as MatSortable);
 
-  constructor(
-    private _storageService: StorageService, 
-    private _router: Router, 
-    private _bibleService: BibleService, 
-    private dialog: MatDialog,
-    private titleService: Title,
-    private metaService: Meta,
-    private _snackbarService: SnackbarService
-  ) {
-    this.subscriptions.push(this._bibleService.curBible.subscribe(
-      (bible) => {
-        this.bible = bible;
-        this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
-        setTimeout(()=>{
-          this.initSorting();
-        }, 10);
-      }
-    ));
-  }
+  bibleEffect = effect(() => {
+    this.dataSource = new MatTableDataSource<IResult>(this.getDataSource());
+    setTimeout(()=>{
+      this.initSorting();
+    }, 10);
+  });
 
   ngOnInit(): void {
     const pageTitle = 'Recitation History | Pericopy';
@@ -121,10 +116,11 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   getDataSource(){
-    if (this.bible === undefined) {
+    const bible = this.bible();
+    if (bible === undefined) {
       return [];
     }
-    let attempts = this.getAttempts(this.bible.m.t);
+    let attempts = this.getAttempts(bible.m.t);
     this.nAttempts = attempts.size;
     return [...attempts.values()]
   }

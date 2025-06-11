@@ -45,7 +45,7 @@
         <div>
           <button class="bible-version-selector" [matMenuTriggerFor]="bibleVersionMenu">
             <mat-icon>book</mat-icon>
-            <span class="button-text">{{this.bibleVersion.toUpperCase()}}</span>
+            <span class="button-text">{{this.getBibleVersion()}}</span>
           </button>
           <mat-menu #bibleVersionMenu="matMenu">
             @for (version of this.supportedVersions; track version) {

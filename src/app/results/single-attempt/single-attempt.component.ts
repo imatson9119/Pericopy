@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -73,21 +73,20 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     improvementTrend: 'stable'
   };
   
+  
+  private _router = inject(Router);
+  private _storageService = inject(StorageService);
+  private _bibleService = inject(BibleService);
+  private dialog = inject(MatDialog);
+  private _location = inject(Location);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private _snackbarService = inject(SnackbarService);
+
+  bible = this._bibleService.bible;
   statCards: StatCard[] = [];
-  bible: Bible | undefined = undefined;
   subscriptions: Subscription[] = [];
   GoalStatus = GoalStatus;
-
-  constructor(
-    private _router: Router,
-    private _storageService: StorageService,
-    private _bibleService: BibleService, 
-    private dialog: MatDialog, 
-    private _location: Location,
-    private titleService: Title,
-    private metaService: Meta,
-    private _snackbarService: SnackbarService
-  ) {}
 
   ngOnInit(): void {
     this.updatePageMetadata();
@@ -99,12 +98,6 @@ export class SingleAttemptComponent implements OnInit, OnDestroy {
     } else {
       this._router.navigateByUrl('/history');
     }
-
-    this.subscriptions.push(this._bibleService.curBible.subscribe(
-      (bible) => {
-        this.bible = bible;
-      }
-    ));
   }
 
   ngOnDestroy(): void {

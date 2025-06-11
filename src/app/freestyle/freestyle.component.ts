@@ -1,5 +1,6 @@
 import {
   Component,
+  inject,
   NgZone,
   OnDestroy,
   OnInit,
@@ -36,27 +37,19 @@ enum InputState {
 export class FreestyleComponent
   implements OnDestroy, OnInit
 {
+  private _bibleService = inject(BibleService);
+  private ngZone = inject(NgZone);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+
   attempt = '';
   passage: BiblePassage | undefined = undefined;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   InputState = InputState
   inputState = InputState.NO_LOCK;
 
   @ViewChild('input') input: FreestyleInputDivComponent | null = null;
-
-  constructor(
-    private _bibleService: BibleService,
-    private ngZone: NgZone,
-    private titleService: Title,
-    private metaService: Meta
-  ) {
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
-      })
-    ); 
-  }
 
   ngOnInit(): void {
     const pageTitle = 'Freestyle Scripture Practice | Pericopy';

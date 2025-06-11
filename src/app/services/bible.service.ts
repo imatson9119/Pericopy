@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, resource, inject, effect, computed } from '@angular/core';
 import {
   IBible,
   WordMap,
@@ -6,13 +6,31 @@ import {
 } from '../classes/models';
 import { Bible } from '../classes/Bible';
 import { BehaviorSubject, Observable, map, of, shareReplay, zip } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, httpResource } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BibleService {
+
+  version = signal<string>(localStorage.getItem('bibleVersion') || 'esv');
   bibleUrl = 'https://imatson9119.github.io/bible-parser';
+  wordMapFile = httpResource<WordMap>(
+    () => ({  url: `${this.bibleUrl}/word_maps/${this.version()}.json` }),
+    { parse: this.wordMapParser }
+  )
+  bibleFile = httpResource<IBible>(
+    () => ({  url: `${this.bibleUrl}/bibles/${this.version()}.json` }),
+  )
+  bible = computed<Bible | undefined>(() => {
+    let wordMap = this.wordMapFile.value();
+    let bible = this.bibleFile.value();
+    if (wordMap !== undefined && bible !== undefined) {
+      return new Bible(bible, wordMap);
+    }
+    return undefined;
+  })
+
   private bibles: { [key: string]: Bible | undefined | Observable<Bible>} = {
     esv: undefined,
     kjv: undefined,
@@ -24,79 +42,25 @@ export class BibleService {
     nlt: undefined,
     nrsv: undefined,
   };
-  curVersion = '';
-  private curBibleSubject: BehaviorSubject<Bible | undefined> = new BehaviorSubject<Bible | undefined>(undefined);
-  _curBible = this.curBibleSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-  }
+  private bibleEffect = effect(() => {
+    console.log(`bible: ${this.bible()}`);
+  })
 
-  get curBible(): Observable<Bible | undefined>{
-    return this._curBible;
-  }
+  private http = inject(HttpClient);
+
+  constructor() {}
 
   getSupportedVersions(): string[] {
     return Object.keys(this.bibles);
   }
 
-  setVersion(version: string): Observable<boolean> {
-    if (version === this.curVersion) {
-      return of(true);
+  wordMapParser(wordMap: unknown): WordMap {
+    let wordMapFile = wordMap as WordMapFile;
+    let wordMapObj: WordMap = {};
+    for (let word in wordMapFile) {
+      wordMapObj[word] = new Set(wordMapFile[word]);
     }
-    let requestedBible = this.bibles[version];
-    if (requestedBible === undefined) {
-      let loadObservable = this.getBible(version);
-      loadObservable.subscribe((bible) => {
-        if (bible === undefined) {
-          return;
-        }
-        this.curVersion = version;
-        this.curBibleSubject.next(bible);
-      });
-      return loadObservable.pipe(map((bible) => {
-        return bible !== undefined;
-      }));
-    } else if (requestedBible instanceof Bible){
-      this.curVersion = version;
-      this.curBibleSubject.next(requestedBible);
-      return of(true);
-    } else {
-      requestedBible.subscribe((bible) => {
-        if (bible === undefined) {
-          return;
-        }
-        this.curVersion = version;
-        this.curBibleSubject.next(bible);
-      });
-      return requestedBible.pipe(map((bible) => {
-        return bible !== undefined;
-      })); 
-    }
-  }
-
-  loadBible(version: string): Observable<Bible> {
-    let bible = this.http.get<any>(`${this.bibleUrl}/bibles/${version}.json`);
-    let wordMap = this.http.get<any>(`${this.bibleUrl}/word_maps/${version}.json`);
-    let observable = zip(bible, wordMap).pipe(
-      map(([bible, wordMap]) => {
-        let wordMapFile = wordMap as WordMapFile;
-        let wordMapObj: WordMap = {};
-        for (let word in wordMapFile) {
-          wordMapObj[word] = new Set(wordMapFile[word]);
-        }
-        let bibleObj = new Bible(bible as IBible, wordMapObj);
-        this.bibles[version] = bibleObj;
-        this.curBibleSubject.next(bibleObj);
-        return bibleObj;
-      }),
-      shareReplay(1)
-    );
-    this.bibles[version] = observable;
-    return observable;
-  }
-
-  getBible(version: string): Observable<Bible> {
-    let bible = this.bibles[version];
-    return bible instanceof Bible ? of(bible) : bible instanceof Observable ? bible : this.loadBible(version);
+    return wordMapObj;
   }
 }

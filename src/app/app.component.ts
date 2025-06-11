@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { StorageService } from './services/storage.service';
 import { BibleService } from './services/bible.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,15 +24,12 @@ import { RouterModule } from '@angular/router';
 })
 export class AppComponent {
   title = 'roman-road-webapp';
-  bibleVersion: string = localStorage.getItem('bibleVersion') || 'esv';
+  private _bibleService = inject(BibleService);
+  private _storageService = inject(StorageService);
+  private dialog = inject(MatDialog);
   supportedVersions = this._bibleService.getSupportedVersions();
 
-  constructor(
-    private _storageService: StorageService, 
-    private _bibleService: BibleService, 
-    private dialog: MatDialog,
-  ) {
-    this.setBibleVersion(this.bibleVersion);
+  constructor() {
     this.handleDialogs();
   }
   
@@ -41,14 +38,11 @@ export class AppComponent {
   }
 
   setBibleVersion(version: string) {
-    this.bibleVersion = version;
-    this._bibleService.setVersion(version).subscribe(
-      (bible) => {
-        if (bible) {
-          localStorage.setItem('bibleVersion', version);
-        }
-      }
-    );
+    this._bibleService.version.set(version);
+  }
+
+  getBibleVersion() {
+    return this._bibleService.version().toUpperCase();
   }
 
   handleDialogs() {

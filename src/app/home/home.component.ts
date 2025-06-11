@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, effect, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IResult } from '../classes/models';
 import { StorageService, TableSettings } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -43,9 +43,17 @@ import { FormsModule } from '@angular/forms';
     ]
 })
 export class HomeComponent implements OnDestroy, OnInit {
+  private _storageService = inject(StorageService);
+  private dialog = inject(MatDialog);
+  private _bibleService = inject(BibleService);
+  private router = inject(Router);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private _snackbarService = inject(SnackbarService);
+
   attempts: Map<string,IResult> = new Map();
   goals: Goal[] = [];
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   filterValue = '';
   displayedColumns: string[] = ['title', 'time', 'status', 'dueIn'];
@@ -58,17 +66,14 @@ export class HomeComponent implements OnDestroy, OnInit {
   // Expose enum to template
   public GoalStatus = GoalStatus;
 
-  constructor(
-    private _storageService: StorageService,
-    private dialog: MatDialog,
-    private _bibleService: BibleService,
-    private router: Router,
-    private titleService: Title,
-    private metaService: Meta,
-    private _snackbarService: SnackbarService
-  ) {
-  
-  }
+  bibleEffect = effect(() => {
+    const bible = this.bible();
+    if (!bible) {
+      return;
+    }
+    this.attempts = this._storageService.getAttempts(bible.m.t);
+    this.goals = [...this._storageService.getGoals(bible.m.t).values()].sort((a,b) => b.t - a.t);
+  })
   
   ngOnInit() {
     const pageTitle = 'Pericopy | Scripture Memorization Made Simple';
@@ -86,39 +91,27 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
-    this.subscriptions.push(this._bibleService.curBible.subscribe(
-      (bible) => {
-        this.bible = bible;
-        if(this.bible) {
-          this.attempts = this._storageService.getAttempts(this.bible.m.t);
-          this.goals = [...this._storageService.getGoals(this.bible.m.t).values()].sort((a,b) => b.t - a.t);
-          this.dataSource = new MatTableDataSource<Goal>(this.goals);
-          this.loadTableSettings();
-          
-          setTimeout(()=>{
-            this.initSorting();
-            if (this.paginator) {
-              this.subscriptions.push(
-                this.paginator.page.subscribe(() => {
-                  this.saveTableSettings();
-                })
-              );
-            }
-            
-            // Subscribe to sort events to save settings
-            if (this.sort) {
-              this.subscriptions.push(
-                this.sort.sortChange.subscribe(() => {
-                  this.saveTableSettings();
-                })
-              );
-            }
-          }, 10);
-          
-        }
+    this.dataSource = new MatTableDataSource<Goal>(this.goals);
+    this.loadTableSettings();
+    setTimeout(()=>{
+      this.initSorting();
+      if (this.paginator) {
+        this.subscriptions.push(
+          this.paginator.page.subscribe(() => {
+            this.saveTableSettings();
+          })
+        );
       }
-    ));
-    
+      
+      // Subscribe to sort events to save settings
+      if (this.sort) {
+        this.subscriptions.push(
+          this.sort.sortChange.subscribe(() => {
+            this.saveTableSettings();
+          })
+        );
+      }
+    }, 10);
   }
 
   loadTableSettings() {
@@ -207,13 +200,14 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   addGoal() {
-    if (!this.bible) {
+    const bible = this.bible();
+    if (!bible) {
       return;
     }
     let last5Attempts = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
     let passages: BiblePassage[] = [];
     for (let attempt of last5Attempts) {
-      let passage = this.bible.getPassage(attempt.diff.i, attempt.diff.j);
+      let passage = bible.getPassage(attempt.diff.i, attempt.diff.j);
       if (passage) {
         passages.push(passage);
       }
@@ -236,12 +230,13 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   getGoalText(goal: Goal) {
     let wordsToPreview = 20;
-    if (!this.bible) {
+    const bible = this.bible();
+    if (!bible) {
       return '';
     }
     return goal.j - goal.i <= wordsToPreview ? 
-      this.bible.getText(goal.i, goal.j) : 
-      this.bible.getText(goal.i, goal.i + wordsToPreview/2) + ' ... ' + this.bible.getText(goal.j - wordsToPreview/2, goal.j);
+      bible.getText(goal.i, goal.j) : 
+      bible.getText(goal.i, goal.i + wordsToPreview/2) + ' ... ' + bible.getText(goal.j - wordsToPreview/2, goal.j);
   }
 
   loadGoal(goalId: string) {

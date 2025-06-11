@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, ElementRef, ViewChild, inject, signal, effect } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title, Meta } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,6 +46,16 @@ interface BlankState {
     imports: [ MatProgressSpinnerModule, MatTooltipModule, MatButtonModule, MatIconModule, CommonModule, MatInputModule ]
 })
 export class BlanksComponent implements OnInit {
+  private _bibleService = inject(BibleService);
+  private practiceService = inject(MemorizationPracticeService);
+  private _storageService = inject(StorageService);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private _dialog = inject(MatDialog);
+  private _snackbarService = inject(SnackbarService);
+
   attempts: Map<string,IResult> = new Map();
   passage: BiblePassage | null = null;
   passageText: string[] = [];
@@ -61,7 +71,7 @@ export class BlanksComponent implements OnInit {
     velocity: number; 
     adjustmentType: 'increase' | 'decrease' | 'maintain' 
   } | null = null;
-  bible: Bible | undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   rng: seedrandom.PRNG = seedrandom();
   preferences: BlanksModulePreferences = this.practiceService.getPreferences();
@@ -75,36 +85,25 @@ export class BlanksComponent implements OnInit {
   private saveCacheTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Query params
-  i: number | null = null;
-  j: number | null = null;
+  i = signal<number>(this.route.snapshot.queryParams['i'] || -1);
+  j = signal<number>(this.route.snapshot.queryParams['j'] || -1);
 
-  constructor(
-    private dialog: MatDialog,
-    private bibleService: BibleService,
-    private practiceService: MemorizationPracticeService,
-    private _storageService: StorageService,
-    private titleService: Title,
-    private metaService: Meta,
-    private route: ActivatedRoute,
-    private router: Router,
-    private _snackbarService: SnackbarService,
-  ) {
+  bibleEffect = effect(() => {
+    const bible = this.bible();
+    if (bible) {
+      this.attempts = this._storageService.getAttempts(bible.m.t);
+    }
+  });
+
+  constructor() {
     // Create a joint observable that combines both bible and query params
     this.subscriptions.push(
-      combineLatest([
-        this.bibleService.curBible,
-        this.route.queryParams
-      ]).subscribe(([bible, params]) => {
-        this.bible = bible;
-        this.i = params['i'] || null;
-        this.j = params['j'] || null;
+        this.route.queryParams.subscribe((params) => {
+        this.i.set(params['i'] || -1);
+        this.j.set(params['j'] || -1);
         
-        if (this.bible) {
-          this.attempts = this._storageService.getAttempts(this.bible.m.t);
-        }
-
-        if (this.i && this.j && this.bible) {
-          this.setPassage(this.bible.getPassage(this.i, this.j));
+        if (this.i() !== -1 && this.j() !== -1) {
+          this.setPassage(this.bible()!.getPassage(this.i(), this.j()));
         }
       })
     );
@@ -149,7 +148,8 @@ export class BlanksComponent implements OnInit {
   }
 
   openPassageSelect() {
-    if(!this.bible) return;
+    const bible = this.bible();
+    if(!bible) return;
     
     // Get recent passages from the practice service instead of general attempts
     const recentPassages = this.practiceService.getRecentPassages();
@@ -157,7 +157,7 @@ export class BlanksComponent implements OnInit {
     
     // Convert recent passages to BiblePassage objects
     for (let recentPassage of recentPassages) {
-      let passage = this.bible.getPassage(recentPassage.i, recentPassage.j);
+      let passage = bible.getPassage(recentPassage.i, recentPassage.j);
       if (passage) {
         passages.push(passage);
       }
@@ -167,14 +167,14 @@ export class BlanksComponent implements OnInit {
     if (passages.length < 5 && this.attempts.size > 0) {
       let last5Attempts = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0, 5 - passages.length);
       for (let attempt of last5Attempts) {
-        let passage = this.bible.getPassage(attempt.diff.i, attempt.diff.j);
+        let passage = bible.getPassage(attempt.diff.i, attempt.diff.j);
         if (passage && !passages.some(p => p.id === passage.id)) {
           passages.push(passage);
         }
       }
     }
     
-    const dialogRef = this.dialog.open(PassageSelectDialogComponent, {
+    const dialogRef = this._dialog.open(PassageSelectDialogComponent, {
       data: {
         title: 'Select a Passage',
         subtitle: 'Please select a passage from the Bible.',
@@ -183,7 +183,7 @@ export class BlanksComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe((result: BiblePassage | undefined) => {
-      if (result && this.bible) {
+      if (result && bible) {
         this.router.navigate([], { queryParams: { i: result.i, j: result.j } });
         this.setPassage(result);
         this.practiceService.trackRecentPassage(result.id, result.i, result.j);
@@ -192,9 +192,10 @@ export class BlanksComponent implements OnInit {
   }
 
   generateBlanks(passage: BiblePassage, passageData: PassageData) {
-    if (!this.bible) return;
+    const bible = this.bible();
+    if (!bible) return;
     
-    const text = this.bible.getText(passage.i, passage.j);
+    const text = bible.getText(passage.i, passage.j);
     this.passageText = text.split(/\s+/);
     this.blanks = new Map();
     this.nFilledBlanks = 0;

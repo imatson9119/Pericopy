@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -56,13 +56,23 @@ import { BaseChartDirective } from 'ng2-charts';
     ]
 })
 export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
+  private _bibleService = inject(BibleService);
+  private _storageService = inject(StorageService);
+  private _router = inject(Router);
+  private _route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private _snackbarService = inject(SnackbarService);
+
+
   goalId = '';
   attempts: Map<string, IResult> = new Map();
   GoalStatus = GoalStatus;
   daysUntil = daysUntil;
 
   goal: Goal | undefined = undefined;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   goalPassage: BiblePassage | undefined = undefined;
   subscriptions: Subscription[] = [];
   displayedColumns: string[] = ['time', 'title', 'score'];
@@ -151,16 +161,25 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.dataSource.data.slice(startIndex, endIndex);
   }
 
-  constructor(
-    private _router: Router,
-    private _route: ActivatedRoute,
-    private _storageService: StorageService,
-    private _bibleService: BibleService,
-    private dialog: MatDialog,
-    private titleService: Title,
-    private metaService: Meta,
-    private _snackbarService: SnackbarService
-  ) {}
+  bibleEffect = effect(() => {
+    const bible = this.bible();
+    if (!bible) {
+      return;
+    }
+    if (bible.m.t !== this.goal?.translation) {
+      this._router.navigateByUrl('');
+    }
+    this.initAttempts();
+    this.goalPassage = bible.getPassage(this.goal!.i, this.goal!.j);
+    this.dataSource.data = Array.from(this.attempts.values()).sort((a, b) => b.timestamp - a.timestamp);
+    this.loadStats();
+    setTimeout(() => {
+      this.initSort();
+      if (this.paginator) {
+        this.paginator.length = this.dataSource.data.length;
+      }
+    },10);
+  })
 
   ngOnInit(): void {
     
@@ -172,28 +191,6 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.initializeTabFromUrl();
     this.updatePageMetadata();
-
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
-        if (this.bible) {
-          if (this.bible?.m.t !== this.goal?.translation) {
-            this._router.navigateByUrl('');
-          }
-          this.initAttempts()
-          this.goalPassage = this.bible.getPassage(this.goal!.i, this.goal!.j);
-          this.dataSource.data = Array.from(this.attempts.values()).sort((a, b) => b.timestamp - a.timestamp);
-          this.loadStats();
-          setTimeout(() => {
-            this.initSort();
-            // Update paginator length after data is loaded
-            if (this.paginator) {
-              this.paginator.length = this.dataSource.data.length;
-            }
-          },10);
-        }
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -239,7 +236,8 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   initAttempts() {
-    if (!this.bible || !this.goal) {
+    const bible = this.bible();
+    if (!bible || !this.goal) {
       return;
     }
     this.attempts = new Map();

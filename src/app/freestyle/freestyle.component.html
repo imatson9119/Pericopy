@@ -1,4 +1,4 @@
-@if(this.bible){
+@if(this.bible()){
   <div class="input-container">
     <h2>Freestyle Practice</h2>
     <div class="subtitle">
@@ -34,7 +34,7 @@
     </div>
     <app-freestyle-input-div 
       #input
-      [bible]='this.bible'
+      [bible]='this.bible()'
       (onInputStateChange)="this.inputState = $event"
       (onPassageChange)="this.passage = $event"
     >

@@ -1,4 +1,4 @@
-@if(this.bible && this.currentResult) {
+@if(this.bible() && this.currentResult) {
   <main class="result-container">
     <header class="result-header">
       <div>
@@ -97,7 +97,7 @@
               <p>Compare your recitation with the original scripture. Added words are highlighted in <span class="highlight-added">red</span>, removed words in <span class="highlight-removed">green</span>.</p>
             </div>
             <div class="tab-inner-container">
-              <app-diff-display [diff]="this.currentResult.diff" [bible]="this.bible"></app-diff-display>
+              <app-diff-display [diff]="this.currentResult.diff" [bible]="this.bible()"></app-diff-display>
             </div>
           </div>
         </mat-tab>
@@ -110,7 +110,7 @@
             <div class="tab-inner-container">
               <app-diff-display
                 [type]="displayTypes.attempt"
-                [bible]="this.bible"
+                [bible]="this.bible()"
                 [diff]="this.currentResult.diff"
               ></app-diff-display>
             </div>
@@ -125,7 +125,7 @@
             <div class="tab-inner-container">
               <app-diff-display
                 [type]="displayTypes.scripture"
-                [bible]="this.bible"
+                [bible]="this.bible()"
                 [diff]="this.currentResult.diff"
               ></app-diff-display>
             </div>

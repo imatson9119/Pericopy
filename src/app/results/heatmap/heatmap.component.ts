@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { BiblePointer, Book, DiffType, Heatmap } from 'src/app/classes/models';
 import { BibleService } from 'src/app/services/bible.service';
 import { StorageService } from 'src/app/services/storage.service';
@@ -44,29 +44,26 @@ enum FilterValues {
     ]
 })
 export class HeatmapComponent implements OnDestroy, OnInit {
+
+  private _bibleService = inject(BibleService);
+  private _storageService = inject(StorageService);
+  private _router = inject(Router);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+
   filterValues = FilterValues;
   filterValue = FilterValues.ALL_TIME;
   heatmap: Heatmap = new Map();
   passage: BiblePassage = {} as BiblePassage;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   reference: BiblePointer | undefined = undefined;
 
-  constructor(
-    private _bibleService: BibleService,
-    private _storageService: StorageService,
-    private _router: Router,
-    private titleService: Title,
-    private metaService: Meta
-  ) {
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
-        let loc = this._router.parseUrl(this._router.url).queryParams['loc'];
-        this.setInitialSelectorState(loc);
-      })
-    );
-  }
+  bibleEffect = effect(() => {
+    let loc = this._router.parseUrl(this._router.url).queryParams['loc'];
+    this.setInitialSelectorState(loc);
+  });
+
 
   ngOnInit(): void {
     const pageTitle = 'Scripture Memorization Heatmap | Pericopy';
@@ -84,16 +81,17 @@ export class HeatmapComponent implements OnDestroy, OnInit {
   }
 
   setInitialSelectorState(loc: string | undefined) {
-    if (!this.bible) {
+    const bible = this.bible();
+    if (!bible) {
       return;
     }
     let i = 0;
     if (loc) {
       i = parseInt(loc);
     } else {
-      i = this._storageService.getLastAttempt(this.bible.m.t)?.diff.i || 0;
+      i = this._storageService.getLastAttempt(bible.m.t)?.diff.i || 0;
     }
-    let attemptStart = this.bible.get(i);
+    let attemptStart = bible.get(i);
     this.reference = {
       book: attemptStart.book,
       chapter: attemptStart.chapter,
@@ -103,10 +101,11 @@ export class HeatmapComponent implements OnDestroy, OnInit {
   }
 
   getBooks(): Book[] {
-    if (this.bible === undefined) {
+    const bible = this.bible();
+    if (bible === undefined) {
       return [];
     }
-    return this.bible.v;
+    return bible.v;
   }
 
 
@@ -127,7 +126,8 @@ export class HeatmapComponent implements OnDestroy, OnInit {
   }
 
   updateHeatmap() {
-    if (!this.reference || !this.bible) {
+    const bible = this.bible();
+    if (!this.reference || !bible) {
       return;
     }
     this.passage = new BiblePassage(
@@ -148,7 +148,7 @@ export class HeatmapComponent implements OnDestroy, OnInit {
     ].filter((a) => {
       return (
         a.timestamp > filterTimestamp &&
-        a.diff.m.t === this.bible?.m.t &&
+        a.diff.m.t === bible.m.t &&
         intersection(a.diff.i, a.diff.j, chapterStart, chapterEnd)
       );
     });

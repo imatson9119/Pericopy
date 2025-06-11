@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PassageSelectorBodyComponent } from 'src/app/misc-components/passage-select-dialog/passage-selector-body/passage-selector-body.component';
@@ -43,12 +43,16 @@ interface AttemptSelector {
     ]
 })
 export class NewGoalDialogComponent implements OnDestroy {
+  private _bibleService = inject(BibleService);
+  private _dialogRef = inject(MatDialogRef<PassageSelectDialogComponent>);
+  private _storageService = inject(StorageService);
+  private _data = inject(MAT_DIALOG_DATA);
   currentStep = 1;
   totalSteps = 3;
   providedOptions: BiblePassage[] = [];
   passage: BiblePassage | undefined = undefined;
   passageValid = false;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   memorized: boolean = false;
   attempts: AttemptSelector[] = [];
@@ -65,20 +69,10 @@ export class NewGoalDialogComponent implements OnDestroy {
 
   getRelativeDate = getRelativeDate;
 
-  constructor(
-    private _bibleService: BibleService,
-    private _dialogRef: MatDialogRef<PassageSelectDialogComponent>,
-    private _storageService: StorageService,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    if (data) {
-      if (data.options) this.providedOptions = data.options
+  constructor() {
+    if (this._data) {
+      if (this._data.options) this.providedOptions = this._data.options
     }
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -144,7 +138,7 @@ export class NewGoalDialogComponent implements OnDestroy {
   }
 
   getPassageName(result: IResult): string {
-    return this.bible ? this.bible.getPassage(result.diff.i, result.diff.j).toString() : '';
+    return this.bible()!.getPassage(result.diff.i, result.diff.j).toString();
   }
 
   isAllSelected(): boolean {
@@ -164,7 +158,7 @@ export class NewGoalDialogComponent implements OnDestroy {
     const selectedAttempts: IResult[] = this.attempts.filter((a) => a.selected).map((a) => a.result);
     let goal = Goal.createGoal(
       this.passage!,
-      this.bible!,
+      this.bible()!,
       selectedAttempts,
       this.memorized ? GoalStatus.MAINTAINING : GoalStatus.MEMORIZING
     );

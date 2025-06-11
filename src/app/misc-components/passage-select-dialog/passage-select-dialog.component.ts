@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, inject, Inject, OnDestroy } from '@angular/core';
 import { BibleService } from '../../services/bible.service';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { BiblePassage } from '../../classes/BiblePassage';
@@ -15,32 +15,28 @@ import { PassageSelectorBodyComponent } from './passage-selector-body/passage-se
     imports: [MatDialogModule, MatButtonModule, PassageSelectorBodyComponent]
 })
 export class PassageSelectDialogComponent implements OnDestroy {
+  private _bibleService = inject(BibleService);
+  private _dialogRef = inject(MatDialogRef<PassageSelectDialogComponent>);
+  private _data = inject(MAT_DIALOG_DATA);
+
   nWordsToPreview = 40;
   providedOptions: BiblePassage[] = [];
   abbreviateBookName = abbreviateBookName;
   passage: BiblePassage | undefined = undefined;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   title = 'Select a passage';
   subtitle = 'Please select a passage from the Bible.';
   isValid = false;
 
-  constructor(
-    private _bibleService: BibleService,
-    private _dialogRef: MatDialogRef<PassageSelectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
-    if (data) {
-      if (data.title) this.title = data.title;
-      if (data.subtitle) this.subtitle = data.subtitle;
-      if (data.options) this.providedOptions = data.options
-      if (data.passage) this.passage = data.passage;
+
+  constructor() {
+    if (this._data) {
+      if (this._data.title) this.title = this._data.title;
+      if (this._data.subtitle) this.subtitle = this._data.subtitle;
+      if (this._data.options) this.providedOptions = this._data.options
+      if (this._data.passage) this.passage = this._data.passage;
     }
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        this.bible = bible;
-      })
-    );
   }
 
   ngOnDestroy(): void {

@@ -2,7 +2,7 @@
 <mat-dialog-content class="mat-typography dialog-content">
   <span class="message-text">{{subtitle}}</span>
   <app-passage-selector-body
-    [bible]="this.bible"
+    [bible]="this.bible()"
     [providedOptions]="providedOptions"
     [nWordsToPreview]="nWordsToPreview"
     [(passage)]="this.passage"

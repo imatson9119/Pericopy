@@ -3,7 +3,7 @@
   <ng-container *ngIf="currentStep === 1">
     <span class="message-text">What passage would you like to memorize?</span>
     <app-passage-selector-body
-      [bible]="bible"
+      [bible]="bible()"
       [providedOptions]="providedOptions"
       [nWordsToPreview]="40"
       [(passage)]="this.passage"

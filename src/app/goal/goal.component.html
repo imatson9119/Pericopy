@@ -1,4 +1,4 @@
-@if (this.bible) {
+@if (this.bible()) {
   <div class="result-container">
     <div class="result-header">
       <div>
@@ -219,7 +219,7 @@
           <mat-tab label="Study">
             @if (this.goalPassage) {
               <app-bible-display
-                [bible]="this.bible"
+                [bible]="this.bible()"
                 [passage]="this.goalPassage"
               ></app-bible-display>
             }

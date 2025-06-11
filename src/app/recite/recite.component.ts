@@ -1,7 +1,9 @@
 import {
   AfterViewChecked,
   Component,
+  effect,
   ElementRef,
+  inject,
   NgZone,
   OnDestroy,
   OnInit,
@@ -49,57 +51,57 @@ export interface CachedAttempt {
 export class ReciteComponent
   implements AfterViewChecked, OnDestroy
 {
+  private _storageService = inject(StorageService);
+  private _bibleService = inject(BibleService);
+  private router = inject(Router);
+  private _dialog = inject(MatDialog);
+  private ngZone = inject(NgZone);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
+  private _snackbarService = inject(SnackbarService);
+  
   attempt = '';
   detectPassage = true;
   editingId = '';
   passage: BiblePassage | undefined = undefined;
-  bible: Bible | undefined = undefined;
+  bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   SelectionType = SelectionType;
   passageSaveTimeout: ReturnType<typeof setTimeout> | null = null;
   recentAttempts: IResult[] = [];
   cachedAttempts: Map<string, CachedAttempt> | null = null;
 
+  bibleEffect = effect(() => {
+    const bible = this.bible();
+    if (!bible) {
+      return;
+    }
+    this.passage = undefined;
+    this.recentAttempts = Array.from(this._storageService.getAttempts().values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
+    const queryParams = this.router.parseUrl(this.router.url).queryParams;
+    let id = queryParams['id'];
+    let i = queryParams['i'];
+    let j = queryParams['j'];
+    if (id != undefined) {
+      this.editResult(id);
+    } else if (i != undefined && j != undefined && i < j) {
+      this.passage = bible.getPassage(i, j);
+      this.detectPassage = false;
+      const cachedAttempt = this.getCachedAttempt();
+      if (cachedAttempt) {
+        this.attempt = cachedAttempt.attempt;
+        this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
+      }
+    }
+    this.updatePageMetadata();
+  })
+
   @ViewChild('input') input: ElementRef | null = null;
   @ViewChild('inputParent') inputParent: ElementRef | null = null;
 
-  constructor(
-    private _storageService: StorageService,
-    private _bibleService: BibleService,
-    private router: Router,
-    private _dialog: MatDialog,
-    private ngZone: NgZone,
-    private titleService: Title,
-    private metaService: Meta,
-    private _snackbarService: SnackbarService
-  ) {
+  constructor() {
     this.cachedAttempts = this.getCachedAttempts();
     this.cleanCachedAttempts();
-    this.subscriptions.push(
-      this._bibleService.curBible.subscribe((bible) => {
-        if (bible) {
-          this.bible = bible;
-          this.passage = undefined;
-          this.recentAttempts = Array.from(this._storageService.getAttempts().values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
-          const queryParams = this.router.parseUrl(this.router.url).queryParams;
-          let id = queryParams['id'];
-          let i = queryParams['i'];
-          let j = queryParams['j'];
-          if (id != undefined) {
-            this.editResult(id);
-          } else if (i != undefined && j != undefined && i < j) {
-            this.passage = this.bible.getPassage(i, j);
-            this.detectPassage = false;
-            const cachedAttempt = this.getCachedAttempt();
-            if (cachedAttempt) {
-              this.attempt = cachedAttempt.attempt;
-              this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
-            }
-          }
-          this.updatePageMetadata();
-        }
-      })
-    );
   }
 
   ngAfterViewChecked(): void {
@@ -118,9 +120,6 @@ export class ReciteComponent
   }
 
   editResult(id: string) {
-    if (!this.bible) {
-      return;
-    }
     let result = this._storageService.getAttempt(id);
     if (result === undefined) {
       this.router.navigateByUrl('/recite');
@@ -139,11 +138,16 @@ export class ReciteComponent
   }
 
   getAnchors(): [BiblePassage, number][] {
-    return this.bible?.anchorText(this.attempt) ?? [];
+    const bible = this.bible();
+    if (!bible) {
+      return [];
+    }
+    return bible.anchorText(this.attempt) ?? [];
   }
 
   submit() {
-    if (!this.valid() || !this.bible) {
+    const bible = this.bible();
+    if (!this.valid() || !bible) {
       return;
     }
     if (this.passageSaveTimeout) {
@@ -164,7 +168,7 @@ export class ReciteComponent
           })
           .afterClosed()
           .subscribe((passage: BiblePassage) => {
-            if (passage && this.bible) {
+            if (passage && bible) {
               this.getAndStoreDiff(passage);
             }
           });
@@ -180,10 +184,11 @@ export class ReciteComponent
   }
 
   getAndStoreDiff(passage: BiblePassage) {
-    if (!this.bible) {
+    const bible = this.bible();
+    if (!bible) {
       return;
     }
-    let diff = this.bible.getBibleDiff(this.attempt, passage.i, passage.j);
+    let diff = bible.getBibleDiff(this.attempt, passage.i, passage.j);
     if (!diff) {
       throw new Error('Error getting diff');
     }
@@ -254,7 +259,7 @@ export class ReciteComponent
       data: {
         title: 'Select a Passage',
         subtitle: 'Please select a passage from the Bible.',
-        options: this.recentAttempts.map((a) => this.bible?.getPassage(a.diff.i, a.diff.j)),
+        options: this.recentAttempts.map((a) => this.bible()?.getPassage(a.diff.i, a.diff.j)),
         passage: this.passage,
       },
     });
