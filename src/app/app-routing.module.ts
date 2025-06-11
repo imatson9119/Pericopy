@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { GoalComponent } from './goal/goal.component';
 import { FreestyleComponent } from './freestyle/freestyle.component';
 import { BlanksComponent } from './blanks/blanks.component';
+import { AccountComponent } from './account/account.component';
 
 export const routes: Routes = [
   { path: 'recite', component: ReciteComponent },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'goal', component: GoalComponent },
   { path: 'freestyle', component: FreestyleComponent },
   { path: 'blanks', component: BlanksComponent },
+  { path: 'account', component: AccountComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '',}
 ];

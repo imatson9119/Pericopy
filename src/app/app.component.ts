@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
     selector: 'app-root',
@@ -19,6 +20,7 @@ import { RouterModule } from '@angular/router';
       MatIconModule,
       MatButtonModule,
       MatMenuModule,
+      MatDividerModule,
       RouterModule
     ]
 })
