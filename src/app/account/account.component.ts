@@ -1,14 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-account',
-  imports: [],
+  imports: [
+    MatButtonModule,
+    CommonModule
+  ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss'
 })
 export class AccountComponent {
 
   totalStorageUsed = this.getLocalStorageSizeMB();
+  authService = inject(AuthService);
+
+  signInWithGoogle() {
+    this.authService.signInWithGoogle();
+  }
 
   getLocalStorageSizeMB() {
     let total = 0;
@@ -23,5 +34,6 @@ export class AccountComponent {
     const totalMB = totalBytes / (1024 * 1024);
     return totalMB;
   }
+
 }
 
