@@ -1,11 +1,11 @@
-import { Injectable, signal, resource, inject, effect, computed } from '@angular/core';
+import { Injectable, signal, inject, effect, computed } from '@angular/core';
 import {
   IBible,
   WordMap,
   WordMapFile,
 } from '../classes/models';
 import { Bible } from '../classes/Bible';
-import { BehaviorSubject, Observable, map, of, shareReplay, zip } from 'rxjs';
+import { Observable} from 'rxjs';
 import { HttpClient, httpResource } from '@angular/common/http';
 
 @Injectable({
@@ -33,7 +33,9 @@ export class BibleService {
 
   private bibles: { [key: string]: Bible | undefined | Observable<Bible>} = {
     esv: undefined,
+    bsb: undefined,
     kjv: undefined,
+    lsb: undefined,
     nasb: undefined,
     net: undefined,
     nirv: undefined,
@@ -43,8 +45,8 @@ export class BibleService {
     nrsv: undefined,
   };
 
-  private bibleEffect = effect(() => {
-    console.log(`bible: ${this.bible()}`);
+  versionEffect = effect(() => {
+    localStorage.setItem('bibleVersion', this.version());
   })
 
   private http = inject(HttpClient);
