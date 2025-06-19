@@ -36,7 +36,7 @@ export class BibleService {
     bsb: undefined,
     kjv: undefined,
     lsb: undefined,
-    nasb: undefined,
+    nasb20: undefined,
     net: undefined,
     nirv: undefined,
     niv: undefined,

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { GoalBank, IResult, ResultBank } from '../classes/models';
-import { intersection, replacer, reviver } from '../utils/utils';
+import { replacer, reviver } from '../utils/utils';
 import { Goal, GoalStatus } from '../classes/Goal';
+import { TRANSLATION_ALIASES } from '../classes/consts';
 
 export interface TableSettings {
   pageSize: number;
@@ -63,7 +64,7 @@ export class StorageService {
   getGoals(translation: string = '') {
     let goals = new Map<string, Goal>();
     for(let goal of this.goalBank.goals.values()){
-      if (translation == '' || goal.translation == translation){
+      if (translation == '' || goal.translation == translation || TRANSLATION_ALIASES[goal.translation] == translation){
         goals.set(goal.id, goal);
       }
     }
@@ -171,21 +172,21 @@ export class StorageService {
     localStorage.setItem(this.resultBankStorageKey, JSON.stringify(this.resultBank, replacer));
   }
 
-  getAttempts(version: string = ''): Map<string, IResult> {
+  getAttempts(translation: string = ''): Map<string, IResult> {
     let attempts = new Map<string, IResult>();
     for(let attempt of this.resultBank.results.values()){
-      if (version == '' || attempt.diff.m.t == version){
+      if (translation == '' || attempt.diff.m.t == translation || TRANSLATION_ALIASES[attempt.diff.m.t] == translation){
         attempts.set(attempt.id, attempt);
       }
     }
     return attempts;
   }
 
-  getLastAttempt(version: string = ''): IResult | undefined {
-    let attempts = this.getAttempts();
+  getLastAttempt(translation: string = ''): IResult | undefined {
+    let attempts = this.getAttempts(translation);
     let lastAttempt = undefined;
     for(let attempt of attempts.values()){
-      if ((lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp) && (version == '' || attempt.diff.m.t == version)){
+      if ((lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp) && (translation == '' || attempt.diff.m.t == translation || TRANSLATION_ALIASES[attempt.diff.m.t] == translation)){
         lastAttempt = attempt;
       }
     }
