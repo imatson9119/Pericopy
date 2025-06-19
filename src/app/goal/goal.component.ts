@@ -7,7 +7,7 @@ import { Bible } from '../classes/Bible';
 import { IResult } from '../classes/models';
 import { BibleService } from '../services/bible.service';
 import { StorageService } from '../services/storage.service';
-import { daysUntil, getRelativeDate, intersection } from '../utils/utils';
+import { daysUntil, getRelativeDate, intersection, translationsEqual } from '../utils/utils';
 import { DeleteGoalDialogComponent } from './delete-goal-dialog/delete-goal-dialog.component';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
@@ -166,7 +166,7 @@ export class GoalComponent implements AfterViewInit, OnDestroy, OnInit {
     if (!bible) {
       return;
     }
-    if (bible.m.t !== this.goal?.translation) {
+    if (this.goal && !translationsEqual(bible.m.t, this.goal.translation)) {
       this._router.navigateByUrl('');
     }
     this.initAttempts();

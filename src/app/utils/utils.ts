@@ -93,6 +93,14 @@ const bookAbbreviations: { [key: string]: string } = {
   "revelation": "Rev",
 }
 
+export const TRANSLATION_ALIASES: Record<string, string> = {
+  "NASB": "NASB20",
+}
+
+export function translationsEqual(t1: string, t2: string): boolean {
+  return t1 == t2 || TRANSLATION_ALIASES[t1] == t2;
+}
+
 export function sanitizeText(text: string): string{
   return cleanWhitespace(text.replace(/[^\w\s]/g, "").toLowerCase());
 }

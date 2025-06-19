@@ -73,6 +73,12 @@ export class HomeComponent implements OnDestroy, OnInit {
     }
     this.attempts = this._storageService.getAttempts(bible.m.t);
     this.goals = [...this._storageService.getGoals(bible.m.t).values()].sort((a,b) => b.t - a.t);
+    this.dataSource = new MatTableDataSource<Goal>(this.goals);
+    this.loadTableSettings();
+    setTimeout(()=>{
+      this.initSorting();
+      this.applyFilter();
+    });
   })
   
   ngOnInit() {
