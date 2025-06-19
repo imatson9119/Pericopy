@@ -1,5 +1,5 @@
 # Pericopy
-(More non-technical details at [Pericopy's website](https://pericopy.com/info))
+(More non-technical details at [Pericopy's website](https://pericopy.net/info))
 
 ## What is Pericopy? 📚🧠
 Pericopy is a web-app dedicated to help people memorize the Bible more effectively. What sets Pericopy apart from other tools is its unique approach to memorization. Once on the website, there are a few avenues to explore. 
