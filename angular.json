@@ -26,7 +26,6 @@
             "inlineStyleLanguage": "scss",
             "assets": ["src/assets"],
             "styles": ["src/styles.scss", "src/material-theme.scss"],
-            "scripts": ["src/assets/js/annyang.js"],
             "browser": "src/main.ts"
           },
           "configurations": {
