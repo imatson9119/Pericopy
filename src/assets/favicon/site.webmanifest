@@ -1,6 +1,11 @@
 {
   "name": "Pericopy",
   "short_name": "Pericopy",
+  "theme_color": "#607D8B",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
   "icons": [
     {
       "src": "/assets/favicon/web-app-manifest-192x192.png",
@@ -14,8 +19,5 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  ]
 }
