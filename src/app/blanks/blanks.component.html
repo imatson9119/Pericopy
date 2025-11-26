@@ -9,7 +9,8 @@
     </p>
   </div>
 
-  <div class="content-area" *ngIf="!passage">
+  @if (!passage) {
+  <div class="content-area">
     <div class="empty-state">
       <p>Select a passage to begin your practice session</p>
       <button
@@ -24,8 +25,8 @@
       </button>
     </div>
   </div>
-
-  <div class="content-area" *ngIf="passage">
+  } @if (passage) {
+  <div class="content-area">
     <div class="passage-info-bar">
       <button mat-fab extended color="primary" (click)="openPassageSelect()">
         <mat-icon>menu_book</mat-icon> {{ passage.toString() }}
@@ -35,27 +36,37 @@
           mat-icon-button
           color="primary"
           (click)="toggleInputWidth()"
-          [matTooltip]="preferences.dynamicInputWidth ? 'Switch to fixed width inputs' : 'Switch to dynamic width inputs'"
+          [matTooltip]="
+            preferences.dynamicInputWidth
+              ? 'Switch to fixed width inputs'
+              : 'Switch to dynamic width inputs'
+          "
         >
-          <mat-icon>{{preferences.dynamicInputWidth ? 'unfold_less' : 'unfold_more'}}</mat-icon>
+          <mat-icon>{{
+            preferences.dynamicInputWidth ? "unfold_less" : "unfold_more"
+          }}</mat-icon>
         </button>
         <button
           mat-icon-button
           color="primary"
           (click)="revealAnswer()"
           [disabled]="curFocusedBlankIndex == null"
-          [matTooltip]="curFocusedBlankIndex == null ? 'No blank selected' : 'Reveal next blank (shift+enter)'"
+          [matTooltip]="
+            curFocusedBlankIndex == null
+              ? 'No blank selected'
+              : 'Reveal next blank (shift+enter)'
+          "
         >
           <mat-icon>lightbulb</mat-icon>
         </button>
       </div>
     </div>
 
-    <div class="progress-section" *ngIf="!feedback.show">
+    @if (!feedback.show) {
+    <div class="progress-section">
       <div class="progress-info">
         <span
-          >Progress: {{ nFilledBlanks }} of
-          {{ blanks.size }} completed</span
+          >Progress: {{ nFilledBlanks }} of {{ blanks.size }} completed</span
         >
         <div class="passage-stats">
           <span class="stat-item">
@@ -74,63 +85,63 @@
             >
             <span class="stat-label">difficulty</span>
           </span>
-          <span class="stat-divider" *ngIf="passageData!.velocityInfo.lastResult">•</span>
-          <span
-            class="stat-item velocity-status"
-            *ngIf="passageData!.velocityInfo.lastResult"
-          >
+          @if (passageData!.velocityInfo.lastResult) {
+          <span class="stat-divider">•</span>
+          <span class="stat-item velocity-status">
             <span class="stat-value">{{ getVelocityStatusText() }}</span>
           </span>
+          }
         </div>
       </div>
       <div class="progress-bar">
         <div
           class="progress-fill"
-          [style.width.%]="
-            (nFilledBlanks / blanks.size) * 100
-          "
+          [style.width.%]="(nFilledBlanks / blanks.size) * 100"
         ></div>
       </div>
     </div>
+    }
 
     <div class="passage-workspace">
       <div class="passage-text">
-        <span
-          *ngFor="let word of passageText; let i = index"
-          class="word-container"
-        >
-          <ng-container *ngIf="blanks.has(i); else staticWord">
-            <input
-              #blankInput
-              type="text"
-              class="blank-input"
-              [ngClass]="{
-                correct: blanks.get(i)!.type === BlankType.CORRECT,
-                incorrect: blanks.get(i)!.type === BlankType.INCORRECT,
-                filled: blanks.get(i)!.type === BlankType.FILLED,
-                hinted: blanks.get(i)!.type === BlankType.HINTED,
-                empty: blanks.get(i)!.type === BlankType.EMPTY
-              }"
-              [value]="blanks.get(i)?.value || ''"
-              (input)="onInput(i, $event)"
-              (keydown)="onKeyDown($event, i)"
-              (keyup)="onKeyUp($event, i)"
-              [readonly]="feedback.show || blanks.get(i)!.type === BlankType.HINTED"
-              (focus)="onFocus(i)"
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-              [style.width]="getInputWidth(word, blanks.get(i)?.value || '')"
-              [matTooltip]="
-                feedback.show && blanks.get(i)!.type === BlankType.INCORRECT ? passageText[i] : null
-              "
-              matTooltipPosition="above"
-            />
-          </ng-container>
-          <ng-template #staticWord>
-            <span class="static-word">{{ word }}</span>
-          </ng-template>
+        @for (word of passageText; track $index) {
+        <span class="word-container">
+          @if (blanks.has($index)) {
+          <input
+            #blankInput
+            type="text"
+            class="blank-input"
+            [ngClass]="{
+              correct: blanks.get($index)!.type === BlankType.CORRECT,
+              incorrect: blanks.get($index)!.type === BlankType.INCORRECT,
+              filled: blanks.get($index)!.type === BlankType.FILLED,
+              hinted: blanks.get($index)!.type === BlankType.HINTED,
+              empty: blanks.get($index)!.type === BlankType.EMPTY
+            }"
+            [value]="blanks.get($index)?.value || ''"
+            (input)="onInput($index, $event)"
+            (keydown)="onKeyDown($event, $index)"
+            (keyup)="onKeyUp($event, $index)"
+            [readonly]="
+              feedback.show || blanks.get($index)!.type === BlankType.HINTED
+            "
+            (focus)="onFocus($index)"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            [style.width]="getInputWidth(word, blanks.get($index)?.value || '')"
+            [matTooltip]="
+              feedback.show && blanks.get($index)!.type === BlankType.INCORRECT
+                ? passageText[$index]
+                : null
+            "
+            matTooltipPosition="above"
+          />
+          } @else {
+          <span class="static-word">{{ word }}</span>
+          }
         </span>
+        }
       </div>
     </div>
 
@@ -161,7 +172,8 @@
       </div>
     </div>
 
-    <div class="results-section" *ngIf="feedback.show">
+    @if (feedback.show) {
+    <div class="results-section">
       <div class="results-header">
         <div class="score-display">
           <div
@@ -213,35 +225,24 @@
         </div>
         <div class="results-message">
           <div class="primary-message">
-            <span
-              *ngIf="feedback.correct === feedback.total"
-              class="success-message"
-            >
+            @if (feedback.correct === feedback.total) {
+            <span class="success-message">
               🎉 Perfect! {{ getDifficultyChangeText() }}
             </span>
-            <span
-              *ngIf="
-                feedback.correct < feedback.total &&
-                feedback.correct / feedback.total >= 0.7
-              "
-              class="good-message"
-            >
+            } @else if (feedback.correct < feedback.total && feedback.correct /
+            feedback.total >= 0.7) {
+            <span class="good-message">
               👏 Great work! {{ getDifficultyChangeText() }}
             </span>
-            <span
-              *ngIf="feedback.correct / feedback.total < 0.7"
-              class="practice-message"
-            >
+            } @else {
+            <span class="practice-message">
               📚 Keep practicing! {{ getDifficultyChangeText() }}
             </span>
+            }
           </div>
-          <div
-            class="velocity-info"
-            *ngIf="
-              difficultyAdjustment &&
-              difficultyAdjustment.adjustmentType !== 'maintain'
-            "
-          >
+          @if (difficultyAdjustment && difficultyAdjustment.adjustmentType !==
+          'maintain') {
+          <div class="velocity-info">
             <div class="velocity-details">
               <span class="velocity-label">Velocity:</span>
               <span class="velocity-value"
@@ -270,10 +271,13 @@
               >
             </div>
           </div>
+          }
         </div>
       </div>
     </div>
+    }
   </div>
+  }
 </div>
 } @else {
 <div class="page-loader">

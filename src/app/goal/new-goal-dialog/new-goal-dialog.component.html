@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>{{ getTitle() }}</h2>
 <div mat-dialog-content class="mat-typography dialog-content" [@stepAnimation]="currentStep">
-  <ng-container *ngIf="currentStep === 1">
+  @if (currentStep === 1) {
+  <ng-container>
     <span class="message-text">What passage would you like to memorize?</span>
     <app-passage-selector-body
       [bible]="bible()"
@@ -10,7 +11,9 @@
       (validityChange)="this.passageValidityChange($event)"
     ></app-passage-selector-body>
   </ng-container>
-  <ng-container *ngIf="currentStep === 2">
+  }
+  @if (currentStep === 2) {
+  <ng-container>
     <span class="message-text">Have you already memorized this passage?</span>
     <div class="memorized-radio-group">
       <button class="memorized-button" [ngClass]="{ on: this.memorized, off: !this.memorized }" mat-fab extended color="primary" (click)="this.memorized = true">
@@ -23,7 +26,9 @@
       </button>
     </div>
   </ng-container>
-  <ng-container *ngIf="currentStep === 3">
+  }
+  @if (currentStep === 3) {
+  <ng-container>
     <span class="message-text">Would you like to apply any recitations towards this goal?</span>
     <mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="select">
@@ -47,10 +52,13 @@
     </mat-table>
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Paginate attempts"></mat-paginator>
   </ng-container>
+  }
 
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="previousStep()" *ngIf="currentStep > 1">Back</button>
+  @if (currentStep > 1) {
+  <button mat-button (click)="previousStep()">Back</button>
+  }
   @if (currentStep === 3 || currentStep === 2 && attempts.length === 0) {
     <button mat-raised-button color="primary" (click)="createGoal()" [disabled]="!canProceed()">
       Create

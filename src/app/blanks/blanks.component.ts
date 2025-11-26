@@ -1,4 +1,14 @@
-import { Component, OnInit, QueryList, ViewChildren, ElementRef, ViewChild, inject, signal, effect } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChildren,
+  ElementRef,
+  ViewChild,
+  inject,
+  signal,
+  effect,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Title, Meta } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +16,11 @@ import { BibleService } from '../services/bible.service';
 import { BiblePassage } from '../classes/BiblePassage';
 import { Bible } from '../classes/Bible';
 import { PassageSelectDialogComponent } from '../misc-components/passage-select-dialog/passage-select-dialog.component';
-import { BlankCache, BlanksModulePreferences, MemorizationPracticeService } from './memorization-practice.service';
+import {
+  BlankCache,
+  BlanksModulePreferences,
+  MemorizationPracticeService,
+} from './memorization-practice.service';
 import { IResult } from '../classes/models';
 import { Subscription, combineLatest } from 'rxjs';
 import { StorageService } from '../services/storage.service';
@@ -25,7 +39,7 @@ export enum BlankType {
   FILLED,
   CORRECT,
   INCORRECT,
-  HINTED
+  HINTED,
 }
 
 interface BlankState {
@@ -39,11 +53,18 @@ interface BlankState {
 }
 
 @Component({
-    selector: 'app-blanks',
-    templateUrl: './blanks.component.html',
-    styleUrls: ['./blanks.component.scss'],
-    standalone: true,
-    imports: [ MatProgressSpinnerModule, MatTooltipModule, MatButtonModule, MatIconModule, CommonModule, MatInputModule ]
+  selector: 'app-blanks',
+  templateUrl: './blanks.component.html',
+  styleUrls: ['./blanks.component.scss'],
+  standalone: true,
+  imports: [
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatButtonModule,
+    MatIconModule,
+    CommonModule,
+    MatInputModule,
+  ],
 })
 export class BlanksComponent implements OnInit {
   private _bibleService = inject(BibleService);
@@ -56,26 +77,32 @@ export class BlanksComponent implements OnInit {
   private _dialog = inject(MatDialog);
   private _snackbarService = inject(SnackbarService);
 
-  attempts: Map<string,IResult> = new Map();
+  attempts: Map<string, IResult> = new Map();
   passage: BiblePassage | null = null;
   passageText: string[] = [];
   curFocusedBlankIndex: number | null = null;
   blanks: Map<number, BlankState> = new Map();
   nFilledBlanks: number = 0;
-  feedback: { correct: number; total: number; show: boolean } = { correct: 0, total: 0, show: false };
+  feedback: { correct: number; total: number; show: boolean } = {
+    correct: 0,
+    total: 0,
+    show: false,
+  };
   passageData: PassageData | null = null;
-  difficultyAdjustment: { 
-    currentDifficulty: number; 
-    newDifficulty: number; 
-    adjustment: number; 
-    velocity: number; 
-    adjustmentType: 'increase' | 'decrease' | 'maintain' 
+  difficultyAdjustment: {
+    currentDifficulty: number;
+    newDifficulty: number;
+    adjustment: number;
+    velocity: number;
+    adjustmentType: 'increase' | 'decrease' | 'maintain';
   } | null = null;
   bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   rng: seedrandom.PRNG = seedrandom();
   preferences: BlanksModulePreferences = this.practiceService.getPreferences();
-  @ViewChildren('blankInput') blankInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChildren('blankInput') blankInputs!: QueryList<
+    ElementRef<HTMLInputElement>
+  >;
   @ViewChild('retryButton') retryButton!: ElementRef<HTMLButtonElement>;
   public Math = Math; // Expose Math for template
   public Object = Object; // Expose Object for template
@@ -95,16 +122,26 @@ export class BlanksComponent implements OnInit {
     }
   });
 
+  // Effect to handle passage loading when both Bible and query params are ready
+  passageEffect = effect(() => {
+    const bible = this.bible();
+    const i = this.i();
+    const j = this.j();
+
+    // Only set passage when Bible is loaded and query params are valid
+    if (bible && i !== -1 && j !== -1) {
+      this.setPassage(bible.getPassage(i, j));
+    }
+  });
+
   constructor() {
-    // Create a joint observable that combines both bible and query params
+    // Subscribe to query params to update signals
     this.subscriptions.push(
-        this.route.queryParams.subscribe((params) => {
+      this.route.queryParams.subscribe((params) => {
         this.i.set(params['i'] || -1);
         this.j.set(params['j'] || -1);
-        
-        if (this.i() !== -1 && this.j() !== -1) {
-          this.setPassage(this.bible()!.getPassage(this.i(), this.j()));
-        }
+        // Note: Passage loading is handled by passageEffect which watches both
+        // the Bible signal and the query param signals
       })
     );
   }
@@ -123,23 +160,33 @@ export class BlanksComponent implements OnInit {
 
   private updatePageMetadata(): void {
     let pageTitle = 'Fill in the Blanks | Pericopy';
-    let pageDescription = 'Practice scripture memorization with our adaptive fill-in-the-blanks exercise. Our intelligent system adjusts difficulty based on your performance to optimize learning.';
-    
+    let pageDescription =
+      'Practice scripture memorization with our adaptive fill-in-the-blanks exercise. Our intelligent system adjusts difficulty based on your performance to optimize learning.';
+
     if (this.passage) {
       pageTitle = `${this.passage.toString()} - Fill in the Blanks | Pericopy`;
       pageDescription = `Practice fill-in-the-blanks for the passage: ${this.passage.toString()}. Track your progress and improve your scripture memorization.`;
     }
 
     this.titleService.setTitle(pageTitle);
-    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({
+      name: 'description',
+      content: pageDescription,
+    });
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
-    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net/blanks' });
-  } 
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: pageDescription,
+    });
+    this.metaService.updateTag({
+      property: 'og:url',
+      content: 'https://pericopy.net/blanks',
+    });
+  }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+
     // Clean up debounce timer to prevent memory leaks
     if (this.saveCacheTimer) {
       clearTimeout(this.saveCacheTimer);
@@ -149,12 +196,12 @@ export class BlanksComponent implements OnInit {
 
   openPassageSelect() {
     const bible = this.bible();
-    if(!bible) return;
-    
+    if (!bible) return;
+
     // Get recent passages from the practice service instead of general attempts
     const recentPassages = this.practiceService.getRecentPassages();
     let passages: BiblePassage[] = [];
-    
+
     // Convert recent passages to BiblePassage objects
     for (let recentPassage of recentPassages) {
       let passage = bible.getPassage(recentPassage.i, recentPassage.j);
@@ -162,18 +209,20 @@ export class BlanksComponent implements OnInit {
         passages.push(passage);
       }
     }
-    
+
     // If we don't have enough recent passages, fall back to general attempts for additional options
     if (passages.length < 5 && this.attempts.size > 0) {
-      let last5Attempts = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0, 5 - passages.length);
+      let last5Attempts = Array.from(this.attempts.values())
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 5 - passages.length);
       for (let attempt of last5Attempts) {
         let passage = bible.getPassage(attempt.diff.i, attempt.diff.j);
-        if (passage && !passages.some(p => p.id === passage.id)) {
+        if (passage && !passages.some((p) => p.id === passage.id)) {
           passages.push(passage);
         }
       }
     }
-    
+
     const dialogRef = this._dialog.open(PassageSelectDialogComponent, {
       data: {
         title: 'Select a Passage',
@@ -194,15 +243,21 @@ export class BlanksComponent implements OnInit {
   generateBlanks(passage: BiblePassage, passageData: PassageData) {
     const bible = this.bible();
     if (!bible) return;
-    
+
     const text = bible.getText(passage.i, passage.j);
     this.passageText = text.split(/\s+/);
     this.blanks = new Map();
     this.nFilledBlanks = 0;
-    
+
     // Randomly select blank indices
-    const numBlanks = Math.max(1, Math.floor(this.passageText.length * passageData.blanking));
-    const indices = Array.from({ length: this.passageText.length }, (_, i) => i);
+    const numBlanks = Math.max(
+      1,
+      Math.floor(this.passageText.length * passageData.blanking)
+    );
+    const indices = Array.from(
+      { length: this.passageText.length },
+      (_, i) => i
+    );
     let blankIndices = new Set<number>();
     while (blankIndices.size < numBlanks && indices.length > 0) {
       const idx = Math.floor(this.rng() * indices.length);
@@ -210,8 +265,12 @@ export class BlanksComponent implements OnInit {
       indices.splice(idx, 1);
     }
     const blankIndicesSorted = Array.from(blankIndices).sort((a, b) => a - b);
-    if (passageData.cache && passageData.cache.length === numBlanks){
-      this._snackbarService.showEmoji('👋', 'Welcome back! We\'ve got your progress saved.', 3000);
+    if (passageData.cache && passageData.cache.length === numBlanks) {
+      this._snackbarService.showEmoji(
+        '👋',
+        "Welcome back! We've got your progress saved.",
+        3000
+      );
     }
     for (let i = 0; i < blankIndicesSorted.length; i++) {
       const wordIndex = blankIndicesSorted[i];
@@ -222,20 +281,24 @@ export class BlanksComponent implements OnInit {
         answer: this.passageText[wordIndex],
         type: BlankType.EMPTY,
         prev: i > 0 ? blankIndicesSorted[i - 1] : null,
-        next: i < blankIndicesSorted.length - 1 ? blankIndicesSorted[i + 1] : null,
-      }
-      if ( passageData.cache && passageData.cache.length === numBlanks){
+        next:
+          i < blankIndicesSorted.length - 1 ? blankIndicesSorted[i + 1] : null,
+      };
+      if (passageData.cache && passageData.cache.length === numBlanks) {
         blankValue.value = passageData.cache[i].value;
         blankValue.type = passageData.cache[i].type;
-        if (blankValue.type === BlankType.FILLED || blankValue.type === BlankType.HINTED) {
+        if (
+          blankValue.type === BlankType.FILLED ||
+          blankValue.type === BlankType.HINTED
+        ) {
           this.nFilledBlanks++;
         }
       }
-      this.blanks.set(wordIndex, blankValue)
+      this.blanks.set(wordIndex, blankValue);
     }
     this.feedback = { correct: 0, total: 0, show: false };
     this.difficultyAdjustment = null;
-    
+
     // Auto-focus the first blank input after the view updates
     setTimeout(() => {
       this.focusFirstBlank();
@@ -246,9 +309,17 @@ export class BlanksComponent implements OnInit {
     this.preferences.dynamicInputWidth = !this.preferences.dynamicInputWidth;
     this.practiceService.savePreferences(this.preferences);
     if (this.preferences.dynamicInputWidth) {
-      this._snackbarService.showEmoji('✅', 'Dynamic input width enabled!', 3000);
+      this._snackbarService.showEmoji(
+        '✅',
+        'Dynamic input width enabled!',
+        3000
+      );
     } else {
-      this._snackbarService.showEmoji('🚫', 'Dynamic input width disabled!', 3000);
+      this._snackbarService.showEmoji(
+        '🚫',
+        'Dynamic input width disabled!',
+        3000
+      );
     }
   }
 
@@ -270,10 +341,10 @@ export class BlanksComponent implements OnInit {
       if (nextInput == null) return;
       nextInput.focus();
       nextInput.select();
-      nextInput.scrollIntoView({ 
-        behavior: 'smooth', 
+      nextInput.scrollIntoView({
+        behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
     this.saveCacheDebounced();
@@ -287,13 +358,13 @@ export class BlanksComponent implements OnInit {
         input = this.blankInputs.toArray()[blank.blankIndex].nativeElement;
         break;
       }
-    } 
+    }
     if (input) {
       input.focus();
-      input.scrollIntoView({ 
-        behavior: 'smooth', 
+      input.scrollIntoView({
+        behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
   }
@@ -301,14 +372,17 @@ export class BlanksComponent implements OnInit {
   onFocus(index: number) {
     this.curFocusedBlankIndex = index;
   }
-  
+
   nextBlank(blank: BlankState): HTMLInputElement | null {
     const inputs = this.blankInputs.toArray();
     let currentBlank: BlankState | undefined = blank;
     while (currentBlank.next != null) {
       currentBlank = this.blanks.get(currentBlank.next);
       if (currentBlank == undefined) return null;
-      if (currentBlank.type === BlankType.EMPTY || currentBlank.type === BlankType.FILLED) {
+      if (
+        currentBlank.type === BlankType.EMPTY ||
+        currentBlank.type === BlankType.FILLED
+      ) {
         return inputs[currentBlank.blankIndex].nativeElement;
       }
     }
@@ -321,7 +395,10 @@ export class BlanksComponent implements OnInit {
     while (currentBlank.prev != null) {
       currentBlank = this.blanks.get(currentBlank.prev);
       if (currentBlank == undefined) return null;
-      if (currentBlank.type === BlankType.EMPTY || currentBlank.type === BlankType.FILLED) {
+      if (
+        currentBlank.type === BlankType.EMPTY ||
+        currentBlank.type === BlankType.FILLED
+      ) {
         return inputs[currentBlank.blankIndex].nativeElement;
       }
     }
@@ -334,8 +411,8 @@ export class BlanksComponent implements OnInit {
     for (let blank of this.blanks.values()) {
       cache.push({
         value: blank.value,
-        type: blank.type
-      })
+        type: blank.type,
+      });
     }
     this.passageData.cache = cache;
     this.practiceService.savePassageData(this.passage.id, this.passageData);
@@ -365,26 +442,36 @@ export class BlanksComponent implements OnInit {
       blank.type = BlankType.FILLED;
       this.nFilledBlanks++;
     }
-    
+
     this.saveCacheDebounced();
   }
 
   onKeyDown(event: KeyboardEvent, index: number) {
     const blank = this.blanks.get(index);
-    if ((event.key === 'Tab' || event.key === ' ' || event.key === 'Spacebar' || event.key === 'ArrowRight' || event.key === "Enter") && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    if (
+      event.key === 'Tab' ||
+      event.key === ' ' ||
+      event.key === 'Spacebar' ||
+      event.key === 'ArrowRight' ||
+      (event.key === 'Enter' &&
+        !event.shiftKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.metaKey)
+    ) {
       event.preventDefault();
       if (blank == undefined) return;
       const nextInput = this.nextBlank(blank);
       if (nextInput == null) return;
       nextInput.focus();
       nextInput.select();
-      nextInput.scrollIntoView({ 
-        behavior: 'smooth', 
+      nextInput.scrollIntoView({
+        behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
-    
+
     // Handle backspace on empty input to move to previous blank
     if (event.key === 'Backspace') {
       const input = event.target as HTMLInputElement;
@@ -395,13 +482,13 @@ export class BlanksComponent implements OnInit {
       if (prevInput == null) return;
       prevInput.focus();
       prevInput.select();
-      prevInput.scrollIntoView({ 
-        behavior: 'smooth', 
+      prevInput.scrollIntoView({
+        behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
-    
+
     if (event.key === 'Enter') {
       if (event.shiftKey) {
         event.preventDefault();
@@ -441,15 +528,19 @@ export class BlanksComponent implements OnInit {
         if (blank.type === BlankType.FILLED) {
           correct++;
           blank.type = BlankType.CORRECT;
-        } 
+        }
       } else {
         blank.type = BlankType.INCORRECT;
       }
     }
     this.feedback = { correct, total, show: true };
-    
+
     const score = total > 0 ? correct / total : 0;
-    this.difficultyAdjustment = this.practiceService.getDifficultyAdjustmentPreview(this.passage.id, score);
+    this.difficultyAdjustment =
+      this.practiceService.getDifficultyAdjustmentPreview(
+        this.passage.id,
+        score
+      );
     this.practiceService.saveAttempt(this.passage.id, { correct, total });
     this.practiceService.adjustBlankingPercentage(this.passage.id, score);
     this.passageData = this.practiceService.getPassageData(this.passage.id);
@@ -475,7 +566,7 @@ export class BlanksComponent implements OnInit {
     if (!this.passageData!.velocityInfo.lastResult) {
       return 'Starting fresh';
     }
-    
+
     if (this.passageData!.velocityInfo.lastResult === 'success') {
       const velocity = this.passageData!.velocityInfo.successVelocity;
       if (velocity === 1) {
@@ -501,16 +592,16 @@ export class BlanksComponent implements OnInit {
 
   getDifficultyChangeText(): string {
     if (!this.difficultyAdjustment) return '';
-    
+
     const { adjustmentType, velocity, adjustment } = this.difficultyAdjustment;
     const changePercent = Math.round(adjustment * 100);
-    
+
     if (adjustmentType === 'maintain') {
       return 'Difficulty maintained';
     }
-    
+
     const velocityText = velocity > 1 ? ` (${velocity.toFixed(1)}x speed)` : '';
-    
+
     if (adjustmentType === 'increase') {
       return `Difficulty increased by ${changePercent}%${velocityText}`;
     } else {
@@ -523,15 +614,18 @@ export class BlanksComponent implements OnInit {
     this.textMeasureContext = this.textMeasureCanvas.getContext('2d');
     if (this.textMeasureContext) {
       // Set font to match the input styling - we'll update this when we have actual inputs
-      this.textMeasureContext.font = '16px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      this.textMeasureContext.font =
+        '16px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
     }
   }
 
   private updateFontFromInput(): void {
     if (!this.textMeasureContext) return;
-    
+
     // Try to get font from an actual input element if available
-    const inputElement = document.querySelector('.blank-input') as HTMLInputElement;
+    const inputElement = document.querySelector(
+      '.blank-input'
+    ) as HTMLInputElement;
     if (inputElement) {
       const computedStyle = window.getComputedStyle(inputElement);
       const fontSize = computedStyle.fontSize;
@@ -552,26 +646,33 @@ export class BlanksComponent implements OnInit {
     // If dynamic width is disabled, return a fixed width
     // Update font to match actual input styling
     this.updateFontFromInput();
-    
+
     // Use the current value if it exists and is longer, otherwise use the target word
-    const textToMeasure = (currentValue && currentValue.length > targetWord.length) || !this.preferences.dynamicInputWidth ? currentValue : targetWord;
-    
+    const textToMeasure =
+      (currentValue && currentValue.length > targetWord.length) ||
+      !this.preferences.dynamicInputWidth
+        ? currentValue
+        : targetWord;
+
     // If no text to measure, use a reasonable default
     if (!textToMeasure) {
       return '2rem';
     }
-    
+
     // Measure the actual text width
     const textWidth = this.measureTextWidth(textToMeasure);
-    
+
     // Add padding for the input (0.2rem on each side = 0.4rem total, plus minimal extra space)
     // Convert rem to pixels (assuming 16px = 1rem)
     const paddingWidth = 16; // 1rem total padding (0.5rem each side)
     const extraSpace = 4; // Minimal extra space for comfortable typing
     const minWidth = 32; // Minimum width (2rem)
-    
-    const calculatedWidth = Math.max(minWidth, textWidth + paddingWidth + extraSpace);
-    
+
+    const calculatedWidth = Math.max(
+      minWidth,
+      textWidth + paddingWidth + extraSpace
+    );
+
     return `${calculatedWidth}px`;
   }
-} 
+}
