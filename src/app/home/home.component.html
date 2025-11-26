@@ -1,239 +1,268 @@
 @if (this.bible()) {
-  <main class="main-container">
-    <header class="logo-container">
-      <div class="left">
-        <img src="assets/logo.png" alt="Pericopy Logo" class="logo" />
+<main class="main-container">
+  <header class="logo-container">
+    <div class="left">
+      <img src="assets/logo.png" alt="Pericopy Logo" class="logo" />
+    </div>
+    <div class="right">
+      <h1 class="title">Pericopy</h1>
+      <p class="subtitle">"Let the word of Christ dwell in you richly"</p>
+    </div>
+  </header>
+
+  <!-- Primary Goal-Centric Section -->
+  <section class="goal-centric-section" aria-label="Goal-oriented memorization">
+    @if (this.goals.length === 0) {
+    <!-- First-time user experience -->
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <h2 class="welcome-title">Start Your Scripture Memorization Journey</h2>
+        <p class="welcome-description">
+          Set a goal to memorize a specific passage and track your progress with
+          our intelligent system. Goals help you stay focused and motivated on
+          your memorization journey.
+        </p>
+        <button
+          class="primary-cta"
+          mat-fab
+          extended
+          color="primary"
+          (click)="this.addGoal()"
+          aria-label="Create your first memorization goal"
+        >
+          <mat-icon>flag</mat-icon>
+          Create Your First Goal
+        </button>
       </div>
-      <div class="right">
-        <h1 class="title">Pericopy</h1>
-        <p class="subtitle">"Let the word of Christ dwell in you richly"</p>
+      <div class="welcome-illustration">
+        <mat-icon class="welcome-icon">track_changes</mat-icon>
       </div>
-    </header>
-    
-    <!-- Primary Goal-Centric Section -->
-    <section class="goal-centric-section" aria-label="Goal-oriented memorization">
-      @if (this.goals.length === 0) {
-        <!-- First-time user experience -->
-        <div class="welcome-section">
-          <div class="welcome-content">
-            <h2 class="welcome-title">Start Your Scripture Memorization Journey</h2>
-            <p class="welcome-description">
-              Set a goal to memorize a specific passage and track your progress with our intelligent system. 
-              Goals help you stay focused and motivated on your memorization journey.
-            </p>
-            <button 
-              class="primary-cta" 
-              mat-fab 
-              extended 
-              color="primary" 
-              (click)="this.addGoal()"
-              aria-label="Create your first memorization goal"
-            >
-              <mat-icon>flag</mat-icon>
-              Create Your First Goal
-            </button>
-          </div>
-          <div class="welcome-illustration">
-            <mat-icon class="welcome-icon">track_changes</mat-icon>
-          </div>
+    </div>
+    } @else {
+    <!-- Existing goals with prominent CTA -->
+    <div class="goals-overview">
+      <div class="goals-header">
+        <div class="goals-header-content">
+          <h2 class="goals-main-title">Your Memorization Goals</h2>
+          <p class="goals-subtitle">
+            Continue your progress or start a new goal
+          </p>
         </div>
-      } @else {
-        <!-- Existing goals with prominent CTA -->
-        <div class="goals-overview">
-          <div class="goals-header">
-            <div class="goals-header-content">
-              <h2 class="goals-main-title">Your Memorization Goals</h2>
-              <p class="goals-subtitle">Continue your progress or start a new goal</p>
+        <button
+          class="primary-cta"
+          mat-fab
+          extended
+          color="primary"
+          (click)="this.addGoal()"
+          aria-label="Create a new memorization goal"
+        >
+          <mat-icon>add</mat-icon>
+          New Goal
+        </button>
+      </div>
+
+      <!-- Quick Action Goals (Active/Due Goals) -->
+      @if (this.getActiveGoals().length > 0) {
+      <div class="quick-actions">
+        <div class="quick-goals-grid">
+          @for (goal of this.getActiveGoals(); track goal.id) {
+          <div class="quick-goal-card" (click)="this.navigateToGoal(goal)">
+            <div class="quick-goal-header">
+              <h4 class="quick-goal-title">{{ goal.title }}</h4>
+              <span class="status-chip" [ngClass]="getStatusClass(goal)">
+                {{ this.getGoalStatusText(goal) }}
+              </span>
             </div>
-            <button 
-              class="primary-cta" 
-              mat-fab 
-              extended 
-              color="primary" 
-              (click)="this.addGoal()"
-              aria-label="Create a new memorization goal"
-            >
-              <mat-icon>add</mat-icon>
-              New Goal
-            </button>
-          </div>
-          
-          <!-- Quick Action Goals (Active/Due Goals) -->
-          @if (this.getActiveGoals().length > 0) {
-            <div class="quick-actions">
-              <div class="quick-goals-grid">
-                @for (goal of this.getActiveGoals(); track goal.id) {
-                  <div class="quick-goal-card" (click)="this.navigateToGoal(goal)">
-                    <div class="quick-goal-header">
-                      <h4 class="quick-goal-title">{{ goal.title }}</h4>
-                      <span class="status-chip" [ngClass]="getStatusClass(goal)">
-                        {{ this.getGoalStatusText(goal) }}
-                      </span>
-                    </div>
-                    <div class="quick-goal-progress">
-                      <div class="progress-info">
-                        <span class="progress-text">Recited {{ this.getLastAttemptText(goal, true, 'never') }}</span>
-                        @if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
-                          <span class="due-chip" [ngClass]="getDueInClass(goal)">
-                            Due {{ this.getDueInDaysText(goal) }}
-                          </span>
-                        }
-                      </div>
-                    </div>
-                    <div class="quick-goal-actions">
-                      <button 
-                        mat-button 
-                        color="primary"
-                        (click)="this.startBlanks(goal, $event)"
-                        class="practice-button"
-                      >
-                        <mat-icon>code</mat-icon>
-                        Blanks
-                      </button>
-                      <button 
-                        mat-button 
-                        color="primary"
-                        (click)="this.startRecite(goal, $event)"
-                        class="practice-button"
-                      >
-                        <mat-icon>edit_note</mat-icon>
-                        Recite
-                      </button>
-                    </div>
-                  </div>
+            <div class="quick-goal-progress">
+              <div class="progress-info">
+                <span class="progress-text"
+                  >Recited
+                  {{ this.getLastAttemptText(goal, true, "never") }}</span
+                >
+                @if (goal.status === GoalStatus.MAINTAINING &&
+                goal.fsrsCard?.due) {
+                <span class="due-chip" [ngClass]="getDueInClass(goal)">
+                  Due {{ this.getDueInDaysText(goal) }}
+                </span>
+                } @else {
+                <span class="difficulty-chip">
+                  Blanks: {{ this.getBlanksDifficultyText(goal) }}
+                </span>
                 }
               </div>
             </div>
-          }
-        </div>
-      }
-    </section>
-
-
-    
-    <!-- All Goals Section (Detailed View) -->
-    @if (this.goals.length > 0) {
-      <section class="all-goals" aria-label="All memorization goals">
-        <header class="all-goals-header">
-          <h3 class="all-goals-title">All Goals</h3>
-          <div class="all-goals-controls">
-            <div class="archived-toggle">
-              <mat-checkbox [(ngModel)]="showArchived" (ngModelChange)="this.applyFilter()" labelPosition="before" color="primary">
-                Show Archived
-              </mat-checkbox>  
+            <div class="quick-goal-actions">
+              <button
+                mat-button
+                color="primary"
+                (click)="this.startBlanks(goal, $event)"
+                class="practice-button"
+              >
+                <mat-icon>code</mat-icon>
+                Blanks
+              </button>
+              <button
+                mat-button
+                color="primary"
+                (click)="this.startRecite(goal, $event)"
+                class="practice-button"
+              >
+                <mat-icon>edit_note</mat-icon>
+                Recite
+              </button>
             </div>
           </div>
-        </header>
-        <div class="hr"></div>
-        <div class="all-goals-container">
-          <mat-form-field class="full-width">
-            <mat-label>Filter</mat-label>
-            <input
-              matInput
-              value=""
-              [(ngModel)]="filterValue"
-              (keyup)="this.applyFilter()"
-              aria-label="Filter goals"
-            />
-            <mat-icon matSuffix>filter_list</mat-icon>
-          </mat-form-field>
-          <table
-            class="goals-table"
-            mat-table
-            matSort
-            matSortDisableClear
-            [dataSource]="dataSource"
-            aria-label="Memorization goals"
-          >
-            <ng-container matColumnDef="title">
-              <th
-                mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                sortActionDescription="Sort by passage"
-                scope="col"
-              >
-                Passage
-              </th>
-              <td mat-cell *matCellDef="let goal">{{ goal.title }}</td>
-            </ng-container>
-    
-            <ng-container matColumnDef="time">
-              <th
-                mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                sortActionDescription="Sort by time"
-                scope="col"
-              >
-                Last Recitation
-              </th>
-              <td mat-cell *matCellDef="let goal">
-                {{ this.getLastAttemptText(goal, true) }}
-              </td>
-            </ng-container>
-    
-            <ng-container matColumnDef="status">
-              <th
-                mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                sortActionDescription="Sort by status"
-                scope="col"
-              >
-                Status
-              </th>
-              <td mat-cell *matCellDef="let goal">
-                <span class="status-chip" [ngClass]="getStatusClass(goal)">
-                  {{ this.getGoalStatusText(goal) }}
-                </span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="dueIn">
-              <th
-                mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                sortActionDescription="Sort by days until due"
-                scope="col"
-              >
-                Due In
-              </th>
-              <td mat-cell *matCellDef="let goal">
-                <span class="due-chip" [ngClass]="getDueInClass(goal)">
-                  {{ this.getDueInDaysText(goal) }}
-                </span>
-              </td>
-            </ng-container>
-    
-            <tr
-              class="goals-table-header-row"
-              mat-header-row
-              *matHeaderRowDef="displayedColumns"
-            ></tr>
-            <tr
-              mat-row
-              class="row"
-              (click)="this.navigateToGoal(row)"
-              *matRowDef="let row; columns: displayedColumns"
-            ></tr>
-          </table>
-          <mat-paginator
-            class="goals-paginator"
-            [pageSize]="5"
-            [pageSizeOptions]="[5, 10, 25, 100]"
-            aria-label="Select page"
-          >
-          </mat-paginator>
+          }
         </div>
-      </section>
+      </div>
+      }
+    </div>
     }
+  </section>
 
+  <!-- All Goals Section (Detailed View) -->
+  @if (this.goals.length > 0) {
+  <section class="all-goals" aria-label="All memorization goals">
+    <header class="all-goals-header">
+      <h3 class="all-goals-title">All Goals</h3>
+      <div class="all-goals-controls">
+        <div class="archived-toggle">
+          <mat-checkbox
+            [(ngModel)]="showArchived"
+            (ngModelChange)="this.applyFilter()"
+            labelPosition="before"
+            color="primary"
+          >
+            Show Archived
+          </mat-checkbox>
+        </div>
+      </div>
+    </header>
+    <div class="hr"></div>
+    <div class="all-goals-container">
+      <mat-form-field class="full-width">
+        <mat-label>Filter</mat-label>
+        <input
+          matInput
+          value=""
+          [(ngModel)]="filterValue"
+          (keyup)="this.applyFilter()"
+          aria-label="Filter goals"
+        />
+        <mat-icon matSuffix>filter_list</mat-icon>
+      </mat-form-field>
+      <div class="table-scroll-container">
+        <table
+          class="goals-table"
+          mat-table
+          matSort
+          matSortDisableClear
+          [dataSource]="dataSource"
+          aria-label="Memorization goals"
+        >
+          <ng-container matColumnDef="title">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              sortActionDescription="Sort by passage"
+              scope="col"
+            >
+              Passage
+            </th>
+            <td mat-cell *matCellDef="let goal">{{ goal.title }}</td>
+          </ng-container>
 
-  </main>
+          <ng-container matColumnDef="time">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              sortActionDescription="Sort by time"
+              scope="col"
+            >
+              Last Recitation
+            </th>
+            <td mat-cell *matCellDef="let goal">
+              {{ this.getLastAttemptText(goal, true) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              sortActionDescription="Sort by status"
+              scope="col"
+            >
+              Status
+            </th>
+            <td mat-cell *matCellDef="let goal">
+              <span class="status-chip" [ngClass]="getStatusClass(goal)">
+                {{ this.getGoalStatusText(goal) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="difficulty">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              sortActionDescription="Sort by blanks difficulty"
+              scope="col"
+            >
+              Blanks Difficulty
+            </th>
+            <td mat-cell *matCellDef="let goal">
+              {{ this.getBlanksDifficultyText(goal) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dueIn">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              sortActionDescription="Sort by days until due"
+              scope="col"
+            >
+              Due In
+            </th>
+            <td mat-cell *matCellDef="let goal">
+              <span class="due-chip" [ngClass]="getDueInClass(goal)">
+                {{ this.getDueInDaysText(goal) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr
+            class="goals-table-header-row"
+            mat-header-row
+            *matHeaderRowDef="displayedColumns"
+          ></tr>
+          <tr
+            mat-row
+            class="row"
+            (click)="this.navigateToGoal(row)"
+            *matRowDef="let row; columns: displayedColumns"
+          ></tr>
+        </table>
+      </div>
+      <mat-paginator
+        class="goals-paginator"
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page"
+      >
+      </mat-paginator>
+    </div>
+  </section>
+  }
+</main>
 } @else {
-  <div class="page-loader" aria-label="Loading application">
-    <mat-spinner></mat-spinner>
-  </div>
+<div class="page-loader" aria-label="Loading application">
+  <mat-spinner></mat-spinner>
+</div>
 }

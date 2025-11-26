@@ -1,4 +1,11 @@
-import { Component, effect, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { IResult } from '../classes/models';
 import { StorageService, TableSettings } from '../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,24 +30,25 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MemorizationPracticeService } from '../blanks/memorization-practice.service';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
-    imports: [
-      MatTableModule,
-      MatPaginatorModule,
-      MatSortModule,
-      MatInputModule,
-      MatButtonModule,
-      MatIconModule,
-      MatTooltipModule,
-      MatProgressSpinnerModule,
-      CommonModule,
-      MatCheckboxModule,
-      FormsModule
-    ]
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+    CommonModule,
+    MatCheckboxModule,
+    FormsModule,
+  ],
 })
 export class HomeComponent implements OnDestroy, OnInit {
   private _storageService = inject(StorageService);
@@ -50,19 +58,29 @@ export class HomeComponent implements OnDestroy, OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private _snackbarService = inject(SnackbarService);
+  private _practiceService = inject(MemorizationPracticeService);
 
-  attempts: Map<string,IResult> = new Map();
+  attempts: Map<string, IResult> = new Map();
   goals: Goal[] = [];
   bible = this._bibleService.bible;
   subscriptions: Subscription[] = [];
   filterValue = '';
-  displayedColumns: string[] = ['title', 'time', 'status', 'dueIn'];
+  displayedColumns: string[] = [
+    'title',
+    'time',
+    'status',
+    'difficulty',
+    'dueIn',
+  ];
   dataSource = new MatTableDataSource<Goal>([]);
   showArchived = false;
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort = new MatSort(({ id: 'dueIn', start: 'asc'}) as MatSortable);
+  @ViewChild(MatSort) sort: MatSort = new MatSort({
+    id: 'dueIn',
+    start: 'asc',
+  } as MatSortable);
   private readonly componentName = 'home';
-  
+
   // Expose enum to template
   public GoalStatus = GoalStatus;
 
@@ -72,34 +90,46 @@ export class HomeComponent implements OnDestroy, OnInit {
       return;
     }
     this.attempts = this._storageService.getAttempts(bible.m.t);
-    this.goals = [...this._storageService.getGoals(bible.m.t).values()].sort((a,b) => b.t - a.t);
+    this.goals = [...this._storageService.getGoals(bible.m.t).values()].sort(
+      (a, b) => b.t - a.t
+    );
     this.dataSource = new MatTableDataSource<Goal>(this.goals);
     this.loadTableSettings();
-    setTimeout(()=>{
+    setTimeout(() => {
       this.initSorting();
       this.applyFilter();
     });
-  })
-  
+  });
+
   ngOnInit() {
     const pageTitle = 'Pericopy | Scripture Memorization Made Simple';
-    const pageDescription = 'Master scripture memorization with Pericopy\'s intelligent tracking, spaced repetition, and adaptive feedback system. Memorize passages with confidence.';
+    const pageDescription =
+      "Master scripture memorization with Pericopy's intelligent tracking, spaced repetition, and adaptive feedback system. Memorize passages with confidence.";
 
     this.titleService.setTitle(pageTitle);
-    this.metaService.updateTag({ name: 'description', content: pageDescription });
+    this.metaService.updateTag({
+      name: 'description',
+      content: pageDescription,
+    });
     this.metaService.updateTag({ property: 'og:title', content: pageTitle });
-    this.metaService.updateTag({ property: 'og:description', content: pageDescription });
-    this.metaService.updateTag({ property: 'og:url', content: 'https://pericopy.net' });
+    this.metaService.updateTag({
+      property: 'og:description',
+      content: pageDescription,
+    });
+    this.metaService.updateTag({
+      property: 'og:url',
+      content: 'https://pericopy.net',
+    });
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   ngAfterViewInit() {
     this.dataSource = new MatTableDataSource<Goal>(this.goals);
     this.loadTableSettings();
-    setTimeout(()=>{
+    setTimeout(() => {
       this.initSorting();
       if (this.paginator) {
         this.subscriptions.push(
@@ -108,7 +138,7 @@ export class HomeComponent implements OnDestroy, OnInit {
           })
         );
       }
-      
+
       // Subscribe to sort events to save settings
       if (this.sort) {
         this.subscriptions.push(
@@ -125,14 +155,14 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (settings) {
       this.filterValue = settings.filterValue;
       this.showArchived = settings.showArchived;
-      
+
       // Will be applied in initSorting
       setTimeout(() => {
         if (this.paginator) {
           this.paginator.pageSize = settings.pageSize;
           this.paginator.pageIndex = settings.pageIndex;
         }
-        
+
         if (this.sort && settings.sortActive) {
           this.sort.active = settings.sortActive;
           this.sort.direction = settings.sortDirection as 'asc' | 'desc';
@@ -143,27 +173,38 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   saveTableSettings() {
     if (!this.paginator || !this.sort) return;
-    
+
     const settings: TableSettings = {
       pageSize: this.paginator.pageSize,
       pageIndex: this.paginator.pageIndex,
       sortActive: this.sort.active,
       sortDirection: this.sort.direction,
       filterValue: this.filterValue,
-      showArchived: this.showArchived
+      showArchived: this.showArchived,
     };
-    
+
     this._storageService.saveTableSettings(this.componentName, settings);
   }
 
   initSorting() {
     this.dataSource.sortingDataAccessor = (item, property) => {
-      switch(property) {
-        case 'time': return Math.max(...Array.from(item.attempts.values()).map(a => this.attempts.get(a)?.timestamp || 0));
-        case 'title': return item.title;
-        case 'status': return this.getGoalStatusText(item);
-        case 'dueIn': return this.getDueInDays(item, true);
-        default: return '';
+      switch (property) {
+        case 'time':
+          return Math.max(
+            ...Array.from(item.attempts.values()).map(
+              (a) => this.attempts.get(a)?.timestamp || 0
+            )
+          );
+        case 'title':
+          return item.title;
+        case 'status':
+          return this.getGoalStatusText(item);
+        case 'difficulty':
+          return this.getBlanksDifficulty(item);
+        case 'dueIn':
+          return this.getDueInDays(item, true);
+        default:
+          return '';
       }
     };
     this.dataSource.paginator = this.paginator;
@@ -176,7 +217,10 @@ export class HomeComponent implements OnDestroy, OnInit {
   }
 
   applyFilter() {
-    this.dataSource.filterPredicate = (data: Goal, _filter: string): boolean => {
+    this.dataSource.filterPredicate = (
+      data: Goal,
+      _filter: string
+    ): boolean => {
       if (!this.showArchived && data.archived) {
         return false;
       }
@@ -186,20 +230,19 @@ export class HomeComponent implements OnDestroy, OnInit {
       }
       return true;
     };
-    this.dataSource.filter = `text:${this.filterValue.trim().toLowerCase()};archived:${this.showArchived}`;
-    
+    this.dataSource.filter = `text:${this.filterValue
+      .trim()
+      .toLowerCase()};archived:${this.showArchived}`;
+
     // Save settings when filter changes
     this.saveTableSettings();
   }
-
-
-
 
   getIntersectingAttempts(i: number, j: number) {
     let attempts: string[] = [];
     for (let result of this.attempts.values()) {
       if (intersection(result.diff.i, result.diff.j, i, j)) {
-        attempts.push(result.id); 
+        attempts.push(result.id);
       }
     }
     return attempts;
@@ -210,7 +253,9 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (!bible) {
       return;
     }
-    let last5Attempts = Array.from(this.attempts.values()).sort((a,b) => b.timestamp - a.timestamp).slice(0,5);
+    let last5Attempts = Array.from(this.attempts.values())
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 5);
     let passages: BiblePassage[] = [];
     for (let attempt of last5Attempts) {
       let passage = bible.getPassage(attempt.diff.i, attempt.diff.j);
@@ -219,19 +264,25 @@ export class HomeComponent implements OnDestroy, OnInit {
       }
     }
 
-    this.dialog.open(NewGoalDialogComponent, {
-      data: {
-        options: passages,
-        width: '600px'
-      },
-    }).afterClosed().subscribe((goal: Goal | undefined) => {
-      if (goal) {
-        this.goals.unshift(goal);
-        this.dataSource = new MatTableDataSource<Goal>(this.goals);
-        this.applyFilter();
-        this._snackbarService.showSuccess('Created new goal: ' + goal.title, 3000);
-      } 
-    });
+    this.dialog
+      .open(NewGoalDialogComponent, {
+        data: {
+          options: passages,
+          width: '600px',
+        },
+      })
+      .afterClosed()
+      .subscribe((goal: Goal | undefined) => {
+        if (goal) {
+          this.goals.unshift(goal);
+          this.dataSource = new MatTableDataSource<Goal>(this.goals);
+          this.applyFilter();
+          this._snackbarService.showSuccess(
+            'Created new goal: ' + goal.title,
+            3000
+          );
+        }
+      });
   }
 
   getGoalText(goal: Goal) {
@@ -240,9 +291,11 @@ export class HomeComponent implements OnDestroy, OnInit {
     if (!bible) {
       return '';
     }
-    return goal.j - goal.i <= wordsToPreview ? 
-      bible.getText(goal.i, goal.j) : 
-      bible.getText(goal.i, goal.i + wordsToPreview/2) + ' ... ' + bible.getText(goal.j - wordsToPreview/2, goal.j);
+    return goal.j - goal.i <= wordsToPreview
+      ? bible.getText(goal.i, goal.j)
+      : bible.getText(goal.i, goal.i + wordsToPreview / 2) +
+          ' ... ' +
+          bible.getText(goal.j - wordsToPreview / 2, goal.j);
   }
 
   loadGoal(goalId: string) {
@@ -253,11 +306,16 @@ export class HomeComponent implements OnDestroy, OnInit {
     let lastAttempt = undefined;
     for (let attemptId of goal.attempts) {
       let attempt = this.attempts.get(attemptId);
-      if (attempt && (lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp)) {
+      if (
+        attempt &&
+        (lastAttempt == undefined || attempt.timestamp > lastAttempt.timestamp)
+      ) {
         lastAttempt = attempt;
       }
     }
-    return lastAttempt ? `${getRelativeDate(lastAttempt.timestamp, short)}` : defaultText;
+    return lastAttempt
+      ? `${getRelativeDate(lastAttempt.timestamp, short)}`
+      : defaultText;
   }
 
   trackByGoalId(index: number, goal: Goal) {
@@ -292,7 +350,7 @@ export class HomeComponent implements OnDestroy, OnInit {
         return 'Today';
       }
       return `${days} day${days !== 1 ? 's' : ''}`;
-    } 
+    }
     return '-';
   }
 
@@ -301,10 +359,14 @@ export class HomeComponent implements OnDestroy, OnInit {
       return 'Archived';
     }
     switch (goal.status) {
-      case GoalStatus.MEMORIZING: return 'Memorizing';
-      case GoalStatus.MAINTAINING: return 'Maintaining';
-      case GoalStatus.MASTERED: return 'Mastered';
-      default: return 'Unknown';
+      case GoalStatus.MEMORIZING:
+        return 'Memorizing';
+      case GoalStatus.MAINTAINING:
+        return 'Maintaining';
+      case GoalStatus.MASTERED:
+        return 'Mastered';
+      default:
+        return 'Unknown';
     }
   }
 
@@ -313,10 +375,14 @@ export class HomeComponent implements OnDestroy, OnInit {
       return 'status-archived';
     }
     switch (goal.status) {
-      case GoalStatus.MEMORIZING: return 'status-memorizing';
-      case GoalStatus.MAINTAINING: return 'status-maintaining';
-      case GoalStatus.MASTERED: return 'status-mastered';
-      default: return '';
+      case GoalStatus.MEMORIZING:
+        return 'status-memorizing';
+      case GoalStatus.MAINTAINING:
+        return 'status-maintaining';
+      case GoalStatus.MASTERED:
+        return 'status-mastered';
+      default:
+        return '';
     }
   }
 
@@ -325,20 +391,22 @@ export class HomeComponent implements OnDestroy, OnInit {
    * (non-archived goals that are either due for review or actively being memorized)
    */
   getActiveGoals(): Goal[] {
-    return this.goals.filter(goal => {
-      if (goal.archived) return false;
-      
-      // Include goals that are currently being memorized
-      if (goal.status === GoalStatus.MEMORIZING) return true;
-      
-      // Include maintaining goals that are due soon (within 7 days) or overdue
-      if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
-        const daysUntil = this.getDueInDays(goal, false) as number;
-        return typeof daysUntil === 'number' && daysUntil <= 7;
-      }
-      
-      return false;
-    }).slice(0, 3); // Limit to 3 most important goals
+    return this.goals
+      .filter((goal) => {
+        if (goal.archived) return false;
+
+        // Include goals that are currently being memorized
+        if (goal.status === GoalStatus.MEMORIZING) return true;
+
+        // Include maintaining goals that are due soon (within 7 days) or overdue
+        if (goal.status === GoalStatus.MAINTAINING && goal.fsrsCard?.due) {
+          const daysUntil = this.getDueInDays(goal, false) as number;
+          return typeof daysUntil === 'number' && daysUntil <= 7;
+        }
+
+        return false;
+      })
+      .slice(0, 3); // Limit to 3 most important goals
   }
 
   /**
@@ -364,8 +432,8 @@ export class HomeComponent implements OnDestroy, OnInit {
    */
   startBlanks(goal: Goal, event: Event): void {
     event.stopPropagation(); // Prevent card click navigation
-    this.router.navigate(['/blanks'], { 
-      queryParams: { i: goal.i, j: goal.j } 
+    this.router.navigate(['/blanks'], {
+      queryParams: { i: goal.i, j: goal.j },
     });
   }
 
@@ -374,9 +442,24 @@ export class HomeComponent implements OnDestroy, OnInit {
    */
   startRecite(goal: Goal, event: Event): void {
     event.stopPropagation(); // Prevent card click navigation
-    this.router.navigate(['/recite'], { 
-      queryParams: { i: goal.i, j: goal.j } 
+    this.router.navigate(['/recite'], {
+      queryParams: { i: goal.i, j: goal.j },
     });
   }
 
+  /**
+   * Get the blanks mode difficulty for a goal as a percentage
+   */
+  getBlanksDifficulty(goal: Goal): number {
+    const passageId = `${goal.i}-${goal.j}`;
+    return this._practiceService.getBlankingPercentage(passageId);
+  }
+
+  /**
+   * Get the blanks mode difficulty for a goal as a formatted string
+   */
+  getBlanksDifficultyText(goal: Goal): string {
+    const difficulty = this.getBlanksDifficulty(goal);
+    return `${Math.round(difficulty * 100)}%`;
+  }
 }

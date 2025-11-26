@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  .due-chip, .status-chip { padding: 2px 8px; border-radius: 12px; display: inline-block; font-weight: normal; color: inherit; font-size: 0.85rem; }
+  .due-chip, .status-chip, .difficulty-chip { padding: 2px 8px; border-radius: 12px; display: inline-block; font-weight: normal; color: inherit; font-size: 0.85rem; }
   .overdue { background: #f8d7da; color: #721c24; }
   .due-soon { background: #fff3cd; color: #856404; }
   .not-due { background: #d4edda; color: #155724; }
@@ -11,6 +11,7 @@
   .status-maintaining { background: #cce5ff; color: #004085; }
   .status-mastered { background: #d1ecf1; color: #0c5460; }
   .status-archived { background: #ebebeb; color: #3f3f3f; }
+  .difficulty-chip { background: #e7f3ff; color: #0056b3; }
 }
 
 .logo-container {
@@ -200,10 +201,46 @@
 
   .all-goals-container { padding-top: 0; display: flex; flex-direction: column; gap: 0.5rem; }
   
-  .goals-table .row {
-    cursor: pointer;
-    transition: background 0.3s;
-    &:hover { background: #f8f9fa; }
+  .table-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    overflow-y: visible;
+    
+    // Custom scrollbar styling for better UX
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+  
+  .goals-table {
+    min-width: 100%;
+    width: max-content; // Allow table to expand beyond container width
+    
+    // Prevent text wrapping in cells for better horizontal scroll experience
+    th, td {
+      white-space: nowrap;
+    }
+    
+    .row {
+      cursor: pointer;
+      transition: background 0.3s;
+      &:hover { background: #f8f9fa; }
+    }
   }
 }
 
@@ -237,10 +274,19 @@ mat-checkbox { user-select: none; font-weight: 100; }
     margin-left: 0;
     margin-right: 0;
 
-    .all-goals-container .goals-table, .all-goals-container .goals-paginator {
-      margin-left: -1.5rem;
-      margin-right: -1.5rem;
-      width: calc(100% + 3rem);
+    .all-goals-container {
+      .table-scroll-container {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      
+      .goals-paginator {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        width: calc(100% + 3rem);
+      }
     }
   }
 
@@ -292,10 +338,19 @@ mat-checkbox { user-select: none; font-weight: 100; }
     margin-right: -0.5rem;
     border-radius: 0;
 
-    .all-goals-container .goals-table, .all-goals-container .goals-paginator {
-      margin-left: -1rem;
-      margin-right: -1rem;
-      width: calc(100% + 2rem);
+    .all-goals-container {
+      .table-scroll-container {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      .goals-paginator {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        width: calc(100% + 2rem);
+      }
     }
   }
 
